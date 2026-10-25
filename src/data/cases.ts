@@ -63,9 +63,9 @@ export const CASE_SCENARIOS: CaseScenario[] = [
     subtitle: 'Kandilli Yalı Müzayedesi Ardından Şüpheli Zehirlenme',
     difficulty: 'Zor',
     estimatedMinutes: 25,
-    minPlayers: 3,
+    minPlayers: 2,
     maxPlayers: 6,
-    bannerTag: 'ZORUNLU 3 UZMANLIK (MİN 3 KİŞİ)',
+    bannerTag: '2-6 KİŞİLİK ASİMETRİK VAKA (2 KİŞİ İLE OYNANABİLİR)',
     synopsis: 
       'Türkiye’nin en varlıklı antikacısı ve sanat koleksiyoneri Turgut Soylu (58), Kandilli’deki yalısının çalışma odasında, elinde bir kadeh kristal viskiyle cansız bulundu. Masada kırık bir bardak, cebinde yırtık bir müzayede kataloğu ve kasada şifrelenmiş bir ses kaydı var. Görünüşte ani kalp krizi veya kadehteki zehir gibi dursa da, asimetrik deliller gizli bir planı açığa çıkarıyor.',
     victim: {

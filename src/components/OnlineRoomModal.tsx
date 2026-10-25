@@ -45,6 +45,8 @@ interface OnlineRoomModalProps {
   scenarios: CaseScenario[];
   selectedScenarioId: string;
   onSelectScenario: (id: string) => void;
+  playerCount?: number;
+  onChangePlayerCount?: (count: number) => void;
   onRoomJoined: (roomCode: string) => void;
   onStartOnlineGame: () => void;
   onClose: () => void;
@@ -57,11 +59,14 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
   scenarios,
   selectedScenarioId,
   onSelectScenario,
+  playerCount = 2,
+  onChangePlayerCount,
   onRoomJoined,
   onStartOnlineGame,
   onClose,
 }) => {
   const [activeTab, setActiveTab] = useState<'create' | 'join'>('create');
+  const [modalPlayerCount, setModalPlayerCount] = useState<number>(playerCount);
   const [joinCodeInput, setJoinCodeInput] = useState<string>('');
   const [guestNameInput, setGuestNameInput] = useState<string>('');
   const [selectedRole, setSelectedRole] = useState<RoleType>('forensics');
@@ -134,7 +139,7 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
       const code = await createOnlineRoom({
         hostUser: currentUser,
         scenarioId: selectedScenarioId,
-        playerCount: 3,
+        playerCount: modalPlayerCount,
         hostRole: selectedRole,
       });
 
@@ -532,35 +537,124 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
               </button>
             </div>
 
-            {/* Role Picker for the Joining/Creating User */}
-            <div>
-              <label className="text-xs font-mono uppercase tracking-wider text-amber-300/90 block mb-2">
-                Uzmanlık Alanınızı Seçin:
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                {availableRoles.slice(0, 3).map((roleKey) => {
-                  const role = ROLES[roleKey];
-                  const isSelected = selectedRole === roleKey;
-                  return (
+            {/* Player Count Selection for Room Host */}
+            {activeTab === 'create' && (
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-mono uppercase tracking-wider text-amber-300/90 block">
+                    Masada Kaç Kişi Olacaksınız?
+                  </label>
+                  <span className="text-[10px] text-zinc-400 font-mono">
+                    {modalPlayerCount === 2 ? '⚡ 2 KİŞİ (İKİLİ ORTAKLIK)' : `${modalPlayerCount} DEDEKTİF`}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  {[2, 3, 4, 5, 6].map((cnt) => (
                     <button
-                      key={roleKey}
+                      key={cnt}
                       type="button"
                       onClick={() => {
                         soundManager.playKeyClick();
-                        setSelectedRole(roleKey);
+                        setModalPlayerCount(cnt);
+                        onChangePlayerCount?.(cnt);
+                        if (cnt === 2 && selectedRole !== 'forensics' && selectedRole !== 'profiler') {
+                          setSelectedRole('forensics');
+                        }
                       }}
-                      className={`p-2.5 rounded-xl border text-left transition-all ${
-                        isSelected
-                          ? 'bg-amber-950/70 border-amber-500 text-amber-200 shadow-md ring-1 ring-amber-500/40'
-                          : 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${
+                        modalPlayerCount === cnt
+                          ? 'bg-amber-600 text-zinc-950 border-amber-400 shadow-md ring-1 ring-amber-400'
+                          : 'bg-zinc-900/60 border-zinc-800 text-zinc-300 hover:border-zinc-700'
                       }`}
                     >
-                      <p className="text-xs font-bold leading-tight text-zinc-200">{role.title}</p>
-                      <p className="text-[10px] text-zinc-400 mt-0.5 truncate">{role.shortDesc.substring(0, 32)}...</p>
+                      {cnt} Kişi
                     </button>
-                  );
-                })}
+                  ))}
+                </div>
+                {modalPlayerCount === 2 && (
+                  <p className="text-[11px] text-emerald-400/90 mt-1.5 bg-emerald-950/30 border border-emerald-800/40 p-2 rounded-xl">
+                    ✓ <strong>2 Kişilik Ortaklık Modu:</strong> 1. Dedektif Adli Tıp & Kripto terminallerini, 2. Dedektif Profilleme ve sorgu tutanaklarını inceler.
+                  </p>
+                )}
               </div>
+            )}
+
+            {/* Role Picker for the Joining/Creating User */}
+            <div>
+              <label className="text-xs font-mono uppercase tracking-wider text-amber-300/90 block mb-2">
+                {modalPlayerCount === 2 ? 'Görevinizi Seçin (2 Kişilik Dağılım):' : 'Uzmanlık Alanınızı Seçin:'}
+              </label>
+
+              {modalPlayerCount === 2 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundManager.playKeyClick();
+                      setSelectedRole('forensics');
+                    }}
+                    className={`p-3 rounded-xl border text-left transition-all ${
+                      selectedRole === 'forensics'
+                        ? 'bg-amber-950/70 border-amber-500 text-amber-200 shadow-md ring-1 ring-amber-500/40'
+                        : 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between text-xs font-bold text-zinc-100">
+                      <span>Dedektif 1: Adli Tıp & Kripto</span>
+                      <span className="text-[10px] text-emerald-400 font-mono">🔬 + 💻</span>
+                    </div>
+                    <p className="text-[11px] text-zinc-400 mt-1 leading-snug">
+                      Otopsi raporları, toksikoloji analizörü ve PIN terminali sizde.
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundManager.playKeyClick();
+                      setSelectedRole('profiler');
+                    }}
+                    className={`p-3 rounded-xl border text-left transition-all ${
+                      selectedRole === 'profiler'
+                        ? 'bg-amber-950/70 border-amber-500 text-amber-200 shadow-md ring-1 ring-amber-500/40'
+                        : 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between text-xs font-bold text-zinc-100">
+                      <span>Dedektif 2: Profilleme & İfadeler</span>
+                      <span className="text-[10px] text-amber-400 font-mono">🧠 + 🕵️</span>
+                    </div>
+                    <p className="text-[11px] text-zinc-400 mt-1 leading-snug">
+                      Şüpheli ifadeleri, psikolojik çelişkiler ve saha istihbaratı sizde.
+                    </p>
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {availableRoles.slice(0, 3).map((roleKey) => {
+                    const role = ROLES[roleKey];
+                    const isSelected = selectedRole === roleKey;
+                    return (
+                      <button
+                        key={roleKey}
+                        type="button"
+                        onClick={() => {
+                          soundManager.playKeyClick();
+                          setSelectedRole(roleKey);
+                        }}
+                        className={`p-2.5 rounded-xl border text-left transition-all ${
+                          isSelected
+                            ? 'bg-amber-950/70 border-amber-500 text-amber-200 shadow-md ring-1 ring-amber-500/40'
+                            : 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                        }`}
+                      >
+                        <p className="text-xs font-bold leading-tight text-zinc-200">{role.title}</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5 truncate">{role.shortDesc.substring(0, 32)}...</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {activeTab === 'create' ? (

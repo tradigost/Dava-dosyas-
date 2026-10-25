@@ -50,11 +50,11 @@ export default function App() {
 
   // Scenario and lobby state
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('son-kadeh');
-  const [playerCount, setPlayerCount] = useState<number>(3);
+  const [playerCount, setPlayerCount] = useState<number>(2);
   const [playerNames, setPlayerNames] = useState<string[]>([
-    'Dr. Selim (Adli Tıp)',
+    'Dr. Selim (Adli Tıp & Kripto)',
+    'Başkomiser Hakan (Profil & Sorgu)',
     'Aslı (Kripto)',
-    'Başkomiser Hakan (Profil)',
     'Murat (Saha)',
     'Zeynep (Kriminalistik)',
     'Can (Arşiv)',
@@ -153,7 +153,10 @@ export default function App() {
 
   // Build current players list:
   // If in online room with members, use online members; otherwise fallback to local table simulator
-  const roleKeys: RoleType[] = ['forensics', 'cryptology', 'profiler', 'field', 'ballistics', 'archive'];
+  const roleKeys: RoleType[] = playerCount === 2
+    ? ['forensics', 'profiler']
+    : ['forensics', 'cryptology', 'profiler', 'field', 'ballistics', 'archive'];
+
   const players: Player[] = onlineRoomCode && onlineMembers.length > 0
     ? onlineMembers.map((m, idx) => ({
         id: m.userId,
@@ -378,6 +381,7 @@ export default function App() {
                 {gameView === 'ENVELOPE_ACTIVE' && (
                   <PlayerInboxView
                     player={activePlayer}
+                    totalPlayers={onlineRoom?.playerCount || playerCount}
                     currentEnvelope={currentEnvelope}
                     evidenceList={scenario.evidence}
                     suspects={scenario.suspects}
@@ -441,6 +445,8 @@ export default function App() {
           scenarios={CASE_SCENARIOS}
           selectedScenarioId={selectedScenarioId}
           onSelectScenario={setSelectedScenarioId}
+          playerCount={playerCount}
+          onChangePlayerCount={setPlayerCount}
           onRoomJoined={(code) => {
             setOnlineRoomCode(code);
           }}

@@ -160,7 +160,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
             >
               <div className="text-lg font-bold">{num} Kişi</div>
               <div className="text-[10px] mt-0.5 opacity-80">
-                {num === 2 ? '2 Uzmanlık' : num === 3 ? '3 Ana Uzmanlık' : `${num} Departman`}
+                {num === 2 ? 'İkili Ortaklık' : num === 3 ? '3 Ana Uzmanlık' : `${num} Departman`}
               </div>
             </button>
           ))}
@@ -168,13 +168,30 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
 
         {/* Player Name and Role Preview */}
         <div className="mt-5">
-          <span className="text-xs font-mono uppercase tracking-wider text-zinc-400 block mb-2.5">
-            Masa Dağılımı ve Oyuncu İsimleri:
-          </span>
+          <div className="flex items-center justify-between mb-2.5">
+            <span className="text-xs font-mono uppercase tracking-wider text-zinc-400 block">
+              Masa Dağılımı ve Oyuncu İsimleri:
+            </span>
+            {playerCount === 2 && (
+              <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-2 py-0.5 rounded">
+                ⚡ İkili Ortaklık Modu: 3 ana uzmanlık 2 dedektife paylaştırıldı
+              </span>
+            )}
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             {Array.from({ length: playerCount }).map((_, idx) => {
-              const roleKey = roleAssignmentKeys[idx % roleAssignmentKeys.length];
+              const isTwoPlayer = playerCount === 2;
+              const roleKey = isTwoPlayer 
+                ? (idx === 0 ? 'forensics' : 'profiler')
+                : roleAssignmentKeys[idx % roleAssignmentKeys.length];
               const role = ROLES[roleKey];
+              const roleTitle = isTwoPlayer
+                ? (idx === 0 ? 'Adli Tıp & Kripto' : 'Profilleme & Sorgu')
+                : role.title;
+              const roleBadge = isTwoPlayer
+                ? (idx === 0 ? '🔬 OTOPSİ + 💻 ŞİFRE DEŞİFRE' : '🧠 DAVRANIŞ + 🕵️ SORGU')
+                : role.badge;
+
               return (
                 <div
                   key={idx}
@@ -183,7 +200,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-amber-300">Oyuncu {idx + 1}</span>
                     <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">
-                      {role.title}
+                      {roleTitle}
                     </span>
                   </div>
                   <input
@@ -194,7 +211,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                     placeholder={`Oyuncu ${idx + 1} İsmi`}
                   />
                   <span className="text-[10px] text-zinc-400 truncate">
-                    {role.badge}
+                    {roleBadge}
                   </span>
                 </div>
               );

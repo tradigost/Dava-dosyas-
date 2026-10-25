@@ -9,22 +9,28 @@ import {
 } from './gameRules';
 
 test('canStartScenario enforces minimum player count constraint', () => {
-  const sonKadehMeta: ScenarioMeta = {
-    id: 'son-kadeh',
-    title: 'Son Kadeh: Müzayede Cinayeti',
+  const strictMeta: ScenarioMeta = {
+    id: 'strict-case',
+    title: '3 Kişilik Vaka',
     minPlayers: 3,
     maxPlayers: 6
   };
 
-  const check2 = canStartScenario(2, sonKadehMeta);
+  const check2 = canStartScenario(2, strictMeta);
   assert.equal(check2.allowed, false);
   assert.match(check2.reason || '', /en az 3 dedektif/);
 
-  const check3 = canStartScenario(3, sonKadehMeta);
+  const check3 = canStartScenario(3, strictMeta);
   assert.equal(check3.allowed, true);
 
-  const check4 = canStartScenario(4, sonKadehMeta);
-  assert.equal(check4.allowed, true);
+  const twoPlayerCase: ScenarioMeta = {
+    id: 'son-kadeh',
+    title: 'Son Kadeh: Müzayede Cinayeti',
+    minPlayers: 2,
+    maxPlayers: 6
+  };
+  const checkTwoPlayerCase = canStartScenario(2, twoPlayerCase);
+  assert.equal(checkTwoPlayerCase.allowed, true);
 });
 
 test('checkGateAnswer verifies correct options', () => {

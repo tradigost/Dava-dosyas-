@@ -27,6 +27,7 @@ import {
 
 interface PlayerInboxViewProps {
   player: Player;
+  totalPlayers?: number;
   currentEnvelope: EnvelopeNumber;
   evidenceList: EvidenceItem[];
   suspects: Suspect[];
@@ -38,6 +39,7 @@ interface PlayerInboxViewProps {
 
 export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
   player,
+  totalPlayers = 3,
   currentEnvelope,
   evidenceList,
   suspects,
@@ -46,14 +48,34 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
   onOpenGateModal,
   onGoToAccusation,
 }) => {
-  const roleInfo = ROLES[player.role];
-  const [selectedEvidenceId, setSelectedEvidenceId] = useState<string | null>(
-    evidenceList.length > 0 ? evidenceList[0].id : null
-  );
+  const roleInfo = ROLES[player.role] || ROLES.forensics;
+  const isTwoPlayerMode = totalPlayers === 2;
 
   // Filter evidence accessible to this player's role in this envelope
-  const myEvidence = evidenceList.filter(
-    (ev) => ev.envelope === currentEnvelope && ev.roleAccess.includes(player.role)
+  // In 2-player mode: Forensics handles Forensics + Cryptology; Profiler handles Profiler + Field + Archive
+  const myEvidence = evidenceList.filter((ev) => {
+    if (ev.envelope !== currentEnvelope) return false;
+    if (isTwoPlayerMode) {
+      if (player.role === 'forensics') {
+        return (
+          ev.roleAccess.includes('forensics') ||
+          ev.roleAccess.includes('cryptology') ||
+          ev.roleAccess.includes('ballistics')
+        );
+      }
+      if (player.role === 'profiler') {
+        return (
+          ev.roleAccess.includes('profiler') ||
+          ev.roleAccess.includes('field') ||
+          ev.roleAccess.includes('archive')
+        );
+      }
+    }
+    return ev.roleAccess.includes(player.role);
+  });
+
+  const [selectedEvidenceId, setSelectedEvidenceId] = useState<string | null>(
+    myEvidence.length > 0 ? myEvidence[0].id : null
   );
 
   const activeEvidence = myEvidence.find((ev) => ev.id === selectedEvidenceId) || myEvidence[0];
@@ -89,7 +111,11 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
               <div className="flex items-center gap-2">
                 <h2 className="text-base sm:text-lg font-bold text-zinc-100">{player.name}</h2>
                 <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-amber-300">
-                  {roleInfo.badge}
+                  {isTwoPlayerMode
+                    ? player.role === 'forensics'
+                      ? '🔬 ADLİ TIP & 💻 KRİPTOLOJİ'
+                      : '🧠 PROFİLLEME & 🕵️ SORGU'
+                    : roleInfo.badge}
                 </span>
               </div>
               <p className="text-xs text-zinc-400 mt-0.5">{roleInfo.shortDesc}</p>
