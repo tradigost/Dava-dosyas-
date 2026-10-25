@@ -7,6 +7,10 @@ import { initializeApp } from 'firebase/app';
 import { 
   getAuth, 
   signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
+  signInAnonymously,
+  updateProfile,
   GoogleAuthProvider, 
   signOut, 
   onAuthStateChanged,
@@ -44,10 +48,71 @@ export async function testFirestoreConnection(): Promise<boolean> {
   }
 }
 
-// Google Sign-In via Popup
-export async function loginWithGoogle(): Promise<User> {
+export interface AuthErrorInfo {
+  code: string;
+  title: string;
+  message: string;
+  solution?: string;
+}
+
+export function parseFirebaseAuthError(err: any): AuthErrorInfo {
+  const code = err?.code || '';
+  const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'davadosyasi.vercel.app';
+
+  if (code === 'auth/unauthorized-domain') {
+    return {
+      code,
+      title: 'Yetkisiz Alan Adı (auth/unauthorized-domain)',
+      message: `Firebase Authentication, "${currentHost}" adresinden gelen Google OAuth giriş isteklerini henüz onaylamadı.`,
+      solution: `Firebase Console -> Authentication -> Settings -> "Authorized domains" listesine "${currentHost}" (ve "vercel.app") adresini eklemeniz gerekir. Hemen oynamak için aşağıdaki "Dedektif İsmiyle Katıl" seçeneğini kullanabilirsiniz.`,
+    };
+  }
+
+  if (code === 'auth/popup-blocked') {
+    return {
+      code,
+      title: 'Açılır Pencere Engellendi (auth/popup-blocked)',
+      message: 'Mobil tarayıcınız Google giriş penceresinin açılmasını engelledi.',
+      solution: 'Tarayıcınızın adres çubuğundaki engellenen pencere bildirimine dokunup "İzin Ver"i seçin veya "Sayfa Yönlendirmesi (Redirect)" ile giriş yapın.',
+    };
+  }
+
+  if (code === 'auth/popup-closed-by-user') {
+    return {
+      code,
+      title: 'Giriş Penceresi Kapatıldı',
+      message: 'Google giriş penceresi işlem tamamlanmadan kapatıldı.',
+      solution: 'Tekrar giriş butonuna basarak Google hesabınızı seçin.',
+    };
+  }
+
+  if (code === 'auth/operation-not-allowed' || code === 'auth/admin-restricted-operation') {
+    return {
+      code,
+      title: 'Oturum Açma Yöntemi Kapalı',
+      message: 'Firebase konsolunda bu oturum açma yöntemi (Google veya Anonim) henüz aktif edilmemiş.',
+      solution: 'Firebase Console -> Authentication -> Sign-in method sekmesinden ilgili sağlayıcıyı etkinleştirin.',
+    };
+  }
+
+  return {
+    code: code || 'auth/unknown',
+    title: 'Giriş Başarısız',
+    message: err?.message || 'Giriş yapılırken beklenmeyen bir hata oluştu.',
+    solution: 'İnternet bağlantınızı kontrol edin veya hızlı dedektif ismiyle katılın.',
+  };
+}
+
+// Google Sign-In via Popup or Redirect
+export async function loginWithGoogle(useRedirect: boolean = false): Promise<User | null> {
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
+
+  if (useRedirect) {
+    await signInWithRedirect(auth, provider);
+    return null;
+  }
+
   const result = await signInWithPopup(auth, provider);
   const user = result.user;
 
@@ -62,6 +127,62 @@ export async function loginWithGoogle(): Promise<User> {
     }, { merge: true });
   } catch (err) {
     console.error('Failed to save user profile:', err);
+  }
+
+  return user;
+}
+
+// Check redirect result for mobile browsers returning from Google OAuth
+export async function checkRedirectResult(): Promise<User | null> {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result?.user) {
+      const user = result.user;
+      try {
+        await setDoc(doc(db, 'users', user.uid), {
+          uid: user.uid,
+          displayName: user.displayName || 'Dedektif',
+          email: user.email || '',
+          photoURL: user.photoURL || '',
+          createdAt: new Date().toISOString(),
+        }, { merge: true });
+      } catch (err) {
+        console.error('Failed to save redirected user profile:', err);
+      }
+      return user;
+    }
+  } catch (err) {
+    console.error('Error handling redirect sign-in result:', err);
+    throw err;
+  }
+  return null;
+}
+
+// Fast Detective Nickname Login (Anonymous Auth + Profile)
+// This avoids OAuth domain whitelisting restrictions so friends on WhatsApp can join immediately
+export async function loginWithGuestName(displayName: string): Promise<User> {
+  const cleanName = displayName.trim() || 'Dedektif';
+  
+  const userCredential = await signInAnonymously(auth);
+  const user = userCredential.user;
+
+  try {
+    await updateProfile(user, {
+      displayName: cleanName,
+    });
+  } catch (e) {
+    console.warn('Could not update profile display name:', e);
+  }
+
+  try {
+    await setDoc(doc(db, 'users', user.uid), {
+      uid: user.uid,
+      displayName: cleanName,
+      isGuest: true,
+      createdAt: new Date().toISOString(),
+    }, { merge: true });
+  } catch (err) {
+    console.error('Failed to save guest user profile:', err);
   }
 
   return user;

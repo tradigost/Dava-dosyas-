@@ -25,6 +25,7 @@ import { soundManager } from './utils/audioEffects';
 import { 
   auth, 
   testFirestoreConnection,
+  checkRedirectResult,
   subscribeToRoom, 
   subscribeToRoomMembers, 
   subscribeToRoomPins, 
@@ -80,6 +81,9 @@ export default function App() {
   // Auth observer
   useEffect(() => {
     testFirestoreConnection();
+    checkRedirectResult().catch((err) => {
+      console.warn('Redirect result check:', err);
+    });
     const unsub = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
     });
