@@ -1,0 +1,104 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated user profile for detective credentials",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "displayName"]
+    },
+    "Room": {
+      "title": "Room",
+      "description": "Detective room instance for co-op investigation",
+      "type": "object",
+      "properties": {
+        "roomCode": { "type": "string" },
+        "hostId": { "type": "string" },
+        "hostName": { "type": "string" },
+        "scenarioId": { "type": "string" },
+        "playerCount": { "type": "number" },
+        "currentEnvelope": { "type": "number" },
+        "status": { "type": "string", "enum": ["lobby", "playing", "accusation", "finished"] },
+        "gateAttempts": { "type": "number" },
+        "debateStartedAt": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["roomCode", "hostId", "scenarioId", "status", "currentEnvelope"]
+    },
+    "RoomMember": {
+      "title": "RoomMember",
+      "description": "Player in the room with assigned detective role",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["forensics", "cryptology", "profiler", "field", "ballistics", "archive"] },
+        "joinedAt": { "type": "string" }
+      },
+      "required": ["userId", "displayName", "role"]
+    },
+    "RoomPin": {
+      "title": "RoomPin",
+      "description": "Evidence pinned to the shared case board in a room",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "evidenceId": { "type": "string" },
+        "title": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "category": { "type": "string" },
+        "pinnedByUserId": { "type": "string" },
+        "pinnedByPlayerName": { "type": "string" },
+        "pinnedByRole": { "type": "string" },
+        "envelope": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "excerpt", "pinnedByUserId", "pinnedByPlayerName", "pinnedByRole", "envelope"]
+    },
+    "RoomVote": {
+      "title": "RoomVote",
+      "description": "Secret final accusation vote of a detective in a room",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "playerName": { "type": "string" },
+        "role": { "type": "string" },
+        "suspectId": { "type": "string" },
+        "motiveId": { "type": "string" },
+        "evidenceId": { "type": "string" },
+        "submittedAt": { "type": "string" }
+      },
+      "required": ["userId", "playerName", "role", "suspectId", "motiveId", "evidenceId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Collection of user profiles"
+    },
+    "/rooms/{roomId}": {
+      "schema": "Room",
+      "description": "Active detective investigation room"
+    },
+    "/rooms/{roomId}/members/{userId}": {
+      "schema": "RoomMember",
+      "description": "Members assigned to roles in the room"
+    },
+    "/rooms/{roomId}/pins/{pinId}": {
+      "schema": "RoomPin",
+      "description": "Pinned items on the shared evidence board"
+    },
+    "/rooms/{roomId}/votes/{userId}": {
+      "schema": "RoomVote",
+      "description": "Accusation votes locked by players"
+    }
+  }
+}
