@@ -8,7 +8,7 @@ import { CaseScenario } from '../types';
 import { ROLES } from '../data/cases';
 import { canStartScenario } from '../utils/gameRules';
 import { soundManager } from '../utils/audioEffects';
-import { User } from 'firebase/auth';
+import { DetectiveProfile } from '../services/firebase';
 import { 
   Users, 
   Lock, 
@@ -34,7 +34,7 @@ interface LobbyViewProps {
   onChangePlayerName: (index: number, name: string) => void;
   onStartGame: () => void;
   onOpenOnlineModal: () => void;
-  currentUser?: User | null;
+  currentUser?: DetectiveProfile | null;
   onlineRoomCode?: string | null;
 }
 

@@ -36,13 +36,14 @@ import {
   setOnlineRoomStatus,
   incrementOnlineGateAttempts,
   OnlineRoom,
-  OnlineMember
+  OnlineMember,
+  DetectiveProfile,
+  subscribeToDetectiveAuth
 } from './services/firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
 
 export default function App() {
   // Authentication & Online Room State
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<DetectiveProfile | null>(null);
   const [onlineRoomCode, setOnlineRoomCode] = useState<string | null>(null);
   const [onlineRoom, setOnlineRoom] = useState<OnlineRoom | null>(null);
   const [onlineMembers, setOnlineMembers] = useState<OnlineMember[]>([]);
@@ -84,8 +85,8 @@ export default function App() {
     checkRedirectResult().catch((err) => {
       console.warn('Redirect result check:', err);
     });
-    const unsub = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+    const unsub = subscribeToDetectiveAuth((profile) => {
+      setCurrentUser(profile);
     });
     return () => unsub();
   }, []);
@@ -118,6 +119,7 @@ export default function App() {
 
         if (room.status === 'playing') {
           setGameView('ENVELOPE_ACTIVE');
+          setIsOnlineModalOpen(false);
         } else if (room.status === 'accusation') {
           setGameView('ACCUSATION');
         } else if (room.status === 'finished') {
@@ -163,7 +165,7 @@ export default function App() {
         name: m.displayName,
         role: m.role,
         avatar: m.photoURL || '',
-        isHost: idx === 0,
+        isHost: onlineRoom ? m.userId === onlineRoom.hostId : idx === 0,
       }))
     : Array.from({ length: playerCount }).map((_, idx) => ({
         id: `p-${idx + 1}`,
@@ -173,18 +175,18 @@ export default function App() {
         isHost: idx === 0,
       }));
 
-  // Match active player
-  const activePlayer = players.find((p) => p.id === activePlayerId) || players[0];
-
-  // If currentUser is in onlineMembers, ensure activePlayer defaults to currentUser
+  // If in online mode with members, ensure activePlayer strictly locks to the current user
   useEffect(() => {
-    if (currentUser && onlineMembers.length > 0) {
+    if (onlineRoomCode && currentUser && onlineMembers.length > 0) {
       const myMember = onlineMembers.find((m) => m.userId === currentUser.uid);
       if (myMember) {
         setActivePlayerId(myMember.userId);
       }
     }
-  }, [currentUser, onlineMembers]);
+  }, [onlineRoomCode, currentUser, onlineMembers]);
+
+  // Match active player
+  const activePlayer = players.find((p) => p.id === activePlayerId) || players[0];
 
   const handleStartGame = async () => {
     if (onlineRoomCode) {
@@ -381,6 +383,7 @@ export default function App() {
                 {gameView === 'ENVELOPE_ACTIVE' && (
                   <PlayerInboxView
                     player={activePlayer}
+                    allPlayers={players}
                     totalPlayers={onlineRoom?.playerCount || playerCount}
                     currentEnvelope={currentEnvelope}
                     evidenceList={scenario.evidence}
@@ -447,6 +450,7 @@ export default function App() {
           onSelectScenario={setSelectedScenarioId}
           playerCount={playerCount}
           onChangePlayerCount={setPlayerCount}
+          initialRoomCode={onlineRoomCode}
           onRoomJoined={(code) => {
             setOnlineRoomCode(code);
           }}

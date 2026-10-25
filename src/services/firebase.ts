@@ -22,6 +22,7 @@ import {
   setDoc, 
   getDoc, 
   getDocFromServer,
+  getDocs,
   collection, 
   onSnapshot, 
   updateDoc, 
@@ -103,8 +104,71 @@ export function parseFirebaseAuthError(err: any): AuthErrorInfo {
   };
 }
 
+export interface DetectiveProfile {
+  uid: string;
+  displayName: string;
+  photoURL?: string;
+  isGuest?: boolean;
+  isAnonymous?: boolean;
+  email?: string;
+}
+
+// Global subscriber for unified auth state
+type AuthListener = (user: DetectiveProfile | null) => void;
+const authListeners: Set<AuthListener> = new Set();
+let cachedDetectiveUser: DetectiveProfile | null = null;
+
+function notifyAuthListeners(user: DetectiveProfile | null) {
+  cachedDetectiveUser = user;
+  authListeners.forEach((cb) => cb(user));
+}
+
+// Initialize guest from localStorage on client load
+if (typeof window !== 'undefined') {
+  try {
+    const saved = localStorage.getItem('detective_local_user');
+    if (saved) {
+      cachedDetectiveUser = JSON.parse(saved);
+    }
+  } catch (e) {
+    // Ignore JSON parse errors
+  }
+}
+
+export function subscribeToDetectiveAuth(callback: AuthListener): () => void {
+  authListeners.add(callback);
+  callback(cachedDetectiveUser);
+
+  const unsubFirebase = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const profile: DetectiveProfile = {
+        uid: user.uid,
+        displayName: user.displayName || 'Dedektif',
+        photoURL: user.photoURL || '',
+        email: user.email || '',
+        isAnonymous: user.isAnonymous,
+        isGuest: false,
+      };
+      notifyAuthListeners(profile);
+    } else {
+      // If Firebase auth is null, check if local guest user exists
+      let localGuest: DetectiveProfile | null = null;
+      try {
+        const saved = localStorage.getItem('detective_local_user');
+        if (saved) localGuest = JSON.parse(saved);
+      } catch (e) {}
+      notifyAuthListeners(localGuest);
+    }
+  });
+
+  return () => {
+    authListeners.delete(callback);
+    unsubFirebase();
+  };
+}
+
 // Google Sign-In via Popup or Redirect
-export async function loginWithGoogle(useRedirect: boolean = false): Promise<User | null> {
+export async function loginWithGoogle(useRedirect: boolean = false): Promise<DetectiveProfile | null> {
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
 
@@ -116,7 +180,21 @@ export async function loginWithGoogle(useRedirect: boolean = false): Promise<Use
   const result = await signInWithPopup(auth, provider);
   const user = result.user;
 
-  // Persist user profile document
+  const profile: DetectiveProfile = {
+    uid: user.uid,
+    displayName: user.displayName || 'Dedektif',
+    photoURL: user.photoURL || '',
+    email: user.email || '',
+    isAnonymous: false,
+    isGuest: false,
+  };
+
+  // Clear guest local storage
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('detective_local_user');
+  }
+
+  // Persist user profile document in Firestore
   try {
     await setDoc(doc(db, 'users', user.uid), {
       uid: user.uid,
@@ -129,15 +207,24 @@ export async function loginWithGoogle(useRedirect: boolean = false): Promise<Use
     console.error('Failed to save user profile:', err);
   }
 
-  return user;
+  notifyAuthListeners(profile);
+  return profile;
 }
 
 // Check redirect result for mobile browsers returning from Google OAuth
-export async function checkRedirectResult(): Promise<User | null> {
+export async function checkRedirectResult(): Promise<DetectiveProfile | null> {
   try {
     const result = await getRedirectResult(auth);
     if (result?.user) {
       const user = result.user;
+      const profile: DetectiveProfile = {
+        uid: user.uid,
+        displayName: user.displayName || 'Dedektif',
+        photoURL: user.photoURL || '',
+        email: user.email || '',
+        isAnonymous: false,
+        isGuest: false,
+      };
       try {
         await setDoc(doc(db, 'users', user.uid), {
           uid: user.uid,
@@ -149,7 +236,8 @@ export async function checkRedirectResult(): Promise<User | null> {
       } catch (err) {
         console.error('Failed to save redirected user profile:', err);
       }
-      return user;
+      notifyAuthListeners(profile);
+      return profile;
     }
   } catch (err) {
     console.error('Error handling redirect sign-in result:', err);
@@ -158,38 +246,78 @@ export async function checkRedirectResult(): Promise<User | null> {
   return null;
 }
 
-// Fast Detective Nickname Login (Anonymous Auth + Profile)
-// This avoids OAuth domain whitelisting restrictions so friends on WhatsApp can join immediately
-export async function loginWithGuestName(displayName: string): Promise<User> {
+// Fast Detective Nickname Login (Instant Guest Profile with Resilient Storage)
+export async function loginWithGuestName(displayName: string): Promise<DetectiveProfile> {
   const cleanName = displayName.trim() || 'Dedektif';
   
-  const userCredential = await signInAnonymously(auth);
-  const user = userCredential.user;
-
+  // Try anonymous auth first if available
+  let firebaseUid: string | null = null;
   try {
-    await updateProfile(user, {
-      displayName: cleanName,
-    });
+    const userCredential = await signInAnonymously(auth);
+    if (userCredential?.user) {
+      firebaseUid = userCredential.user.uid;
+      try {
+        await updateProfile(userCredential.user, { displayName: cleanName });
+      } catch (e) {}
+    }
   } catch (e) {
-    console.warn('Could not update profile display name:', e);
+    // If anonymous auth is disabled on project, fall back to robust local guest UID
+    console.info('Anonymous sign-in not enabled on project; using persistent guest UID fallback.');
   }
 
+  let finalUid = firebaseUid;
+  if (!finalUid) {
+    let localSavedUid: string | null = null;
+    try {
+      localSavedUid = localStorage.getItem('detective_guest_uid');
+    } catch (e) {}
+
+    if (!localSavedUid) {
+      localSavedUid = `guest_${Math.random().toString(36).substring(2, 9)}_${Date.now().toString(36)}`;
+      try {
+        localStorage.setItem('detective_guest_uid', localSavedUid);
+      } catch (e) {}
+    }
+    finalUid = localSavedUid;
+  }
+
+  const profile: DetectiveProfile = {
+    uid: finalUid,
+    displayName: cleanName,
+    isGuest: true,
+    isAnonymous: true,
+  };
+
   try {
-    await setDoc(doc(db, 'users', user.uid), {
-      uid: user.uid,
+    localStorage.setItem('detective_local_user', JSON.stringify(profile));
+  } catch (e) {}
+
+  try {
+    await setDoc(doc(db, 'users', finalUid), {
+      uid: finalUid,
       displayName: cleanName,
       isGuest: true,
       createdAt: new Date().toISOString(),
     }, { merge: true });
   } catch (err) {
-    console.error('Failed to save guest user profile:', err);
+    console.warn('Could not write guest document to Firestore:', err);
   }
 
-  return user;
+  notifyAuthListeners(profile);
+  return profile;
 }
 
 export async function logoutUser(): Promise<void> {
-  await signOut(auth);
+  try {
+    await signOut(auth);
+  } catch (e) {}
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem('detective_local_user');
+      localStorage.removeItem('detective_guest_uid');
+    } catch (e) {}
+  }
+  notifyAuthListeners(null);
 }
 
 // Room Data Types
@@ -227,7 +355,7 @@ export function generateRoomCode(): string {
 
 // Create a new online investigation room
 export async function createOnlineRoom(params: {
-  hostUser: User;
+  hostUser: DetectiveProfile | User;
   scenarioId: string;
   playerCount: number;
   hostRole: RoleType;
@@ -266,7 +394,7 @@ export async function createOnlineRoom(params: {
 // Join an existing room
 export async function joinOnlineRoom(params: {
   roomCode: string;
-  user: User;
+  user: DetectiveProfile | User;
   desiredRole: RoleType;
 }): Promise<{ success: boolean; error?: string }> {
   const cleanCode = params.roomCode.trim().toUpperCase();
@@ -274,7 +402,35 @@ export async function joinOnlineRoom(params: {
   const snap = await getDoc(roomRef);
 
   if (!snap.exists()) {
-    return { success: false, error: 'Oda bulunamadı. Lütfen oda kodunu kontrol edin.' };
+    return { success: false, error: 'Oda bulunamadı. Lütfen 6 haneli oda kodunu kontrol edin.' };
+  }
+
+  const roomData = snap.data() as OnlineRoom;
+
+  // Check current members
+  const membersRef = collection(db, 'rooms', cleanCode, 'members');
+  const membersSnap = await getDocs(membersRef);
+  const currentMembers = membersSnap.docs.map((d) => d.data() as OnlineMember);
+
+  const isAlreadyMember = currentMembers.some((m) => m.userId === params.user.uid);
+
+  // If not already in room, check capacity
+  if (!isAlreadyMember && currentMembers.length >= roomData.playerCount) {
+    return { 
+      success: false, 
+      error: `Masa dolu! Bu vaka ${roomData.playerCount} dedektifle sınırlandırılmıştır.` 
+    };
+  }
+
+  // Check if role is taken by someone else
+  const roleTakenByOther = currentMembers.find(
+    (m) => m.role === params.desiredRole && m.userId !== params.user.uid
+  );
+  if (roleTakenByOther) {
+    return {
+      success: false,
+      error: `"${params.desiredRole}" rolü zaten ${roleTakenByOther.displayName} tarafından alınmış. Lütfen boş kalan bir rol seçin.`
+    };
   }
 
   const memberRef = doc(db, 'rooms', cleanCode, 'members', params.user.uid);
@@ -287,6 +443,80 @@ export async function joinOnlineRoom(params: {
   }, { merge: true });
 
   return { success: true };
+}
+
+// Fetch room and its members details (useful for guests browsing empty seats before claiming)
+export async function fetchRoomDetails(
+  roomCode: string
+): Promise<{ room: OnlineRoom | null; members: OnlineMember[] }> {
+  const cleanCode = roomCode.trim().toUpperCase();
+  if (!cleanCode) return { room: null, members: [] };
+
+  try {
+    const roomRef = doc(db, 'rooms', cleanCode);
+    const snap = await getDoc(roomRef);
+    if (!snap.exists()) {
+      return { room: null, members: [] };
+    }
+    const room = snap.data() as OnlineRoom;
+
+    const membersRef = collection(db, 'rooms', cleanCode, 'members');
+    const membersSnap = await getDocs(membersRef);
+    const members = membersSnap.docs.map((d) => d.data() as OnlineMember);
+
+    return { room, members };
+  } catch (err) {
+    console.warn('Error fetching room details:', err);
+    return { room: null, members: [] };
+  }
+}
+
+// Host starts the online game (only host, and only when room capacity is reached)
+export async function startOnlineRoom(
+  roomCode: string,
+  callerUserId: string
+): Promise<{ success: boolean; error?: string }> {
+  const cleanCode = roomCode.trim().toUpperCase();
+  const roomRef = doc(db, 'rooms', cleanCode);
+  const snap = await getDoc(roomRef);
+
+  if (!snap.exists()) {
+    return { success: false, error: 'Oda bulunamadı.' };
+  }
+
+  const data = snap.data() as OnlineRoom;
+  if (data.hostId !== callerUserId) {
+    return { success: false, error: 'Sadece odayı kuran masa şefi oyunu başlatabilir.' };
+  }
+
+  // Ensure room has enough members before starting
+  const membersRef = collection(db, 'rooms', cleanCode, 'members');
+  const membersSnap = await getDocs(membersRef);
+  if (membersSnap.size < data.playerCount) {
+    return {
+      success: false,
+      error: `Masa henüz dolmadı (${membersSnap.size}/${data.playerCount}). Lütfen arkadaşlarınızın koltuklara oturmasını bekleyin.`
+    };
+  }
+
+  await updateDoc(roomRef, {
+    status: 'playing',
+    currentEnvelope: 1,
+    updatedAt: new Date().toISOString(),
+  });
+
+  return { success: true };
+}
+
+// Leave room
+export async function leaveOnlineRoom(roomCode: string, userId: string): Promise<void> {
+  try {
+    const cleanCode = roomCode.trim().toUpperCase();
+    const memberRef = doc(db, 'rooms', cleanCode, 'members', userId);
+    await deleteDoc(memberRef);
+  } catch (err) {
+    console.error('Error leaving online room:', err);
+  }
 }
 
 // Real-time Listeners

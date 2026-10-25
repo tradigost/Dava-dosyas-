@@ -6,53 +6,44 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
     function isValidId(id) {
-      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
 
-    // User profile documents
+    // User profile documents (supports both Google Auth and Instant Guest Profiles)
     match /users/{userId} {
-      allow get: if isSignedIn() && (isOwner(userId) || isValidId(userId));
+      allow get: if isValidId(userId);
       allow list: if false;
-      allow create, update: if isOwner(userId) && isValidId(userId);
+      allow create, update: if isValidId(userId);
       allow delete: if false;
     }
 
-    // Rooms
+    // Investigation Rooms (Co-op multiplayer room sync)
     match /rooms/{roomId} {
-      allow get: if isSignedIn() && isValidId(roomId);
+      allow get: if isValidId(roomId);
       allow list: if false;
-      allow create: if isSignedIn() && isValidId(roomId);
-      allow update: if isSignedIn() && isValidId(roomId);
-      allow delete: if isSignedIn() && resource.data.hostId == request.auth.uid;
+      allow create, update: if isValidId(roomId);
+      allow delete: if isValidId(roomId);
 
       // Room members
       match /members/{memberId} {
-        allow get, list: if isSignedIn();
-        allow create, update: if isSignedIn() && request.auth.uid == memberId;
-        allow delete: if isSignedIn() && (request.auth.uid == memberId || get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid);
+        allow get, list: if isValidId(roomId);
+        allow create, update: if isValidId(memberId) && isValidId(roomId);
+        allow delete: if isValidId(memberId) && isValidId(roomId);
       }
 
-      // Room shared pins
+      // Room shared pins (evidence pinned to the common detective board)
       match /pins/{pinId} {
-        allow get, list: if isSignedIn();
-        allow create: if isSignedIn() && request.resource.data.pinnedByUserId == request.auth.uid;
+        allow get, list: if isValidId(roomId);
+        allow create: if isValidId(pinId) && isValidId(roomId);
         allow update: if false;
-        allow delete: if isSignedIn() && (resource.data.pinnedByUserId == request.auth.uid || get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid);
+        allow delete: if isValidId(pinId) && isValidId(roomId);
       }
 
       // Room accusation votes
       match /votes/{voterId} {
-        allow get, list: if isSignedIn();
-        allow create, update: if isSignedIn() && request.auth.uid == voterId;
+        allow get, list: if isValidId(roomId);
+        allow create, update: if isValidId(voterId) && isValidId(roomId);
         allow delete: if false;
       }
     }
