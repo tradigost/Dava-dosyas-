@@ -159,11 +159,6 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
             </div>
           </div>
 
-          {/* Key Deduction Note */}
-          <div className="p-3.5 bg-amber-950/20 border border-amber-800/40 rounded-xl text-xs sm:text-sm text-amber-200">
-            <strong>💡 Uzmanlık Çıkarımı:</strong> {activeEvidence.keyDeduction}
-          </div>
-
           {/* Single Pin to Common Board Button */}
           <div className="pt-2">
             <button
@@ -172,7 +167,7 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
                 soundManager.playPinSound();
                 onPinEvidence(
                   activeEvidence.title,
-                  activeEvidence.keyDeduction,
+                  activeEvidence.summary,
                   activeEvidence.category,
                   activeEvidence.id
                 );

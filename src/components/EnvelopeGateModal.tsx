@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { GateQuestion, RoleType } from '../types';
 import { soundManager } from '../utils/audioEffects';
-import { KeyRound, ShieldAlert, CheckCircle2, XCircle, ArrowRight, Lightbulb } from 'lucide-react';
+import { KeyRound, ShieldAlert, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
 
 interface EnvelopeGateModalProps {
   gate: GateQuestion;
@@ -26,7 +26,6 @@ export const EnvelopeGateModal: React.FC<EnvelopeGateModalProps> = ({
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
-  const [showRoleHints, setShowRoleHints] = useState<boolean>(false);
 
   const handleSubmit = () => {
     if (!selectedOptionId) return;
@@ -106,31 +105,6 @@ export const EnvelopeGateModal: React.FC<EnvelopeGateModalProps> = ({
                 </button>
               );
             })}
-          </div>
-
-          {/* Role Hints Disclosure */}
-          <div className="mt-4 pt-3 border-t border-zinc-800/80">
-            <button
-              type="button"
-              onClick={() => setShowRoleHints(!showRoleHints)}
-              className="flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 transition-colors font-medium"
-            >
-              <Lightbulb className="w-3.5 h-3.5" />
-              {showRoleHints ? 'Uzmanlık İpuçlarını Gizle' : '💡 Masadaki Uzmanlık İpuçlarını Gör'}
-            </button>
-
-            {showRoleHints && (
-              <div className="mt-2.5 p-3 bg-zinc-900/70 border border-amber-900/30 rounded-lg text-xs space-y-2">
-                {Object.entries(gate.hintByRole).map(([role, hint]) => (
-                  <div key={role} className="flex items-start gap-2">
-                    <span className="font-semibold text-amber-300 shrink-0 font-typewriter">
-                      [{role === 'forensics' ? 'Adli Tıp' : role === 'cryptology' ? 'Kripto' : 'Profil'}] :
-                    </span>
-                    <span className="text-zinc-300">{hint}</span>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Result Alert */}
