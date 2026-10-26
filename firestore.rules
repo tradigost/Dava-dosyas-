@@ -24,6 +24,12 @@ service cloud.firestore {
       allow update, delete: if isValidId(ratingId);
     }
 
+    // Custom Case Scenarios uploaded by Admin
+    match /custom_cases/{caseId} {
+      allow get, list: if isValidId(caseId);
+      allow create, update, delete: if isValidId(caseId);
+    }
+
     // Investigation Rooms (Co-op multiplayer room sync)
     match /rooms/{roomId} {
       allow get: if isValidId(roomId);

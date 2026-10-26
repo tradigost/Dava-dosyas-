@@ -62,21 +62,6 @@
         "createdAt": { "type": "string" }
       },
       "required": ["id", "title", "excerpt", "pinnedByUserId", "pinnedByPlayerName", "pinnedByRole", "envelope"]
-    },
-    "RoomVote": {
-      "title": "RoomVote",
-      "description": "Secret final accusation vote of a detective in a room",
-      "type": "object",
-      "properties": {
-        "userId": { "type": "string" },
-        "playerName": { "type": "string" },
-        "role": { "type": "string" },
-        "suspectId": { "type": "string" },
-        "motiveId": { "type": "string" },
-        "evidenceId": { "type": "string" },
-        "submittedAt": { "type": "string" }
-      },
-      "required": ["userId", "playerName", "role", "suspectId", "motiveId", "evidenceId"]
     "RoomVote": {
       "title": "RoomVote",
       "description": "Accusation vote cast by detective in final phase",
@@ -107,6 +92,30 @@
         "createdAt": { "type": "string" }
       },
       "required": ["id", "scenarioId", "rating", "userId"]
+    },
+    "CustomCase": {
+      "title": "CustomCase",
+      "description": "Custom investigation case scenarios uploaded by the administrator",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "difficulty": { "type": "string" },
+        "estimatedMinutes": { "type": "number" },
+        "minPlayers": { "type": "number" },
+        "maxPlayers": { "type": "number" },
+        "bannerTag": { "type": "string" },
+        "synopsis": { "type": "string" },
+        "victim": { "type": "object" },
+        "suspects": { "type": "array" },
+        "evidence": { "type": "array" },
+        "gates": { "type": "object" },
+        "solution": { "type": "object" },
+        "uploadedBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "synopsis", "victim", "suspects", "evidence", "gates", "solution"]
     }
   },
   "firestore": {
@@ -117,6 +126,10 @@
     "/case_ratings/{ratingId}": {
       "schema": "CaseRating",
       "description": "Case ratings and reviews submitted by players"
+    },
+    "/custom_cases/{caseId}": {
+      "schema": "CustomCase",
+      "description": "Admin uploaded case scenarios available in the game"
     },
     "/rooms/{roomId}": {
       "schema": "Room",

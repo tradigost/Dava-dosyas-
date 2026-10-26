@@ -37,7 +37,7 @@ import {
   where
 } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
-import { RoleType, SharedPin, AccusationSubmission } from '../types';
+import { RoleType, SharedPin, AccusationSubmission, CaseScenario } from '../types';
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
@@ -1027,4 +1027,146 @@ export async function fetchAdminDashboardData(): Promise<AdminDashboardData> {
     roomsCount,
   };
 }
+
+// ----------------------------------------------------------------------
+// Custom Case Scenarios Management (Vaka Yükleme ve Yönetimi)
+// ----------------------------------------------------------------------
+
+export function validateCaseScenario(data: any): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  if (!data || typeof data !== 'object') {
+    return { valid: false, errors: ['Geçersiz JSON formatı. Bir senaryo nesnesi bekleniyor.'] };
+  }
+
+  if (!data.id || typeof data.id !== 'string') errors.push('Dosya ID (id) zorunludur (örn: "bogaz-cinayeti").');
+  if (!data.title || typeof data.title !== 'string') errors.push('Vaka başlığı (title) zorunludur.');
+  if (!data.synopsis || typeof data.synopsis !== 'string') errors.push('Vaka özeti (synopsis) zorunludur.');
+  if (!data.victim || !data.victim.name) errors.push('Maktul bilgisi (victim.name) zorunludur.');
+  if (!Array.isArray(data.suspects) || data.suspects.length < 2) {
+    errors.push('En az 2 şüpheli (suspects) tanımlanmalıdır.');
+  }
+  if (!Array.isArray(data.evidence) || data.evidence.length === 0) {
+    errors.push('En az bir delil/kanıt (evidence) bulunmalıdır.');
+  }
+  if (!data.gates || !data.gates[1]) {
+    errors.push('Zarf 1 için doğrulama sorusu (gates[1]) tanımlanmalıdır.');
+  }
+  if (!data.solution || !data.solution.culpritName) {
+    errors.push('Vaka çözümü (solution.culpritName) tanımlanmalıdır.');
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+const customCasesListeners = new Set<(cases: CaseScenario[]) => void>();
+
+function getLocalCustomCases(): CaseScenario[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const saved = localStorage.getItem('masadaki_custom_cases');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return [];
+}
+
+function notifyCustomCasesListeners(cases: CaseScenario[]) {
+  customCasesListeners.forEach((fn) => {
+    try {
+      fn(cases);
+    } catch (e) {}
+  });
+}
+
+export async function saveCustomCase(scenario: CaseScenario, user?: DetectiveProfile | null): Promise<void> {
+  const cleanId = scenario.id.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+  const payload = {
+    ...scenario,
+    id: cleanId,
+    uploadedBy: user?.email || user?.displayName || 'Admin',
+    updatedAt: new Date().toISOString(),
+    createdAt: (scenario as any).createdAt || new Date().toISOString(),
+  };
+
+  // Immediate local cache update and listener broadcast for instant UI response
+  const current = getLocalCustomCases().filter((c) => c.id !== cleanId);
+  current.unshift(payload);
+  try {
+    localStorage.setItem('masadaki_custom_cases', JSON.stringify(current));
+  } catch (e) {}
+  notifyCustomCasesListeners(current);
+
+  try {
+    await setDoc(doc(db, 'custom_cases', cleanId), payload);
+  } catch (err) {
+    console.warn('Could not write custom case to Firestore:', err);
+  }
+}
+
+export async function fetchCustomCases(): Promise<CaseScenario[]> {
+  try {
+    const snap = await getDocs(collection(db, 'custom_cases'));
+    if (!snap.empty) {
+      const cases = snap.docs.map((d) => d.data() as CaseScenario);
+      try {
+        localStorage.setItem('masadaki_custom_cases', JSON.stringify(cases));
+      } catch (e) {}
+      notifyCustomCasesListeners(cases);
+      return cases;
+    }
+  } catch (err) {
+    console.warn('Error fetching custom cases from Firestore:', err);
+  }
+
+  return getLocalCustomCases();
+}
+
+export async function deleteCustomCase(scenarioId: string): Promise<void> {
+  const current = getLocalCustomCases().filter((c) => c.id !== scenarioId);
+  try {
+    localStorage.setItem('masadaki_custom_cases', JSON.stringify(current));
+  } catch (e) {}
+  notifyCustomCasesListeners(current);
+
+  try {
+    await deleteDoc(doc(db, 'custom_cases', scenarioId));
+  } catch (err) {
+    console.warn('Error deleting custom case from Firestore:', err);
+  }
+}
+
+export function subscribeToCustomCases(callback: (cases: CaseScenario[]) => void): () => void {
+  customCasesListeners.add(callback);
+  
+  // Immediate deliver from local cache
+  const cached = getLocalCustomCases();
+  if (cached.length > 0) {
+    callback(cached);
+  }
+
+  const casesRef = collection(db, 'custom_cases');
+  const unsubFirestore = onSnapshot(
+    casesRef,
+    (snap) => {
+      const list = snap.docs.map((d) => d.data() as CaseScenario);
+      try {
+        localStorage.setItem('masadaki_custom_cases', JSON.stringify(list));
+      } catch (e) {}
+      notifyCustomCasesListeners(list);
+    },
+    (err) => {
+      console.warn('Firestore subscription error for custom cases:', err);
+      const fallback = getLocalCustomCases();
+      if (fallback.length > 0) callback(fallback);
+    }
+  );
+
+  return () => {
+    customCasesListeners.delete(callback);
+    unsubFirestore();
+  };
+}
+
 

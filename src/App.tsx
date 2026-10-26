@@ -10,7 +10,8 @@ import {
   SharedPin, 
   AccusationSubmission, 
   GameView,
-  RoleType
+  RoleType,
+  CaseScenario
 } from './types';
 import { CASE_SCENARIOS, ROLES } from './data/cases';
 import { PlayerSimulatorBar } from './components/PlayerSimulatorBar';
@@ -44,7 +45,8 @@ import {
   OnlineRoom, 
   OnlineMember,
   DetectiveProfile,
-  subscribeToDetectiveAuth
+  subscribeToDetectiveAuth,
+  subscribeToCustomCases
 } from './services/firebase';
 
 export default function App() {
@@ -86,10 +88,23 @@ export default function App() {
   const [localInspectorId, setLocalInspectorId] = useState<string | null>(null);
   const [localEnvelopeCompleted, setLocalEnvelopeCompleted] = useState<boolean>(false);
 
+  // Dynamic custom cases state
+  const [customCases, setCustomCases] = useState<CaseScenario[]>([]);
+
   // Accusation submissions: playerId -> submission
   const [submissions, setSubmissions] = useState<Record<string, AccusationSubmission>>({});
 
-  const scenario = CASE_SCENARIOS.find((s) => s.id === selectedScenarioId) || CASE_SCENARIOS[0];
+  // Merge built-in cases with uploaded custom cases
+  const allScenarios = [...CASE_SCENARIOS, ...customCases];
+  const scenario = allScenarios.find((s) => s.id === selectedScenarioId) || allScenarios[0] || CASE_SCENARIOS[0];
+
+  // Subscribe to uploaded custom cases from Firestore
+  useEffect(() => {
+    const unsub = subscribeToCustomCases((cases) => {
+      setCustomCases(cases);
+    });
+    return () => unsub();
+  }, []);
 
   // Auth observer
   useEffect(() => {
@@ -469,7 +484,7 @@ export default function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 md:p-8">
         {gameView === 'LOBBY' && (
           <LobbyView
-            scenarios={CASE_SCENARIOS}
+            scenarios={allScenarios}
             selectedScenarioId={selectedScenarioId}
             onSelectScenario={setSelectedScenarioId}
             playerCount={playerCount}
@@ -603,7 +618,7 @@ export default function App() {
           currentUser={currentUser}
           currentRoom={onlineRoom}
           roomMembers={onlineMembers}
-          scenarios={CASE_SCENARIOS}
+          scenarios={allScenarios}
           selectedScenarioId={selectedScenarioId}
           onSelectScenario={setSelectedScenarioId}
           playerCount={playerCount}
@@ -629,6 +644,7 @@ export default function App() {
       {isAdminModalOpen && (
         <AdminDashboardModal
           currentUser={currentUser}
+          customCases={customCases}
           onClose={() => setIsAdminModalOpen(false)}
         />
       )}
