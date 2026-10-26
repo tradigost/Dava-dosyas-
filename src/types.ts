@@ -146,6 +146,7 @@ export interface CaseScenario {
 
 export type GameView = 
   | 'LOBBY' 
+  | 'BRIEFING'
   | 'CASE_OVERVIEW' 
   | 'ENVELOPE_ACTIVE' 
   | 'BOARD_VIEW' 

@@ -10,12 +10,18 @@ service cloud.firestore {
       return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
 
-    // User profile documents (supports both Google Auth and Instant Guest Profiles)
+    // User profile documents (supports Google Auth, Email/Password, and Guest Profiles)
     match /users/{userId} {
-      allow get: if isValidId(userId);
-      allow list: if false;
+      allow get, list: if isValidId(userId);
       allow create, update: if isValidId(userId);
       allow delete: if false;
+    }
+
+    // Case Ratings (5-star ratings & reviews submitted by detectives)
+    match /case_ratings/{ratingId} {
+      allow get, list: if isValidId(ratingId);
+      allow create: if isValidId(ratingId);
+      allow update, delete: if isValidId(ratingId);
     }
 
     // Investigation Rooms (Co-op multiplayer room sync)

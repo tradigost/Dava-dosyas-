@@ -21,6 +21,10 @@ import { AccusationPhase } from './components/AccusationPhase';
 import { CaseResolution } from './components/CaseResolution';
 import { LobbyView } from './components/LobbyView';
 import { OnlineRoomModal } from './components/OnlineRoomModal';
+import { BriefingView } from './components/BriefingView';
+import { WaitingTurnView } from './components/WaitingTurnView';
+import { AuthModal } from './components/AuthModal';
+import { AdminDashboardModal } from './components/AdminDashboardModal';
 import { soundManager } from './utils/audioEffects';
 import { 
   auth, 
@@ -35,7 +39,9 @@ import {
   submitOnlineVote,
   setOnlineRoomStatus,
   incrementOnlineGateAttempts,
-  OnlineRoom,
+  finishBriefingAndStartFirstEnvelope,
+  passEnvelopeInspectorTurn,
+  OnlineRoom, 
   OnlineMember,
   DetectiveProfile,
   subscribeToDetectiveAuth
@@ -48,6 +54,8 @@ export default function App() {
   const [onlineRoom, setOnlineRoom] = useState<OnlineRoom | null>(null);
   const [onlineMembers, setOnlineMembers] = useState<OnlineMember[]>([]);
   const [isOnlineModalOpen, setIsOnlineModalOpen] = useState<boolean>(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState<boolean>(false);
 
   // Scenario and lobby state
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('son-kadeh');
@@ -74,6 +82,10 @@ export default function App() {
   const [pinnedEvidenceIds, setPinnedEvidenceIds] = useState<Set<string>>(new Set());
   const [gateAttempts, setGateAttempts] = useState<number>(0);
 
+  // Local turn tracking for offline/simulator
+  const [localInspectorId, setLocalInspectorId] = useState<string | null>(null);
+  const [localEnvelopeCompleted, setLocalEnvelopeCompleted] = useState<boolean>(false);
+
   // Accusation submissions: playerId -> submission
   const [submissions, setSubmissions] = useState<Record<string, AccusationSubmission>>({});
 
@@ -91,7 +103,7 @@ export default function App() {
     return () => unsub();
   }, []);
 
-  // URL Query Parser (?room=KND-884 or ?autostart=1)
+  // URL Query Parser (?room=KND-884, ?admin=1, or ?autostart=1)
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -102,6 +114,9 @@ export default function App() {
       }
       if (params.get('autostart') === '1') {
         setGameView('ENVELOPE_ACTIVE');
+      }
+      if (params.get('admin') === '1' || params.get('yonetici') === '1' || params.get('panel') === '1') {
+        setIsAdminModalOpen(true);
       }
     }
   }, []);
@@ -117,7 +132,10 @@ export default function App() {
         setSelectedScenarioId(room.scenarioId);
         setGateAttempts(room.gateAttempts || 0);
 
-        if (room.status === 'playing') {
+        if (room.status === 'briefing') {
+          setGameView('BRIEFING');
+          setIsOnlineModalOpen(false);
+        } else if (room.status === 'playing') {
           setGameView('ENVELOPE_ACTIVE');
           setIsOnlineModalOpen(false);
         } else if (room.status === 'accusation') {
@@ -155,7 +173,13 @@ export default function App() {
 
   // Build current players list:
   // If in online room with members, use online members; otherwise fallback to local table simulator
-  const roleKeys: RoleType[] = playerCount === 2
+  const activeCount = onlineRoom?.playerCount || playerCount;
+  const isSolo = activeCount === 1;
+  const isTwoPlayer = activeCount === 2;
+
+  const roleKeys: RoleType[] = isSolo
+    ? ['forensics']
+    : isTwoPlayer
     ? ['forensics', 'profiler']
     : ['forensics', 'cryptology', 'profiler', 'field', 'ballistics', 'archive'];
 
@@ -169,7 +193,7 @@ export default function App() {
       }))
     : Array.from({ length: playerCount }).map((_, idx) => ({
         id: `p-${idx + 1}`,
-        name: playerNames[idx] || `Dedektif ${idx + 1}`,
+        name: isSolo ? (playerNames[0] || 'Dedektif') : (playerNames[idx] || `Dedektif ${idx + 1}`),
         role: roleKeys[idx % roleKeys.length],
         avatar: '',
         isHost: idx === 0,
@@ -188,19 +212,109 @@ export default function App() {
   // Match active player
   const activePlayer = players.find((p) => p.id === activePlayerId) || players[0];
 
+  // Turn management: which players participate in current envelope
+  const currentEnvelopeEvidence = scenario.evidence.filter((ev) => ev.envelope === currentEnvelope);
+
+  const participatingPlayers = isSolo
+    ? players
+    : players.filter((p) => {
+        return currentEnvelopeEvidence.some((ev) => {
+          if (isTwoPlayer) {
+            if (p.role === 'forensics') {
+              return ev.roleAccess.includes('forensics') || ev.roleAccess.includes('cryptology');
+            }
+            if (p.role === 'profiler') {
+              const isLab = ev.roleAccess.includes('forensics') || ev.roleAccess.includes('cryptology');
+              return !isLab;
+            }
+          }
+          return ev.roleAccess.includes(p.role);
+        });
+      });
+
+  const activeInspectorIdFromRoom = onlineRoom?.activeInspectorId;
+  const isEnvelopeCompleted = Boolean(
+    onlineRoomCode
+      ? activeInspectorIdFromRoom === 'DONE'
+      : localEnvelopeCompleted
+  );
+
+  const currentInspectorId = onlineRoomCode
+    ? activeInspectorIdFromRoom || (participatingPlayers[0]?.id || players[0]?.id)
+    : localInspectorId || (participatingPlayers[0]?.id || players[0]?.id);
+
+  const currentInspectorPlayer = players.find((p) => p.id === currentInspectorId) || participatingPlayers[0] || players[0];
+  const currentInspectorName = onlineRoom?.activeInspectorName || currentInspectorPlayer?.name || 'Dedektif';
+  const currentInspectorRole = onlineRoom?.activeInspectorRole || currentInspectorPlayer?.role || 'forensics';
+
+  const currentInspectorIndex = participatingPlayers.findIndex((p) => p.id === currentInspectorId);
+  const nextInspector = !isSolo && (currentInspectorIndex >= 0 && currentInspectorIndex < participatingPlayers.length - 1)
+    ? participatingPlayers[currentInspectorIndex + 1]
+    : null;
+
+  // Determine if this user is allowed to view the open dossier right now
+  const isMyTurn = isSolo || isEnvelopeCompleted || (
+    onlineRoomCode && currentUser
+      ? currentInspectorId === currentUser.uid
+      : activePlayerId === currentInspectorId
+  );
+
+  // Host starts the game from Lobby (moves to Briefing)
   const handleStartGame = async () => {
     if (onlineRoomCode) {
-      await setOnlineRoomStatus(onlineRoomCode, 'playing');
+      await setOnlineRoomStatus(onlineRoomCode, 'briefing');
       await advanceOnlineRoomEnvelope(onlineRoomCode, 1);
     } else {
-      setGameView('ENVELOPE_ACTIVE');
+      setGameView('BRIEFING');
       setCurrentEnvelope(1);
       setActivePlayerId(players[0].id);
+      setLocalInspectorId(null);
+      setLocalEnvelopeCompleted(false);
       setIsBoardViewOpen(false);
       setPinnedItems([]);
       setPinnedEvidenceIds(new Set());
       setSubmissions({});
       setGateAttempts(0);
+    }
+  };
+
+  // Host finishes reading briefing aloud and hands first envelope to first specialist
+  const handleFinishBriefing = async () => {
+    const firstInspector = participatingPlayers[0] || players[0];
+    if (onlineRoomCode) {
+      await finishBriefingAndStartFirstEnvelope(onlineRoomCode, {
+        id: firstInspector.id,
+        name: firstInspector.name,
+        role: firstInspector.role,
+      });
+    } else {
+      setGameView('ENVELOPE_ACTIVE');
+      setLocalInspectorId(firstInspector.id);
+      setActivePlayerId(firstInspector.id);
+      setLocalEnvelopeCompleted(false);
+    }
+  };
+
+  // Active inspector closes dossier and passes turn to next player in envelope
+  const handlePassTurn = async () => {
+    if (nextInspector) {
+      if (onlineRoomCode) {
+        await passEnvelopeInspectorTurn(onlineRoomCode, {
+          id: nextInspector.id,
+          name: nextInspector.name,
+          role: nextInspector.role,
+        });
+      } else {
+        setLocalInspectorId(nextInspector.id);
+        setActivePlayerId(nextInspector.id);
+      }
+    } else {
+      // All participating players have reviewed files in this envelope
+      if (onlineRoomCode) {
+        await passEnvelopeInspectorTurn(onlineRoomCode, null);
+      } else {
+        setLocalEnvelopeCompleted(true);
+      }
     }
   };
 
@@ -264,13 +378,35 @@ export default function App() {
     setIsGateModalOpen(false);
     const nextEnv = (currentEnvelope === 1 ? 2 : currentEnvelope === 2 ? 3 : 4) as EnvelopeNumber;
 
-    if (onlineRoomCode) {
-      await advanceOnlineRoomEnvelope(onlineRoomCode, nextEnv);
+    if (nextEnv <= 3) {
+      const nextEnvelopeEvidence = scenario.evidence.filter((ev) => ev.envelope === nextEnv);
+      const nextParticipants = players.filter((p) => {
+        return nextEnvelopeEvidence.some((ev) => {
+          if (isTwoPlayer) {
+            if (p.role === 'forensics') return ev.roleAccess.includes('forensics') || ev.roleAccess.includes('cryptology');
+            if (p.role === 'profiler') return !ev.roleAccess.includes('forensics') && !ev.roleAccess.includes('cryptology');
+          }
+          return ev.roleAccess.includes(p.role);
+        });
+      });
+      const firstInspector = nextParticipants[0] || players[0];
+
+      if (onlineRoomCode) {
+        await advanceOnlineRoomEnvelope(onlineRoomCode, nextEnv);
+        await passEnvelopeInspectorTurn(onlineRoomCode, {
+          id: firstInspector.id,
+          name: firstInspector.name,
+          role: firstInspector.role,
+        });
+      } else {
+        setCurrentEnvelope(nextEnv);
+        setLocalInspectorId(firstInspector.id);
+        setActivePlayerId(firstInspector.id);
+        setLocalEnvelopeCompleted(false);
+      }
     } else {
-      if (currentEnvelope === 1) {
-        setCurrentEnvelope(2);
-      } else if (currentEnvelope === 2) {
-        setCurrentEnvelope(3);
+      if (onlineRoomCode) {
+        await setOnlineRoomStatus(onlineRoomCode, 'accusation');
       } else {
         setGameView('ACCUSATION');
       }
@@ -313,8 +449,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans">
-      {/* Top Player Simulator & Online Bar (always visible when game is ongoing) */}
-      {gameView !== 'LOBBY' && (
+      {/* Top Bar (only visible when actively playing an envelope or viewing board) */}
+      {gameView !== 'LOBBY' && gameView !== 'BRIEFING' && (
         <PlayerSimulatorBar
           players={players}
           activePlayerId={activePlayerId}
@@ -326,12 +462,6 @@ export default function App() {
           onToggleBoardView={() => setIsBoardViewOpen((prev) => !prev)}
           currentEnvelope={currentEnvelope}
           pinnedCount={pinnedItems.length}
-          unreadCountByPlayer={{}}
-          isMuted={isMuted}
-          onToggleMute={handleToggleMute}
-          onlineRoomCode={onlineRoomCode}
-          currentUser={currentUser}
-          onOpenOnlineModal={() => setIsOnlineModalOpen(true)}
         />
       )}
 
@@ -348,12 +478,25 @@ export default function App() {
             onChangePlayerName={handleNameChange}
             onStartGame={handleStartGame}
             onOpenOnlineModal={() => setIsOnlineModalOpen(true)}
+            onOpenAuthModal={() => setIsAuthModalOpen(true)}
+            onOpenAdminModal={() => setIsAdminModalOpen(true)}
             currentUser={currentUser}
             onlineRoomCode={onlineRoomCode}
           />
         )}
 
-        {gameView !== 'LOBBY' && (
+        {/* Phase 1: Case Briefing & Prologue Narrative */}
+        {gameView === 'BRIEFING' && (
+          <BriefingView
+            scenario={scenario}
+            isHost={onlineRoom ? (currentUser?.uid === onlineRoom.hostId) : true}
+            hostName={onlineRoom ? onlineRoom.hostName : (players[0]?.name || 'Masa Şefi')}
+            firstInspector={participatingPlayers[0] || players[0]}
+            onFinishBriefing={handleFinishBriefing}
+          />
+        )}
+
+        {gameView !== 'LOBBY' && gameView !== 'BRIEFING' && (
           <>
             {/* If Board view toggle is active, show the Shared Board */}
             {isBoardViewOpen ? (
@@ -362,7 +505,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setIsBoardViewOpen(false)}
-                    className="text-xs text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1"
+                    className="text-xs text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1 cursor-pointer"
                   >
                     &larr; {activePlayer.name} ({activePlayer.role.toUpperCase()}) Telefonuna Geri Dön
                   </button>
@@ -379,20 +522,33 @@ export default function App() {
               </div>
             ) : (
               <>
-                {/* Active Envelope Inbox Screen */}
+                {/* Active Envelope Inbox Screen: Either the active dossier OR the clean Waiting Screen */}
                 {gameView === 'ENVELOPE_ACTIVE' && (
-                  <PlayerInboxView
-                    player={activePlayer}
-                    allPlayers={players}
-                    totalPlayers={onlineRoom?.playerCount || playerCount}
-                    currentEnvelope={currentEnvelope}
-                    evidenceList={scenario.evidence}
-                    suspects={scenario.suspects}
-                    pinnedEvidenceIds={pinnedEvidenceIds}
-                    onPinEvidence={handlePinEvidence}
-                    onOpenGateModal={() => setIsGateModalOpen(true)}
-                    onGoToAccusation={() => setGameView('ACCUSATION')}
-                  />
+                  !isMyTurn ? (
+                    /* Other players see ONLY logo and active inspector name */
+                    <WaitingTurnView
+                      currentEnvelope={currentEnvelope}
+                      activeInspectorName={currentInspectorName}
+                      activeInspectorRole={currentInspectorRole}
+                    />
+                  ) : (
+                    /* Active inspector sees their confidential dossier */
+                    <PlayerInboxView
+                      player={activePlayer}
+                      allPlayers={players}
+                      totalPlayers={onlineRoom?.playerCount || playerCount}
+                      currentEnvelope={currentEnvelope}
+                      evidenceList={scenario.evidence}
+                      suspects={scenario.suspects}
+                      pinnedEvidenceIds={pinnedEvidenceIds}
+                      onPinEvidence={handlePinEvidence}
+                      onOpenGateModal={() => setIsGateModalOpen(true)}
+                      onGoToAccusation={() => setGameView('ACCUSATION')}
+                      nextInspector={nextInspector}
+                      onPassTurn={handlePassTurn}
+                      isEnvelopeCompleted={isEnvelopeCompleted}
+                    />
+                  )
                 )}
 
                 {/* Final Accusation & Debate Phase */}
@@ -420,6 +576,8 @@ export default function App() {
                       setGameView('LOBBY');
                       setOnlineRoomCode(null);
                     }}
+                    currentUser={currentUser}
+                    onOpenAuthModal={() => setIsAuthModalOpen(true)}
                   />
                 )}
               </>
@@ -456,6 +614,22 @@ export default function App() {
           }}
           onStartOnlineGame={handleStartGame}
           onClose={() => setIsOnlineModalOpen(false)}
+        />
+      )}
+
+      {/* Detective Auth & Membership Modal */}
+      {isAuthModalOpen && (
+        <AuthModal
+          currentUser={currentUser}
+          onClose={() => setIsAuthModalOpen(false)}
+        />
+      )}
+
+      {/* Admin Dashboard & Mobile Stores Blueprint Modal */}
+      {isAdminModalOpen && (
+        <AdminDashboardModal
+          currentUser={currentUser}
+          onClose={() => setIsAdminModalOpen(false)}
         />
       )}
 

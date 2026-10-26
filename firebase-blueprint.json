@@ -77,12 +77,46 @@
         "submittedAt": { "type": "string" }
       },
       "required": ["userId", "playerName", "role", "suspectId", "motiveId", "evidenceId"]
+    "RoomVote": {
+      "title": "RoomVote",
+      "description": "Accusation vote cast by detective in final phase",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "playerName": { "type": "string" },
+        "role": { "type": "string" },
+        "suspectId": { "type": "string" },
+        "motiveId": { "type": "string" },
+        "evidenceId": { "type": "string" },
+        "submittedAt": { "type": "string" }
+      },
+      "required": ["userId", "playerName", "role", "suspectId", "motiveId", "evidenceId"]
+    },
+    "CaseRating": {
+      "title": "CaseRating",
+      "description": "5-star rating and review given to a case scenario",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "scenarioId": { "type": "string" },
+        "scenarioTitle": { "type": "string" },
+        "rating": { "type": "number", "minimum": 1, "maximum": 5 },
+        "comment": { "type": "string" },
+        "userId": { "type": "string" },
+        "userDisplayName": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "scenarioId", "rating", "userId"]
     }
   },
   "firestore": {
     "/users/{userId}": {
       "schema": "UserProfile",
       "description": "Collection of user profiles"
+    },
+    "/case_ratings/{ratingId}": {
+      "schema": "CaseRating",
+      "description": "Case ratings and reviews submitted by players"
     },
     "/rooms/{roomId}": {
       "schema": "Room",

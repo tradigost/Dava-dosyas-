@@ -21,10 +21,14 @@ export interface PlayerVote {
  * Checks if selected player count satisfies scenario minimum requirements
  */
 export function canStartScenario(playerCount: number, scenario: ScenarioMeta): { allowed: boolean; reason?: string } {
+  // Solo / Single screen mode is always allowed across all scenarios
+  if (playerCount === 1) {
+    return { allowed: true };
+  }
   if (playerCount < scenario.minPlayers) {
     return {
       allowed: false,
-      reason: `"${scenario.title}" hikayesi gereği en az ${scenario.minPlayers} dedektif (farklı uzmanlıklar) gerektirir. Masa mevcudunuz: ${playerCount}.`,
+      reason: `"${scenario.title}" asimetrik kurgusu gereği çok oyunculu modda en az ${scenario.minPlayers} dedektif gerektirir. (Tek cihazdan oynamak için "1 Kişi (Solo / Tek Ekran)" modunu seçebilirsiniz).`,
     };
   }
   if (playerCount > scenario.maxPlayers) {

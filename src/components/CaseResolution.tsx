@@ -3,11 +3,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { CaseScenario, Player, AccusationSubmission } from '../types';
 import { calculateDetectiveScore } from '../utils/gameRules';
 import { soundManager } from '../utils/audioEffects';
-import { Award, CheckCircle2, XCircle, RotateCcw, ShieldCheck, FileText, AlertOctagon } from 'lucide-react';
+import { 
+  DetectiveProfile, 
+  submitCaseRating 
+} from '../services/firebase';
+import { 
+  Award, 
+  CheckCircle2, 
+  XCircle, 
+  RotateCcw, 
+  ShieldCheck, 
+  FileText, 
+  AlertOctagon,
+  Star,
+  Send,
+  Sparkles
+} from 'lucide-react';
 
 interface CaseResolutionProps {
   scenario: CaseScenario;
@@ -17,6 +32,8 @@ interface CaseResolutionProps {
   gateAttempts: number;
   onRestartGame: () => void;
   onBackToLobby: () => void;
+  currentUser?: DetectiveProfile | null;
+  onOpenAuthModal?: () => void;
 }
 
 export const CaseResolution: React.FC<CaseResolutionProps> = ({
@@ -27,8 +44,41 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
   gateAttempts,
   onRestartGame,
   onBackToLobby,
+  currentUser,
+  onOpenAuthModal,
 }) => {
   const { solution } = scenario;
+  const [selectedStars, setSelectedStars] = useState<number>(5);
+  const [hoverStars, setHoverStars] = useState<number | null>(null);
+  const [commentText, setCommentText] = useState<string>('');
+  const [isSubmittingRating, setIsSubmittingRating] = useState<boolean>(false);
+  const [hasRated, setHasRated] = useState<boolean>(false);
+
+  const handleRateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingRating(true);
+    soundManager.playKeyClick();
+    try {
+      const activeUser: DetectiveProfile = currentUser || {
+        uid: `guest_${Date.now()}`,
+        displayName: players[0]?.name || 'Dedektif',
+        isGuest: true,
+      };
+      await submitCaseRating({
+        scenarioId: scenario.id,
+        rating: selectedStars,
+        comment: commentText,
+        user: activeUser,
+      });
+      soundManager.playSuccessSound();
+      setHasRated(true);
+    } catch (err) {
+      console.warn('Error submitting rating:', err);
+      setHasRated(true);
+    } finally {
+      setIsSubmittingRating(false);
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
@@ -218,6 +268,104 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
         </div>
       </div>
 
+      {/* Case Rating Card (5 Üzerinden Dosya Puanlama Sistemi) */}
+      <div className="bg-zinc-950 border border-amber-500/50 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+        <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+          <div className="flex items-center gap-2">
+            <Star className="w-5 h-5 text-amber-400 fill-current" />
+            <h3 className="font-cinzel text-base sm:text-lg font-bold text-zinc-100">
+              Bu Soruşturma Dosyasına Puan Verin
+            </h3>
+          </div>
+          <span className="text-xs text-amber-400 font-mono">
+            5 ÜZERİNDEN DERECELEME
+          </span>
+        </div>
+
+        {hasRated ? (
+          <div className="py-6 text-center space-y-2">
+            <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <h4 className="font-bold text-zinc-100 text-sm">Değerlendirmeniz Kaydedildi!</h4>
+            <p className="text-xs text-zinc-400 max-w-md mx-auto">
+              Oyunuz ve yorumunuz başarıyla veritabanına iletildi. Bu vakanın genel arşivi ve puan ortalaması güncellendi.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={handleRateSubmit} className="mt-4 space-y-4">
+            <div>
+              <p className="text-xs text-zinc-300 mb-2">
+                &quot;{scenario.title}&quot; kurgusu, ipucu dengesi ve gizem örgüsü nasıldı?
+              </p>
+              
+              {/* Interactive 5 Stars */}
+              <div className="flex items-center gap-2">
+                {[1, 2, 3, 4, 5].map((starVal) => {
+                  const isHovered = hoverStars !== null && hoverStars >= starVal;
+                  const isSelected = selectedStars >= starVal;
+                  const active = hoverStars !== null ? isHovered : isSelected;
+
+                  return (
+                    <button
+                      key={starVal}
+                      type="button"
+                      onMouseEnter={() => setHoverStars(starVal)}
+                      onMouseLeave={() => setHoverStars(null)}
+                      onClick={() => {
+                        soundManager.playKeyClick();
+                        setSelectedStars(starVal);
+                      }}
+                      className="p-1 cursor-pointer transition-transform hover:scale-125 focus:outline-none"
+                    >
+                      <Star
+                        className={`w-7 h-7 sm:w-8 sm:h-8 transition-colors ${
+                          active
+                            ? 'text-amber-400 fill-current drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]'
+                            : 'text-zinc-700'
+                        }`}
+                      />
+                    </button>
+                  );
+                })}
+                <span className="ml-3 text-sm font-mono font-bold text-amber-300">
+                  {hoverStars !== null ? hoverStars : selectedStars} / 5 Yıldız
+                </span>
+              </div>
+            </div>
+
+            {/* Optional Comment */}
+            <div>
+              <label className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 block mb-1">
+                Dedektif Yorumunuz (Opsiyonel):
+              </label>
+              <textarea
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Örn: Otopsi bulgusu ile şifre bağlantısı harikaydı, son ana kadar katili tahmin edemedik..."
+                rows={3}
+                className="w-full px-3.5 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-amber-400 resize-none font-sans"
+              />
+            </div>
+
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-[11px] text-zinc-500">
+                Puanlayan: <strong className="text-zinc-300">{currentUser?.displayName || players[0]?.name || 'Dedektif'}</strong>
+              </span>
+
+              <button
+                type="submit"
+                disabled={isSubmittingRating}
+                className="py-2.5 px-5 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>{isSubmittingRating ? 'Gönderiliyor...' : 'Puanı Kaydet'}</span>
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+
       {/* Action Buttons */}
       <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
         <button
@@ -226,7 +374,7 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
             soundManager.playKeyClick();
             onRestartGame();
           }}
-          className="flex items-center gap-2 px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl text-xs font-semibold transition-colors"
+          className="flex items-center gap-2 px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
         >
           <RotateCcw className="w-4 h-4" />
           Bu Vakayı Tekrar Oyna
@@ -238,7 +386,7 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
             soundManager.playKeyClick();
             onBackToLobby();
           }}
-          className="px-6 py-2.5 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold rounded-xl text-xs transition-colors shadow-lg"
+          className="px-6 py-2.5 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold rounded-xl text-xs transition-colors shadow-lg cursor-pointer"
         >
           Lobiye Dön & Yeni Vaka Seç
         </button>
@@ -246,3 +394,4 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
     </div>
   );
 };
+

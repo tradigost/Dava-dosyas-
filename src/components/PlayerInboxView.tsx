@@ -5,14 +5,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { Player, EvidenceItem, EnvelopeNumber, Suspect } from '../types';
-import { ROLES } from '../data/cases';
 import { soundManager } from '../utils/audioEffects';
 import { 
   FileText, 
   Pin, 
   KeyRound, 
   ShieldAlert, 
-  Clock
+  ArrowRight,
+  CheckCircle2
 } from 'lucide-react';
 
 interface PlayerInboxViewProps {
@@ -21,11 +21,14 @@ interface PlayerInboxViewProps {
   totalPlayers?: number;
   currentEnvelope: EnvelopeNumber;
   evidenceList: EvidenceItem[];
-  suspects: Suspect[];
+  suspects?: Suspect[];
   pinnedEvidenceIds: Set<string>;
   onPinEvidence: (title: string, excerpt: string, category: string, evidenceId?: string) => void;
   onOpenGateModal: () => void;
   onGoToAccusation: () => void;
+  nextInspector?: Player | null;
+  onPassTurn?: () => void;
+  isEnvelopeCompleted?: boolean;
 }
 
 export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
@@ -38,12 +41,18 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
   onPinEvidence,
   onOpenGateModal,
   onGoToAccusation,
+  nextInspector,
+  onPassTurn,
+  isEnvelopeCompleted = false,
 }) => {
-  const isTwoPlayerMode = totalPlayers === 2 || allPlayers.length === 2;
+  const isSoloMode = totalPlayers === 1 || allPlayers.length === 1;
+  const isTwoPlayerMode = !isSoloMode && (totalPlayers === 2 || allPlayers.length === 2);
 
   // Filter evidence accessible to this player in this envelope
   const myEvidence = evidenceList.filter((ev) => {
     if (ev.envelope !== currentEnvelope) return false;
+    // In solo mode, the single player or shared single screen has access to ALL evidence
+    if (isSoloMode) return true;
     if (isTwoPlayerMode) {
       if (player.role === 'forensics') {
         return ev.roleAccess.includes('forensics') || ev.roleAccess.includes('cryptology');
@@ -88,7 +97,7 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
                   soundManager.playKeyClick();
                   setSelectedEvidenceId(ev.id);
                 }}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap border transition-all ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap border transition-all cursor-pointer ${
                   isSelected
                     ? 'bg-amber-600 text-zinc-950 border-amber-400 font-bold shadow-md'
                     : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
@@ -184,31 +193,63 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
             </button>
           </div>
 
+          {/* Close Dossier & Pass Turn Button */}
+          {onPassTurn && !isEnvelopeCompleted && (
+            <div className="pt-3 border-t border-zinc-800/80">
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playSuccessSound();
+                  onPassTurn();
+                }}
+                className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>
+                  {isSoloMode
+                    ? '📁 Dosyaları İnceledim - Doğrulama Sorusunu Çözmeye Geç'
+                    : nextInspector
+                    ? `📁 Dosyayı Okudum, Sırayı ${nextInspector.name}'e Devret`
+                    : '📁 Zarfı İnceledim & Masaya Bırak (Tüm Dosyalar Tamamlandı)'}
+                </span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <p className="text-[11px] text-zinc-400 text-center mt-1.5">
+                {isSoloMode
+                  ? '* İncelemeniz bittiğinde butona basarak şifreli doğrulama aşamasını açabilirsiniz.'
+                  : nextInspector
+                  ? `* Butona bastığınızda dosyanız kapanacak ve sıradaki zarf ${nextInspector.name} ekranında açılacaktır.`
+                  : '* Masadaki tüm dosyalar incelendi. Şimdi doğrulama sorusunu çözebilirsiniz.'}
+              </p>
+            </div>
+          )}
+
         </div>
       ) : null}
 
-      {/* Clean Envelope Advancement Bar */}
-      <div className="pt-2">
-        {currentEnvelope < 3 ? (
-          <button
-            type="button"
-            onClick={onOpenGateModal}
-            className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-800 border border-amber-500/50 hover:border-amber-400 text-amber-300 font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <KeyRound className="w-4 h-4 text-amber-400" />
-            <span>Zarf {currentEnvelope + 1} Doğrulama Sorusunu Çöz & İlerle</span>
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={onGoToAccusation}
-            className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-xl flex items-center justify-center gap-2 animate-pulse cursor-pointer"
-          >
-            <ShieldAlert className="w-4 h-4" />
-            <span>Final Katil Suçlama Aşamasına Geç</span>
-          </button>
-        )}
-      </div>
+      {/* Envelope Advancement Gate: Appears once all players in the envelope have reviewed files */}
+      {isEnvelopeCompleted && (
+        <div className="pt-2">
+          {currentEnvelope < 3 ? (
+            <button
+              type="button"
+              onClick={onOpenGateModal}
+              className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-800 border border-amber-500/50 hover:border-amber-400 text-amber-300 font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer ring-2 ring-amber-500/20 animate-pulse"
+            >
+              <KeyRound className="w-4 h-4 text-amber-400" />
+              <span>✓ Tüm Dosyalar İncelendi - Zarf {currentEnvelope + 1} Doğrulama Sorusunu Çöz</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onGoToAccusation}
+              className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-xl flex items-center justify-center gap-2 animate-pulse cursor-pointer"
+            >
+              <ShieldAlert className="w-4 h-4" />
+              <span>✓ 3. Zarf Tamamlandı - Final Katil Suçlama Aşamasına Geç</span>
+            </button>
+          )}
+        </div>
+      )}
 
     </div>
   );
