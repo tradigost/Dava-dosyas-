@@ -34,7 +34,7 @@ interface PlayerInboxViewProps {
   suspects?: Suspect[];
   pinnedEvidenceIds: Set<string>;
   onPinEvidence: (title: string, excerpt: string, category: string, evidenceId?: string) => void;
-  onOpenGateModal: () => void;
+  onAdvanceEnvelope?: () => void;
   onGoToAccusation: () => void;
   nextInspector?: Player | null;
   onPassTurn?: () => void;
@@ -50,7 +50,7 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
   evidenceList,
   pinnedEvidenceIds,
   onPinEvidence,
-  onOpenGateModal,
+  onAdvanceEnvelope,
   onGoToAccusation,
   nextInspector,
   onPassTurn,
@@ -379,11 +379,14 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
           {currentEnvelope < totalEnvelopes ? (
             <button
               type="button"
-              onClick={onOpenGateModal}
-              className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-800 border border-amber-500/50 hover:border-amber-400 text-amber-300 font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer ring-2 ring-amber-500/20 animate-pulse"
+              onClick={() => {
+                soundManager.playSuccessSound();
+                if (onAdvanceEnvelope) onAdvanceEnvelope();
+              }}
+              className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-800 border border-amber-500/50 hover:border-amber-400 text-amber-300 font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer ring-2 ring-amber-500/20"
             >
-              <KeyRound className="w-4 h-4 text-amber-400" />
-              <span>✓ Tüm Dosyalar İncelendi - Zarf {currentEnvelope + 1} Doğrulama Sorusunu Çöz</span>
+              <span>✓ Zarf {currentEnvelope} İncelendi — Zarf {currentEnvelope + 1}’i Aç</span>
+              <ArrowRight className="w-4 h-4 text-amber-400" />
             </button>
           ) : (
             <button
@@ -392,7 +395,7 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
               className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-xl flex items-center justify-center gap-2 animate-pulse cursor-pointer"
             >
               <ShieldAlert className="w-4 h-4" />
-              <span>✓ Son Zarf ({totalEnvelopes}) Tamamlandı - Final Katil Suçlama Aşamasına Geç</span>
+              <span>✓ Son Zarf ({totalEnvelopes}) Tamamlandı — Final Suçlama ve Test Aşamasına Geç &rarr;</span>
             </button>
           )}
         </div>

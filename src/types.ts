@@ -107,6 +107,8 @@ export interface AccusationSubmission {
   evidenceId: string;
   statementNotes: string;
   submittedAt: string;
+  individualScore?: number;
+  quizAnswers?: Record<number, string>;
 }
 
 export interface CaseSolution {

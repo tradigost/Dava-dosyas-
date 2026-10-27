@@ -61,7 +61,7 @@ export default function App() {
   const [isAdminModalOpen, setIsAdminModalOpen] = useState<boolean>(false);
 
   // Scenario and lobby state
-  const [selectedScenarioId, setSelectedScenarioId] = useState<string>('son-kadeh');
+  const [selectedScenarioId, setSelectedScenarioId] = useState<string>('bogazda-kayip-koleksiyon');
   const [playerCount, setPlayerCount] = useState<number>(2);
   const [playerNames, setPlayerNames] = useState<string[]>([
     'Dr. Selim (Adli Tıp & Kripto)',
@@ -563,7 +563,7 @@ export default function App() {
                       suspects={scenario.suspects}
                       pinnedEvidenceIds={pinnedEvidenceIds}
                       onPinEvidence={handlePinEvidence}
-                      onOpenGateModal={() => setIsGateModalOpen(true)}
+                      onAdvanceEnvelope={handleAdvanceToNextEnvelope}
                       onGoToAccusation={() => setGameView('ACCUSATION')}
                       nextInspector={nextInspector}
                       onPassTurn={handlePassTurn}
@@ -607,33 +607,6 @@ export default function App() {
           </>
         )}
       </main>
-
-      {/* Envelope Gate Modal */}
-      {isGateModalOpen && currentEnvelope <= totalEnvelopes && (
-        <EnvelopeGateModal
-          gate={
-            scenario.gates && scenario.gates[currentEnvelope]
-              ? scenario.gates[currentEnvelope]
-              : {
-                  envelope: currentEnvelope,
-                  title: `Zarf ${currentEnvelope} İlerleme Kilidi`,
-                  instructions: 'Bir sonraki aşamaya geçmek için aşağıdaki durum tespitini ekipçe doğrulayın.',
-                  question: `Zarf ${currentEnvelope} İlerleme Doğrulaması: Ekibiniz bu zarftaki tüm kanıtları masaya yatırıp şüphelileri değerlendirdi mi?`,
-                  options: [
-                    { id: 'opt-1', text: 'Evet, tüm delilleri inceledik ve kritik bulguları paylaştık.', isCorrect: true },
-                    { id: 'opt-2', text: 'Şüpheli ifadeleri ve saat çelişkilerini henüz netleştiremedik.', isCorrect: false },
-                    { id: 'opt-3', text: 'Ortak panoda eksik parçalar var.', isCorrect: false },
-                  ],
-                  explanation: `Zarf ${currentEnvelope} başarıyla tamamlandı. İpuçları ortak panoda güncellendi.`,
-                }
-          }
-          currentEnvelope={currentEnvelope}
-          totalEnvelopes={totalEnvelopes}
-          onSuccessNextEnvelope={handleAdvanceToNextEnvelope}
-          onClose={() => setIsGateModalOpen(false)}
-          onIncrementAttempts={handleGateIncrement}
-        />
-      )}
 
       {/* Online Room & WhatsApp Modal */}
       {isOnlineModalOpen && (

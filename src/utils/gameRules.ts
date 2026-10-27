@@ -83,51 +83,138 @@ export function evaluateVotesConsensus(votes: PlayerVote[]): {
   return { isUnanimous, majoritySuspectId, voteCounts: counts };
 }
 
+export interface TableVerdict {
+  isWon: boolean;
+  majoritySuspectId: string;
+  majorityCount: number;
+  totalVotes: number;
+  percentage: number;
+  isUnanimous: boolean;
+  voteCounts: Record<string, number>;
+  correctSuspectId: string;
+}
+
 /**
- * Calculates final score and detective rank
+ * Evaluates the collective table verdict.
+ * The table wins if and only if the majority of the votes match the true culprit.
+ */
+export function evaluateTableVerdict(
+  votes: { suspectId: string }[],
+  correctSuspectId: string
+): TableVerdict {
+  if (votes.length === 0) {
+    return {
+      isWon: false,
+      majoritySuspectId: '',
+      majorityCount: 0,
+      totalVotes: 0,
+      percentage: 0,
+      isUnanimous: false,
+      voteCounts: {},
+      correctSuspectId,
+    };
+  }
+
+  const counts: Record<string, number> = {};
+  for (const v of votes) {
+    counts[v.suspectId] = (counts[v.suspectId] || 0) + 1;
+  }
+
+  let majoritySuspectId = votes[0].suspectId;
+  let maxCount = -1;
+  for (const [suspectId, count] of Object.entries(counts)) {
+    if (count > maxCount) {
+      maxCount = count;
+      majoritySuspectId = suspectId;
+    }
+  }
+
+  const isWon = majoritySuspectId === correctSuspectId;
+  const isUnanimous = votes.every((v) => v.suspectId === majoritySuspectId);
+  const percentage = Math.round((maxCount / votes.length) * 100);
+
+  return {
+    isWon,
+    majoritySuspectId,
+    majorityCount: maxCount,
+    totalVotes: votes.length,
+    percentage,
+    isUnanimous,
+    voteCounts: counts,
+    correctSuspectId,
+  };
+}
+
+/**
+ * Calculates final individual score and detective rank
  */
 export function calculateDetectiveScore(params: {
   correctSuspectSelected: boolean;
   correctMotiveSelected: boolean;
   correctEvidenceSelected: boolean;
-  pinnedCount: number;
-  gateAttempts: number; // 1 for first try, 2+ for retries
-}): { totalScore: number; maxScore: number; rankTitle: string; badge: string } {
-  let score = 0;
+  quizCorrectCount?: number;
+  quizTotalCount?: number;
+  pinnedCount?: number;
+  gateAttempts?: number;
+}): {
+  totalScore: number;
+  maxScore: number;
+  rankTitle: string;
+  badge: string;
+  quizScore: number;
+  suspectScore: number;
+  motiveScore: number;
+  evidenceScore: number;
+  bonusScore: number;
+} {
   const maxScore = 100;
 
-  // Suspect accuracy (40 pts)
-  if (params.correctSuspectSelected) score += 40;
-
-  // Motive accuracy (20 pts)
-  if (params.correctMotiveSelected) score += 20;
-
-  // Evidence accuracy (20 pts)
-  if (params.correctEvidenceSelected) score += 20;
-
-  // Collaboration pinning effort (up to 10 pts)
-  const pinBonus = Math.min(params.pinnedCount * 2, 10);
-  score += pinBonus;
-
-  // Deduction efficiency (up to 10 pts)
-  if (params.gateAttempts <= 3) {
-    score += 10;
-  } else if (params.gateAttempts <= 5) {
-    score += 5;
+  // 1. Quiz / Exam Score (up to 40 pts)
+  let quizScore = 0;
+  if (params.quizTotalCount && params.quizTotalCount > 0) {
+    const correctRatio = (params.quizCorrectCount || 0) / params.quizTotalCount;
+    quizScore = Math.round(correctRatio * 40);
+  } else {
+    // If no quiz questions, grant base points
+    quizScore = 30;
   }
+
+  // 2. Individual Suspect accuracy (30 pts)
+  const suspectScore = params.correctSuspectSelected ? 30 : 0;
+
+  // 3. Motive accuracy (15 pts)
+  const motiveScore = params.correctMotiveSelected ? 15 : 0;
+
+  // 4. Evidence accuracy (15 pts)
+  const evidenceScore = params.correctEvidenceSelected ? 15 : 0;
+
+  // Bonus: pinned evidence collaboration (up to 5 pts bonus)
+  const bonusScore = Math.min((params.pinnedCount || 0) * 1, 5);
+
+  const totalScore = Math.min(100, quizScore + suspectScore + motiveScore + evidenceScore + bonusScore);
 
   let rankTitle = 'Stajyer Dedektif';
   let badge = '🔍';
-  if (score >= 90) {
+  if (totalScore >= 90) {
     rankTitle = 'Efsanevi Başmüfettiş (Sherlock Derecesi)';
     badge = '🏆';
-  } else if (score >= 75) {
+  } else if (totalScore >= 75) {
     rankTitle = 'Kıdemli Cinayet Masası Dedektifi';
     badge = '⭐';
-  } else if (score >= 55) {
+  } else if (totalScore >= 55) {
     rankTitle = 'Adli Vaka Araştırmacısı';
     badge = '📁';
   }
 
-  return { totalScore: score, maxScore, rankTitle, badge };
+  return {
+    totalScore,
+    maxScore,
+    rankTitle,
+    badge,
+    quizScore,
+    suspectScore,
+    motiveScore,
+    evidenceScore,
+    bonusScore,
+  };
 }

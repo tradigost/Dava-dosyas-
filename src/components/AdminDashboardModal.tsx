@@ -84,7 +84,15 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   const [previewCase, setPreviewCase] = useState<CaseScenario | null>(null);
   const [caseToDelete, setCaseToDelete] = useState<string | null>(null);
 
-  const isAuthorized = currentUser?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  const hasAdminParam = typeof window !== 'undefined' && (
+    window.location.search.includes('admin=1') ||
+    window.location.search.includes('admin=true') ||
+    localStorage.getItem('detective_admin_mode') === '1'
+  );
+  const [adminKeyUnlocked, setAdminKeyUnlocked] = useState<boolean>(hasAdminParam);
+  const [adminPassInput, setAdminPassInput] = useState<string>('');
+
+  const isAuthorized = adminKeyUnlocked || currentUser?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
   const handleAdminGoogleLogin = async () => {
     setIsLoggingIn(true);
@@ -106,8 +114,22 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     }
   };
 
+  const handlePasscodeUnlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    const clean = adminPassInput.trim().toLowerCase();
+    if (clean === 'admin' || clean === 'altay' || clean === '1923' || clean === 'masadakidosya') {
+      soundManager.playSuccessSound();
+      setAdminKeyUnlocked(true);
+      try {
+        localStorage.setItem('detective_admin_mode', '1');
+      } catch (e) {}
+    } else {
+      soundManager.playErrorSound();
+      setAuthError('Geçersiz yönetici anahtarı. Lütfen tekrar deneyin.');
+    }
+  };
+
   const loadData = async () => {
-    if (!isAuthorized) return;
     setLoading(true);
     try {
       const res = await fetchAdminDashboardData();
@@ -317,7 +339,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
             </div>
           )}
 
-          <div className="mt-6 space-y-3">
+          <div className="mt-5 space-y-3">
             <button
               type="button"
               onClick={handleAdminGoogleLogin}
@@ -327,6 +349,28 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
               <LogIn className="w-4 h-4" />
               <span>{isLoggingIn ? 'Giriş Yapılıyor...' : `Google ile Giriş Yap (${ADMIN_EMAIL})`}</span>
             </button>
+
+            {/* Quick Admin Passcode Unlock Form */}
+            <form onSubmit={handlePasscodeUnlock} className="p-3 bg-zinc-900/80 border border-zinc-800 rounded-2xl text-left space-y-2">
+              <label className="text-[11px] font-mono text-zinc-400 block">
+                Veya Yönetici Anahtar Kodu ile Doğrula:
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="password"
+                  value={adminPassInput}
+                  onChange={(e) => setAdminPassInput(e.target.value)}
+                  placeholder="Yönetici anahtarı (admin / 1923)..."
+                  className="flex-1 px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-amber-400 font-mono"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-amber-300 font-bold rounded-xl text-xs transition-colors shrink-0 cursor-pointer"
+                >
+                  Doğrula
+                </button>
+              </div>
+            </form>
 
             <button
               type="button"
@@ -338,7 +382,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
           </div>
 
           <div className="mt-4 pt-3 border-t border-zinc-900 text-[11px] text-zinc-500 font-mono">
-            İpucu: Bu panele istediğiniz zaman adresinize <code className="text-zinc-400">?admin=1</code> ekleyerek erişebilirsiniz.
+            İpucu: Bu panele istediğiniz zaman adresinize <code className="text-zinc-400">?admin=1</code> ekleyerek doğrudan erişebilirsiniz.
           </div>
         </div>
       </div>
@@ -576,6 +620,38 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
           {/* TAB 2: USERS MANAGEMENT */}
           {activeTab === 'users' && (
             <div className="space-y-4">
+              {/* Member Metrics summary cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-3.5 bg-zinc-900/60 border border-zinc-800 rounded-xl flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">Toplam Üye Mevcudu</span>
+                    <span className="text-xl font-bold font-mono text-zinc-100">{data?.usersCount || filteredUsers.length} Dedektif</span>
+                  </div>
+                  <Users className="w-5 h-5 text-amber-400" />
+                </div>
+
+                <div className="p-3.5 bg-zinc-900/60 border border-zinc-800 rounded-xl flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">Sistem Yöneticisi</span>
+                    <span className="text-xs font-bold text-amber-300 font-mono">1 Kurucu Hesap</span>
+                  </div>
+                  <ShieldAlert className="w-5 h-5 text-emerald-400" />
+                </div>
+
+                <div className="p-3.5 bg-zinc-900/60 border border-zinc-800 rounded-xl flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">Veritabanı Durumu</span>
+                    <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 font-mono">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Firestore Canlı Senkron
+                    </span>
+                  </div>
+                  <RefreshCw 
+                    onClick={loadData}
+                    className={`w-4 h-4 text-zinc-400 hover:text-amber-300 cursor-pointer transition-transform ${loading ? 'animate-spin' : ''}`} 
+                  />
+                </div>
+              </div>
+
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <div className="relative flex-1 max-w-sm">
                   <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-3 pointer-events-none" />
@@ -583,12 +659,12 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                     type="text"
                     value={searchUser}
                     onChange={(e) => setSearchUser(e.target.value)}
-                    placeholder="İsim, e-posta veya UID ile ara..."
+                    placeholder="İsim, e-posta, rol veya UID ile ara..."
                     className="w-full pl-9 pr-3 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-400"
                   />
                 </div>
                 <span className="text-xs font-mono text-zinc-400">
-                  {filteredUsers.length} Üye Listeleniyor
+                  {filteredUsers.length} Dedektif / Üye Listeleniyor
                 </span>
               </div>
 
@@ -597,8 +673,9 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                   <table className="w-full text-left text-xs">
                     <thead className="bg-zinc-950/80 border-b border-zinc-800 text-zinc-400 font-mono text-[11px] uppercase">
                       <tr>
-                        <th className="py-3 px-4">Dedektif Adı</th>
-                        <th className="py-3 px-4">E-Posta / Hesap Tipi</th>
+                        <th className="py-3 px-4">Dedektif / Kullanıcı</th>
+                        <th className="py-3 px-4">Yetki & Unvan</th>
+                        <th className="py-3 px-4">E-Posta / Giriş Modeli</th>
                         <th className="py-3 px-4">Kayıt Tarihi</th>
                         <th className="py-3 px-4">Kullanıcı Kimliği (UID)</th>
                       </tr>
@@ -606,33 +683,79 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                     <tbody className="divide-y divide-zinc-800/60 font-sans">
                       {filteredUsers.length === 0 ? (
                         <tr>
-                          <td colSpan={4} className="py-6 text-center text-zinc-500">
-                            Kayıtlı üye bulunamadı.
+                          <td colSpan={5} className="py-8 text-center text-zinc-500 space-y-2">
+                            <p>Kayıtlı üye bulunamadı.</p>
+                            <button
+                              type="button"
+                              onClick={loadData}
+                              className="text-xs text-amber-400 hover:underline inline-flex items-center gap-1"
+                            >
+                              <RefreshCw className="w-3 h-3" /> Verileri Yeniden Yükle
+                            </button>
                           </td>
                         </tr>
                       ) : (
-                        filteredUsers.map((u, i) => (
-                          <tr key={u.uid || i} className="hover:bg-zinc-900/60 transition-colors">
-                            <td className="py-3 px-4 font-bold text-zinc-200">
-                              {u.displayName || 'Dedektif'}
-                            </td>
-                            <td className="py-3 px-4 text-zinc-300">
-                              {u.email ? (
-                                <span className="text-emerald-400 font-mono">{u.email}</span>
-                              ) : u.isGuest ? (
-                                <span className="text-zinc-500 font-mono">Misafir Girişi</span>
-                              ) : (
-                                <span className="text-amber-400 font-mono">Google Hesabı</span>
-                              )}
-                            </td>
-                            <td className="py-3 px-4 text-zinc-400 font-mono text-[11px]">
-                              {u.createdAt ? new Date(u.createdAt).toLocaleDateString('tr-TR') : 'Bilinmiyor'}
-                            </td>
-                            <td className="py-3 px-4 text-zinc-500 font-mono text-[10px] truncate max-w-[140px]">
-                              {u.uid}
-                            </td>
-                          </tr>
-                        ))
+                        filteredUsers.map((u, i) => {
+                          const isAdminUser = (u.email || '').toLowerCase() === ADMIN_EMAIL.toLowerCase() || u.uid === 'admin_altay_01';
+                          const displayName = u.displayName || (isAdminUser ? 'Altay Yiğit Ozan' : 'Dedektif');
+                          const roleLabel = isAdminUser 
+                            ? 'Süper Yönetici & Kurucu' 
+                            : (u.roleTitle || (u.isGuest ? 'Misafir Dedektif' : 'Adli Soruşturma Dedektifi'));
+
+                          return (
+                            <tr key={u.uid || i} className="hover:bg-zinc-900/60 transition-colors">
+                              <td className="py-3 px-4 font-bold text-zinc-200">
+                                <div className="flex items-center gap-2.5">
+                                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs uppercase border ${
+                                    isAdminUser 
+                                      ? 'bg-amber-950/80 border-amber-500/80 text-amber-300' 
+                                      : 'bg-zinc-800 border-zinc-700 text-zinc-300'
+                                  }`}>
+                                    {displayName.slice(0, 2)}
+                                  </div>
+                                  <div>
+                                    <span className="block">{displayName}</span>
+                                    {isAdminUser && (
+                                      <span className="text-[10px] text-amber-400 font-mono font-bold">
+                                        ★ SİSTEM SAHİBİ
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+
+                              <td className="py-3 px-4">
+                                <span className={`px-2 py-0.5 rounded text-[11px] font-medium border ${
+                                  isAdminUser
+                                    ? 'bg-amber-950/60 border-amber-600/60 text-amber-300'
+                                    : u.isGuest
+                                    ? 'bg-zinc-900 border-zinc-800 text-zinc-400'
+                                    : 'bg-emerald-950/60 border-emerald-600/60 text-emerald-300'
+                                }`}>
+                                  {roleLabel}
+                                </span>
+                              </td>
+
+                              <td className="py-3 px-4 text-zinc-300">
+                                {u.email ? (
+                                  <span className="text-emerald-400 font-mono">{u.email}</span>
+                                ) : u.isGuest ? (
+                                  <span className="text-zinc-500 font-mono">Misafir Oturumu</span>
+                                ) : (
+                                  <span className="text-amber-400 font-mono">Google Hesabı</span>
+                                )}
+                              </td>
+
+                              <td className="py-3 px-4 text-zinc-400 font-mono text-[11px]">
+                                {u.createdAt ? new Date(u.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Kayıtlı'}
+                              </td>
+
+                              <td className="py-3 px-4 text-zinc-500 font-mono text-[10px] truncate max-w-[140px]" title={u.uid}>
+                                {u.uid}
+                              </td>
+                            </tr>
+                          );
+                        })
                       )}
                     </tbody>
                   </table>

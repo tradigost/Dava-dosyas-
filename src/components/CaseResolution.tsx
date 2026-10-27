@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { CaseScenario, Player, AccusationSubmission } from '../types';
-import { calculateDetectiveScore } from '../utils/gameRules';
+import { calculateDetectiveScore, evaluateTableVerdict } from '../utils/gameRules';
 import { soundManager } from '../utils/audioEffects';
 import { 
   DetectiveProfile, 
@@ -21,7 +21,11 @@ import {
   AlertOctagon,
   Star,
   Send,
-  Sparkles
+  Trophy,
+  Users2,
+  FileCheck,
+  Check,
+  X
 } from 'lucide-react';
 
 interface CaseResolutionProps {
@@ -45,7 +49,6 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
   onRestartGame,
   onBackToLobby,
   currentUser,
-  onOpenAuthModal,
 }) => {
   const { solution } = scenario;
   const [selectedStars, setSelectedStars] = useState<number>(5);
@@ -53,6 +56,13 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
   const [commentText, setCommentText] = useState<string>('');
   const [isSubmittingRating, setIsSubmittingRating] = useState<boolean>(false);
   const [hasRated, setHasRated] = useState<boolean>(false);
+
+  // Evaluate collective table verdict
+  const votesList = Object.values(submissions).map((s) => ({
+    suspectId: s.suspectId,
+  }));
+  const tableVerdict = evaluateTableVerdict(votesList, solution.culpritId);
+  const majoritySuspect = scenario.suspects.find((s) => s.id === tableVerdict.majoritySuspectId);
 
   const handleRateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,58 +92,119 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* Top Solved Banner */}
-      <div className="bg-zinc-950 border-2 border-emerald-600/70 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-        {/* Closed Dossier Stamp */}
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 border-2 border-red-500/80 text-red-500 font-cinzel font-black text-xs sm:text-base px-3 py-1 rotate-12 uppercase tracking-widest pointer-events-none opacity-80">
-          DOSYA KAPATILDI · SUÇLU YAKALANDI
-        </div>
+      
+      {/* 1. MASA OYUNU SONUCU: ÇOĞUNLUK OYU İLE KAZANMA / KAYBETME BANNERI */}
+      {tableVerdict.isWon ? (
+        <div className="bg-gradient-to-br from-emerald-950 via-zinc-950 to-emerald-950/80 border-2 border-emerald-500 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-4 right-4 sm:top-6 sm:right-6 border-2 border-emerald-400 text-emerald-400 font-cinzel font-black text-xs sm:text-base px-3 py-1 rotate-6 uppercase tracking-widest pointer-events-none opacity-80">
+            MASA KAZANDI · VAKA ÇÖZÜLDÜ
+          </div>
 
-        <div className="flex items-center gap-2 text-emerald-400 text-xs font-typewriter uppercase tracking-wider mb-2">
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-mono uppercase tracking-wider mb-2">
+            <Trophy className="w-5 h-5 text-amber-400 animate-bounce" />
+            <span>ORTAK MASA KARARI: BAŞARILI SORUŞTURMA</span>
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl font-cinzel font-black text-emerald-300">
+            Tebrikler Dedektifler! Masa Oyunu Kazandı!
+          </h2>
+
+          <p className="text-sm text-zinc-200 mt-2 max-w-2xl leading-relaxed">
+            Masanın çoğunluğu (<strong>{tableVerdict.majorityCount} / {tableVerdict.totalVotes} oy</strong>, %{tableVerdict.percentage}) 
+            doğru şüpheliyi (<strong>{solution.culpritName}</strong>) suçlayarak gerçeği ortaya çıkardı. Sahte ipuçları ve yanıltıcı husumetler sizi yanıltamadı!
+          </p>
+
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-xs">
+            <div className="px-3 py-1.5 bg-emerald-900/50 border border-emerald-600/50 rounded-xl text-emerald-200 flex items-center gap-2">
+              <Check className="w-4 h-4 text-emerald-400" />
+              <span>Gerçek Katil: <strong>{solution.culpritName}</strong></span>
+            </div>
+            <div className="px-3 py-1.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-300 font-mono">
+              Çoğunluk Oy Oranı: %{tableVerdict.percentage}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-gradient-to-br from-rose-950 via-zinc-950 to-zinc-950 border-2 border-rose-600/80 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-4 right-4 sm:top-6 sm:right-6 border-2 border-rose-500 text-rose-500 font-cinzel font-black text-xs sm:text-base px-3 py-1 -rotate-6 uppercase tracking-widest pointer-events-none opacity-80">
+            MASA KAYBETTİ · KATİL KAÇTI
+          </div>
+
+          <div className="flex items-center gap-2 text-rose-400 text-xs font-mono uppercase tracking-wider mb-2">
+            <AlertOctagon className="w-5 h-5 text-rose-400" />
+            <span>ORTAK MASA KARARI: YANILGI</span>
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl font-cinzel font-black text-rose-300">
+            Vaka Çözülemedi! Masa Çoğunluğu Yanıldı.
+          </h2>
+
+          <p className="text-sm text-zinc-300 mt-2 max-w-2xl leading-relaxed">
+            Masanın çoğunluğu {majoritySuspect ? `"${majoritySuspect.name}"` : 'farklı bir şüpheli'} üzerinde yoğunlaştı ({tableVerdict.majorityCount} / {tableVerdict.totalVotes} oy). 
+            Ancak bu şüpheler aradaki kişisel husumetlerin ve yanıltıcı ipuçlarının birer tuzağıydı! Gerçek suçlu <strong>{solution.culpritName}</strong> delillerin arasından sıyrılarak cezasız kaldı.
+          </p>
+
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-xs">
+            <div className="px-3 py-1.5 bg-rose-950/70 border border-rose-700/60 rounded-xl text-rose-200 flex items-center gap-2">
+              <X className="w-4 h-4 text-rose-400" />
+              <span>Masanın Tercihi: <strong>{majoritySuspect?.name || 'Belirsiz'}</strong></span>
+            </div>
+            <div className="px-3 py-1.5 bg-emerald-950/60 border border-emerald-700/60 rounded-xl text-emerald-300 flex items-center gap-2">
+              <Check className="w-4 h-4 text-emerald-400" />
+              <span>Asıl Katil: <strong>{solution.culpritName}</strong></span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. ZARF 4: RESMİ ÇÖZÜM DOSYASI */}
+      <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 sm:p-7 shadow-xl space-y-4">
+        <div className="flex items-center gap-2 text-amber-400 text-xs font-typewriter uppercase tracking-wider">
           <ShieldCheck className="w-4 h-4" />
-          ZARF 4: ÇÖZÜM DOSYASI VE ADLİ MAHKEME KARARI
+          <span>ZARF 4: ADLİ MAHKEME DOSYASI VE ÇÖZÜM REKONSTRÜKSİYONU</span>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-cinzel font-bold text-zinc-100">
-          Gerçek Katil: <span className="text-emerald-400">{solution.culpritName}</span>
-        </h1>
-        <p className="text-sm text-zinc-300 mt-2 max-w-2xl leading-relaxed">
+        <h3 className="text-xl sm:text-2xl font-cinzel font-bold text-zinc-100">
+          Suçun Anatomisi: <span className="text-amber-300">{solution.culpritName}</span>
+        </h3>
+
+        <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed bg-zinc-900/60 border border-zinc-800/80 p-4 rounded-xl">
           {solution.verdictSummary}
         </p>
 
-        {/* Motive & Key Evidence Badge Box */}
-        <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* Motive & Key Evidence */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
           <div className="p-3.5 bg-zinc-900/80 border border-zinc-800 rounded-xl">
             <span className="text-[11px] font-typewriter text-zinc-400 uppercase tracking-wider block">
-              Cinayet Sebebi (Motive):
+              Asıl Suç Sebebi (Gerçek Motif):
             </span>
-            <p className="text-xs font-bold text-zinc-200 mt-1">
+            <p className="text-xs font-bold text-amber-200 mt-1">
               {solution.motiveTitle}
             </p>
           </div>
 
           <div className="p-3.5 bg-zinc-900/80 border border-zinc-800 rounded-xl">
             <span className="text-[11px] font-typewriter text-zinc-400 uppercase tracking-wider block">
-              Katili Yıkan Kilit Kanıt:
+              Katili Ele Veren Kilit Kanıt:
             </span>
-            <p className="text-xs font-bold text-zinc-200 mt-1">
+            <p className="text-xs font-bold text-amber-200 mt-1">
               {solution.keyEvidenceTitle}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Detective Report Cards (Dedektif Karnesi) */}
+      {/* 3. DEDEKTİF PERFORMANS KARNELERİ (BİREYSEL BAŞARI PUANLARI) */}
       <div className="bg-zinc-950 border border-amber-600/40 rounded-2xl p-6 shadow-xl">
-        <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-zinc-800">
           <div className="flex items-center gap-2">
             <Award className="w-5 h-5 text-amber-400" />
             <h3 className="font-cinzel text-lg sm:text-xl font-bold text-amber-200">
-              Dedektif Performans Karneleri
+              Bireysel Dedektif Karneleri & Sınav Puanları
             </h3>
           </div>
-          <span className="text-xs text-zinc-400 font-typewriter">
-            MASA DEDEKTİF DEĞERLENDİRMESİ
+          <span className="text-xs text-zinc-400 font-mono">
+            TEST SORULARI (40P) + ŞÜPHELİ (30P) + MOTİF (15P) + KANIT (15P)
           </span>
         </div>
 
@@ -141,16 +212,33 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
           {players.map((player) => {
             const sub = submissions[player.id];
             const isSuspectCorrect = sub?.suspectId === solution.culpritId;
-            const isMotiveCorrect = sub?.motiveId === 'zimmet';
-            const isEvidenceCorrect = sub?.evidenceId === 'kapsul-gps';
+            const isMotiveCorrect = sub?.motiveId === 'motive-solution';
+            const isEvidenceCorrect = sub?.evidenceId === 'evidence-solution';
+
+            // Count quiz answers if any
+            let quizCorrectCount = 0;
+            const gateEntries = scenario.gates ? Object.entries(scenario.gates) : [];
+            if (sub?.quizAnswers && gateEntries.length > 0) {
+              gateEntries.forEach(([envNumStr, gate]) => {
+                const selectedOptionId = sub.quizAnswers?.[Number(envNumStr)];
+                const isCorrect = gate.options.some((opt) => opt.id === selectedOptionId && opt.isCorrect);
+                if (isCorrect) {
+                  quizCorrectCount++;
+                }
+              });
+            }
 
             const scoreData = calculateDetectiveScore({
               correctSuspectSelected: isSuspectCorrect,
               correctMotiveSelected: isMotiveCorrect,
               correctEvidenceSelected: isEvidenceCorrect,
+              quizCorrectCount,
+              quizTotalCount: gateEntries.length,
               pinnedCount,
               gateAttempts,
             });
+
+            const displayScore = sub?.individualScore !== undefined ? sub.individualScore : scoreData.totalScore;
 
             return (
               <div
@@ -169,7 +257,7 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
                   {/* Score Number */}
                   <div className="my-3 text-center p-2.5 bg-zinc-950 rounded-lg border border-zinc-800">
                     <span className="text-2xl font-black text-amber-300 font-mono">
-                      {scoreData.totalScore}
+                      {displayScore}
                     </span>
                     <span className="text-xs text-zinc-500 font-mono"> / 100 PUAN</span>
                     <p className="text-[11px] font-semibold text-zinc-300 mt-1">
@@ -180,10 +268,17 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
                   {/* Breakdown checklist */}
                   <div className="space-y-1.5 text-xs">
                     <div className="flex items-center justify-between">
+                      <span className="text-zinc-400">Soruşturma Testi:</span>
+                      <span className="text-amber-400 font-mono font-bold">
+                        {scoreData.quizScore} / 40 Puan
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
                       <span className="text-zinc-400">Katil Tespiti:</span>
                       {isSuspectCorrect ? (
                         <span className="text-emerald-400 flex items-center gap-1 font-medium">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Doğru (+40)
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Doğru (+30)
                         </span>
                       ) : (
                         <span className="text-rose-400 flex items-center gap-1 font-medium">
@@ -196,7 +291,7 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
                       <span className="text-zinc-400">Motif Analizi:</span>
                       {isMotiveCorrect ? (
                         <span className="text-emerald-400 flex items-center gap-1 font-medium">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Doğru (+20)
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Doğru (+15)
                         </span>
                       ) : (
                         <span className="text-rose-400 flex items-center gap-1 font-medium">
@@ -209,18 +304,13 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
                       <span className="text-zinc-400">Kilit Kanıt:</span>
                       {isEvidenceCorrect ? (
                         <span className="text-emerald-400 flex items-center gap-1 font-medium">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Doğru (+20)
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Doğru (+15)
                         </span>
                       ) : (
                         <span className="text-rose-400 flex items-center gap-1 font-medium">
                           <XCircle className="w-3.5 h-3.5" /> Hatalı (0)
                         </span>
                       )}
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span className="text-zinc-400">Masa İğnesi Bonusu:</span>
-                      <span className="text-amber-400 font-mono">+{Math.min(pinnedCount * 2, 10)}</span>
                     </div>
                   </div>
                 </div>
@@ -230,14 +320,14 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
         </div>
       </div>
 
-      {/* Murder Chronology (Olayın Kronolojisi) */}
-      <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6">
-        <h3 className="font-cinzel text-base sm:text-lg font-bold text-zinc-100 mb-4 flex items-center gap-2">
-          <FileText className="w-5 h-5 text-amber-500" />
-          Cinayetin Adım Adım Kronolojisi (Adli Rekonstrüksiyon)
-        </h3>
+      {/* 4. OLAYIN ADIM ADIM KRONOLOJİSİ */}
+      {solution.fullChronology && solution.fullChronology.length > 0 && (
+        <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6">
+          <h3 className="font-cinzel text-base sm:text-lg font-bold text-zinc-100 mb-4 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-amber-500" />
+            Cinayetin / Sabotajın Adım Adım Kronolojisi (Adli Rekonstrüksiyon)
+          </h3>
 
-        {solution.fullChronology && solution.fullChronology.length > 0 && (
           <div className="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-zinc-800">
             {solution.fullChronology.map((item, idx) => (
               <div key={idx} className="relative">
@@ -256,21 +346,23 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
               </div>
             ))}
           </div>
-        )}
-      </div>
-
-      {/* Confession Transcript */}
-      <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6">
-        <h3 className="font-cinzel text-base sm:text-lg font-bold text-zinc-100 mb-3 flex items-center gap-2">
-          <AlertOctagon className="w-5 h-5 text-rose-500" />
-          Dr. Kerem Akman’ın İtirafı (Sorgu Kaydı)
-        </h3>
-        <div className="p-4 bg-zinc-900/80 border border-zinc-800 rounded-xl font-typewriter text-xs text-zinc-300 whitespace-pre-line leading-relaxed">
-          {solution.confessionAudioTranscript}
         </div>
-      </div>
+      )}
 
-      {/* Case Rating Card (5 Üzerinden Dosya Puanlama Sistemi) */}
+      {/* 5. FAİLİN İTİRAFI VEYA SORGU TUTANAĞI */}
+      {solution.confessionAudioTranscript && (
+        <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6">
+          <h3 className="font-cinzel text-base sm:text-lg font-bold text-zinc-100 mb-3 flex items-center gap-2">
+            <AlertOctagon className="w-5 h-5 text-rose-500" />
+            {solution.culpritName} &mdash; Sorgu ve İtiraf Kaydı
+          </h3>
+          <div className="p-4 bg-zinc-900/80 border border-zinc-800 rounded-xl font-typewriter text-xs text-zinc-300 whitespace-pre-line leading-relaxed">
+            {solution.confessionAudioTranscript}
+          </div>
+        </div>
+      )}
+
+      {/* 6. VAKA PUANLAMA (5 YILDIZ DERECELENDİRME) */}
       <div className="bg-zinc-950 border border-amber-500/50 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
         <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
           <div className="flex items-center gap-2">
@@ -291,7 +383,7 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
             </div>
             <h4 className="font-bold text-zinc-100 text-sm">Değerlendirmeniz Kaydedildi!</h4>
             <p className="text-xs text-zinc-400 max-w-md mx-auto">
-              Oyunuz ve yorumunuz başarıyla veritabanına iletildi. Bu vakanın genel arşivi ve puan ortalaması güncellendi.
+              Oyunuz ve yorumunuz başarıyla iletildi. Bu vakanın genel arşivi ve puan ortalaması güncellendi.
             </p>
           </div>
         ) : (
@@ -301,7 +393,6 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
                 &quot;{scenario.title}&quot; kurgusu, ipucu dengesi ve gizem örgüsü nasıldı?
               </p>
               
-              {/* Interactive 5 Stars */}
               <div className="flex items-center gap-2">
                 {[1, 2, 3, 4, 5].map((starVal) => {
                   const isHovered = hoverStars !== null && hoverStars >= starVal;
@@ -336,7 +427,6 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
               </div>
             </div>
 
-            {/* Optional Comment */}
             <div>
               <label className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 block mb-1">
                 Dedektif Yorumunuz (Opsiyonel):
@@ -344,7 +434,7 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
               <textarea
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                placeholder="Örn: Otopsi bulgusu ile şifre bağlantısı harikaydı, son ana kadar katili tahmin edemedik..."
+                placeholder="Örn: Ses kayıtları ve şüphelilerin aralarındaki husumetler çok gerçekçiydi..."
                 rows={3}
                 className="w-full px-3.5 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-amber-400 resize-none font-sans"
               />
@@ -396,4 +486,3 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
     </div>
   );
 };
-

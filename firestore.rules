@@ -12,51 +12,42 @@ service cloud.firestore {
 
     // User profile documents (supports Google Auth, Email/Password, and Guest Profiles)
     match /users/{userId} {
-      allow get, list: if isValidId(userId);
+      allow read: if true;
       allow create, update: if isValidId(userId);
       allow delete: if false;
     }
 
     // Case Ratings (5-star ratings & reviews submitted by detectives)
     match /case_ratings/{ratingId} {
-      allow get, list: if isValidId(ratingId);
-      allow create: if isValidId(ratingId);
-      allow update, delete: if isValidId(ratingId);
+      allow read: if true;
+      allow create, update, delete: if isValidId(ratingId);
     }
 
     // Custom Case Scenarios uploaded by Admin
     match /custom_cases/{caseId} {
-      allow get, list: if isValidId(caseId);
+      allow read: if true;
       allow create, update, delete: if isValidId(caseId);
     }
 
     // Investigation Rooms (Co-op multiplayer room sync)
     match /rooms/{roomId} {
-      allow get: if isValidId(roomId);
-      allow list: if false;
+      allow read: if true;
       allow create, update: if isValidId(roomId);
       allow delete: if isValidId(roomId);
 
       // Room members
       match /members/{memberId} {
-        allow get, list: if isValidId(roomId);
-        allow create, update: if isValidId(memberId) && isValidId(roomId);
-        allow delete: if isValidId(memberId) && isValidId(roomId);
+        allow read, write: if isValidId(roomId);
       }
 
       // Room shared pins (evidence pinned to the common detective board)
       match /pins/{pinId} {
-        allow get, list: if isValidId(roomId);
-        allow create: if isValidId(pinId) && isValidId(roomId);
-        allow update: if false;
-        allow delete: if isValidId(pinId) && isValidId(roomId);
+        allow read, write: if isValidId(roomId);
       }
 
       // Room accusation votes
       match /votes/{voterId} {
-        allow get, list: if isValidId(roomId);
-        allow create, update: if isValidId(voterId) && isValidId(roomId);
-        allow delete: if false;
+        allow read, write: if isValidId(roomId);
       }
     }
   }
