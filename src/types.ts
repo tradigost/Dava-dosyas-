@@ -28,24 +28,27 @@ export interface Player {
   isHost?: boolean;
 }
 
-export type EnvelopeNumber = 1 | 2 | 3 | 4;
+export type EnvelopeNumber = number;
 
 export interface EvidenceItem {
   id: string;
   envelope: EnvelopeNumber;
   title: string;
-  category: 'autopsy' | 'toxicology' | 'cipher' | 'audio' | 'interrogation' | 'document' | 'gps' | 'banking';
+  category: 'autopsy' | 'toxicology' | 'cipher' | 'audio' | 'interrogation' | 'document' | 'gps' | 'banking' | string;
   roleAccess: RoleType[];
   summary: string;
   fullReport: string;
   keyDeduction: string;
+  mediaType?: 'text' | 'image' | 'audio' | 'video';
+  mediaUrl?: string;
+  mediaCaption?: string;
   hasInteractiveTool?: 'toxicology' | 'terminal' | 'profiler-highlighter' | 'gps-map';
   interactiveToolTitle?: string;
   interactiveToolSubtitle?: string;
   metadata?: {
     date: string;
     caseRef: string;
-    confidentiality: 'GİZLİ' | 'ÇOK GİZLİ' | 'ADLİ TIP RAPORU' | 'TEKNİK DEŞİFRE';
+    confidentiality: 'GİZLİ' | 'ÇOK GİZLİ' | 'ADLİ TIP RAPORU' | 'TEKNİK DEŞİFRE' | string;
   };
 }
 
@@ -58,9 +61,9 @@ export interface Suspect {
   description: string;
   alibi: string;
   suspiciousQuotes: string[];
-  motiveHypothesis: string;
+  motiveHypothesis?: string;
   initialSuspicion: number; // 0-100
-  photoPlaceholder: {
+  photoPlaceholder?: {
     initials: string;
     tint: string;
     silhouetteStyle: string;
@@ -69,9 +72,9 @@ export interface Suspect {
 }
 
 export interface GateQuestion {
-  envelope: 1 | 2 | 3;
-  title: string;
-  instructions: string;
+  envelope: number;
+  title?: string;
+  instructions?: string;
   question: string;
   options: {
     id: string;
@@ -79,7 +82,7 @@ export interface GateQuestion {
     isCorrect: boolean;
   }[];
   explanation: string;
-  hintByRole: Partial<Record<RoleType, string>>;
+  hintByRole?: Partial<Record<RoleType, string>>;
 }
 
 export interface SharedPin {
@@ -111,24 +114,24 @@ export interface CaseSolution {
   culpritName: string;
   motiveTitle: string;
   keyEvidenceTitle: string;
-  fullChronology: {
+  fullChronology?: {
     time: string;
     action: string;
     proof: string;
   }[];
   verdictSummary: string;
-  confessionAudioTranscript: string;
+  confessionAudioTranscript?: string;
 }
 
 export interface CaseScenario {
   id: string;
   title: string;
   subtitle: string;
-  difficulty: 'Kolay' | 'Orta' | 'Zor';
+  difficulty: 'Kolay' | 'Orta' | 'Zor' | 'Uzman' | string;
   estimatedMinutes: number;
   minPlayers: number;
   maxPlayers: number;
-  bannerTag: string;
+  bannerTag?: string;
   synopsis: string;
   victim: {
     name: string;
@@ -138,10 +141,24 @@ export interface CaseScenario {
     locationOfBody: string;
     causeInitial: string;
   };
+  totalEnvelopes?: number;
   suspects: Suspect[];
   evidence: EvidenceItem[];
-  gates: Record<1 | 2 | 3, GateQuestion>;
+  gates: Record<number, GateQuestion>;
   solution: CaseSolution;
+}
+
+export function getScenarioTotalEnvelopes(scenario: CaseScenario): number {
+  if (scenario.totalEnvelopes && scenario.totalEnvelopes > 0) {
+    return scenario.totalEnvelopes;
+  }
+  const envFromEvidence = scenario.evidence?.length
+    ? Math.max(...scenario.evidence.map((e) => Number(e.envelope) || 1))
+    : 1;
+  const envFromGates = scenario.gates
+    ? Math.max(...Object.keys(scenario.gates).map(Number))
+    : 1;
+  return Math.max(envFromEvidence, envFromGates, 1);
 }
 
 export type GameView = 

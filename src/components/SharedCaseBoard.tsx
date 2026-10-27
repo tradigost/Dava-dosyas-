@@ -14,12 +14,14 @@ interface SharedCaseBoardProps {
   activeEnvelope: number;
   onAddCustomNote: (text: string) => void;
   onRemovePin?: (id: string) => void;
+  totalEnvelopes?: number;
 }
 
 export const SharedCaseBoard: React.FC<SharedCaseBoardProps> = ({
   pins,
   suspects,
   activeEnvelope,
+  totalEnvelopes = 3,
   onAddCustomNote,
   onRemovePin,
 }) => {
@@ -70,7 +72,7 @@ export const SharedCaseBoard: React.FC<SharedCaseBoardProps> = ({
           >
             Tümü ({pins.length})
           </button>
-          {[1, 2, 3].map((envNum) => (
+          {Array.from({ length: totalEnvelopes }, (_, i) => i + 1).map((envNum) => (
             <button
               key={envNum}
               type="button"
@@ -105,9 +107,9 @@ export const SharedCaseBoard: React.FC<SharedCaseBoardProps> = ({
 
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-12 h-12 rounded-lg border flex items-center justify-center font-bold text-sm ${suspect.photoPlaceholder.silhouetteStyle}`}
+                  className={`w-12 h-12 rounded-lg border flex items-center justify-center font-bold text-sm ${suspect.photoPlaceholder?.silhouetteStyle || 'bg-zinc-800 border-zinc-700 text-zinc-300'}`}
                 >
-                  {suspect.photoPlaceholder.initials}
+                  {suspect.photoPlaceholder?.initials || suspect.name.slice(0, 2).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="text-xs font-bold text-zinc-100 truncate">{suspect.name}</h4>

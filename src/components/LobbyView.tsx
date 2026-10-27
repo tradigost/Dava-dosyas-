@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { CaseScenario } from '../types';
+import { CaseScenario, getScenarioTotalEnvelopes } from '../types';
 import { ROLES } from '../data/cases';
 import { canStartScenario } from '../utils/gameRules';
 import { soundManager } from '../utils/audioEffects';
@@ -408,7 +408,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                       <Clock className="w-3.5 h-3.5" /> ~{scenario.estimatedMinutes} Dakika
                     </span>
                     <span>Zorluk: {scenario.difficulty}</span>
-                    <span>3 Şüpheli · 3 Zarf</span>
+                    <span>{scenario.suspects?.length || 0} Şüpheli · {getScenarioTotalEnvelopes(scenario)} Zarf</span>
                   </div>
                 </div>
 

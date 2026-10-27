@@ -12,7 +12,16 @@ import {
   KeyRound, 
   ShieldAlert, 
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  Volume2,
+  Play,
+  Pause,
+  Video,
+  Image as ImageIcon,
+  Maximize2,
+  X,
+  Headphones,
+  Radio
 } from 'lucide-react';
 
 interface PlayerInboxViewProps {
@@ -20,6 +29,7 @@ interface PlayerInboxViewProps {
   allPlayers?: Player[];
   totalPlayers?: number;
   currentEnvelope: EnvelopeNumber;
+  totalEnvelopes?: number;
   evidenceList: EvidenceItem[];
   suspects?: Suspect[];
   pinnedEvidenceIds: Set<string>;
@@ -36,6 +46,7 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
   allPlayers = [],
   totalPlayers = 2,
   currentEnvelope,
+  totalEnvelopes = 3,
   evidenceList,
   pinnedEvidenceIds,
   onPinEvidence,
@@ -68,6 +79,8 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
   const [selectedEvidenceId, setSelectedEvidenceId] = useState<string | null>(
     myEvidence.length > 0 ? myEvidence[0].id : null
   );
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState<boolean>(false);
 
   // Sync selected evidence when envelope or player changes
   useEffect(() => {
@@ -76,6 +89,7 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
     } else {
       setSelectedEvidenceId(null);
     }
+    setIsPlayingAudio(false);
   }, [currentEnvelope, player.id]);
 
   const activeEvidence = myEvidence.find((ev) => ev.id === selectedEvidenceId) || myEvidence[0];
@@ -138,6 +152,144 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
           <h3 className="text-base sm:text-lg font-bold text-zinc-100">
             {activeEvidence.title}
           </h3>
+
+          {/* Audio Wiretap / Recording Station */}
+          {(activeEvidence.mediaType === 'audio' || activeEvidence.category === 'audio') && (
+            <div className="p-4 bg-zinc-950 rounded-2xl border border-amber-600/30 space-y-3">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="flex items-center gap-2 text-amber-400 font-bold">
+                  <Headphones className="w-4 h-4 animate-pulse" />
+                  <span>SES KAYDI & TELEFON DİNLEME TUTANAĞI</span>
+                </span>
+                <span className="text-[10px] text-zinc-500 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                  {isPlayingAudio ? '● OYNATILIYOR' : 'DURDURULDU'}
+                </span>
+              </div>
+
+              {activeEvidence.mediaUrl ? (
+                <div className="pt-1">
+                  <audio
+                    src={activeEvidence.mediaUrl}
+                    controls
+                    className="w-full accent-amber-500 rounded-lg"
+                    onPlay={() => setIsPlayingAudio(true)}
+                    onPause={() => setIsPlayingAudio(false)}
+                  />
+                  {activeEvidence.mediaCaption && (
+                    <p className="text-[11px] text-zinc-400 mt-1 italic font-sans">{activeEvidence.mediaCaption}</p>
+                  )}
+                </div>
+              ) : (
+                /* Interactive Simulated Wiretap Deck */
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundManager.playKeyClick();
+                        setIsPlayingAudio((prev) => !prev);
+                      }}
+                      className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-zinc-950 rounded-xl font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-md"
+                    >
+                      {isPlayingAudio ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                      <span>{isPlayingAudio ? 'Kaydı Durdur' : 'Teybi Dinle'}</span>
+                    </button>
+                    
+                    {/* Simulated Waveform */}
+                    <div className="flex items-center gap-1 h-6 px-3">
+                      {[12, 24, 18, 32, 20, 28, 14, 26, 30, 16, 22, 10, 24, 18, 28, 14].map((h, i) => (
+                        <div
+                          key={i}
+                          className={`w-1 rounded-full transition-all duration-300 ${
+                            isPlayingAudio ? 'bg-amber-400 animate-pulse' : 'bg-zinc-700'
+                          }`}
+                          style={{ height: isPlayingAudio ? `${Math.max(6, (h * (i % 3 + 1)) % 24)}px` : '6px' }}
+                        />
+                      ))}
+                    </div>
+
+                    <span className="text-[11px] font-mono text-zinc-400">
+                      {isPlayingAudio ? '01:24 / 03:10' : '00:00 / 03:10'}
+                    </span>
+                  </div>
+                  {activeEvidence.mediaCaption && (
+                    <p className="text-[11px] text-zinc-400 italic font-sans">{activeEvidence.mediaCaption}</p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Visual Evidence / Crime Scene Polaroid */}
+          {(activeEvidence.mediaType === 'image' || (activeEvidence.mediaUrl && activeEvidence.mediaUrl.match(/\.(jpg|jpeg|png|webp|gif)/i))) && (
+            <div className="space-y-2">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                <ImageIcon className="w-3.5 h-3.5" />
+                <span>OLAY YERİ / DELİL GÖRSELİ</span>
+              </span>
+              <div 
+                onClick={() => setIsPhotoModalOpen(true)}
+                className="group relative cursor-pointer overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 hover:border-amber-500/60 transition-all shadow-lg"
+              >
+                <img
+                  src={activeEvidence.mediaUrl || 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80'}
+                  alt={activeEvidence.title}
+                  className="w-full max-h-72 object-cover object-center group-hover:scale-102 transition-transform duration-300 opacity-90 group-hover:opacity-100"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 flex items-end justify-between p-3.5">
+                  <span className="text-xs text-zinc-200 font-medium font-sans">
+                    {activeEvidence.mediaCaption || activeEvidence.title}
+                  </span>
+                  <span className="flex items-center gap-1 text-[11px] text-amber-400 bg-zinc-950/80 px-2.5 py-1 rounded-lg border border-amber-500/40 font-mono">
+                    <Maximize2 className="w-3 h-3" /> İncele / Büyüt
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Video / Surveillance Camera Embed */}
+          {activeEvidence.mediaType === 'video' && (
+            <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="flex items-center gap-2 text-rose-400 font-bold">
+                  <Video className="w-4 h-4" />
+                  <span>GÜVENLİK KAMERASI / SORGULAMA VİDEOSU</span>
+                </span>
+                <span className="text-[10px] text-rose-400 bg-rose-950/50 px-2 py-0.5 rounded border border-rose-800 font-bold flex items-center gap-1.5 animate-pulse">
+                  <span className="w-2 h-2 rounded-full bg-rose-500" /> REC [CAM-02]
+                </span>
+              </div>
+
+              {activeEvidence.mediaUrl && (activeEvidence.mediaUrl.includes('youtube.com') || activeEvidence.mediaUrl.includes('youtu.be') || activeEvidence.mediaUrl.includes('vimeo.com')) ? (
+                <div className="aspect-video w-full rounded-xl overflow-hidden border border-zinc-800 bg-black">
+                  <iframe
+                    src={activeEvidence.mediaUrl.replace('watch?v=', 'embed/')}
+                    title={activeEvidence.title}
+                    className="w-full h-full border-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              ) : activeEvidence.mediaUrl ? (
+                <div className="aspect-video w-full rounded-xl overflow-hidden border border-zinc-800 bg-black">
+                  <video
+                    src={activeEvidence.mediaUrl}
+                    controls
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="aspect-video w-full rounded-xl border border-zinc-800 bg-zinc-900/80 flex flex-col items-center justify-center text-center p-6 space-y-2">
+                  <Video className="w-10 h-10 text-zinc-600 animate-pulse" />
+                  <p className="text-xs font-mono text-zinc-300 font-semibold">[KAPALI DEVRE SORGULAMA KAMERASI]</p>
+                  <p className="text-[11px] text-zinc-500 max-w-sm">
+                    {activeEvidence.mediaCaption || 'Kamera kaydı emniyet sunucusunda arşivlenmiştir. Çözüm tutanağı aşağıdaki resmi rapor metnindedir.'}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Summary Box */}
           <div className="p-3.5 bg-zinc-950 rounded-xl border border-zinc-800/80">
@@ -224,7 +376,7 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
       {/* Envelope Advancement Gate: Appears once all players in the envelope have reviewed files */}
       {isEnvelopeCompleted && (
         <div className="pt-2">
-          {currentEnvelope < 3 ? (
+          {currentEnvelope < totalEnvelopes ? (
             <button
               type="button"
               onClick={onOpenGateModal}
@@ -240,9 +392,37 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
               className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-xl flex items-center justify-center gap-2 animate-pulse cursor-pointer"
             >
               <ShieldAlert className="w-4 h-4" />
-              <span>✓ 3. Zarf Tamamlandı - Final Katil Suçlama Aşamasına Geç</span>
+              <span>✓ Son Zarf ({totalEnvelopes}) Tamamlandı - Final Katil Suçlama Aşamasına Geç</span>
             </button>
           )}
+        </div>
+      )}
+
+      {/* Forensic Photo Zoom Lightbox Modal */}
+      {isPhotoModalOpen && activeEvidence && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
+          <div className="relative max-w-4xl max-h-[90vh] flex flex-col items-center bg-zinc-950 border border-zinc-800 rounded-3xl p-4 shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setIsPhotoModalOpen(false)}
+              className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 rounded-xl transition-colors cursor-pointer z-10"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="overflow-hidden rounded-2xl w-full flex items-center justify-center bg-black">
+              <img
+                src={activeEvidence.mediaUrl || 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80'}
+                alt={activeEvidence.title}
+                className="max-h-[75vh] w-auto object-contain rounded-xl"
+              />
+            </div>
+            <div className="w-full pt-3 px-2 flex items-center justify-between text-xs text-zinc-300">
+              <span className="font-mono text-amber-400 font-bold uppercase tracking-wider">
+                [DELİL İNCELEME - BÜYÜTÜLMÜŞ GÖRÜNTÜ]
+              </span>
+              <span className="font-sans text-zinc-400">{activeEvidence.mediaCaption || activeEvidence.title}</span>
+            </div>
+          </div>
         </div>
       )}
 

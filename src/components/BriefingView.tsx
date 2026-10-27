@@ -68,9 +68,14 @@ export const BriefingView: React.FC<BriefingViewProps> = ({
               <p>
                 {scenario.synopsis}
               </p>
-              <p className="text-xs sm:text-sm text-zinc-400 font-sans">
-                Olay yeri inceleme ekipleri çalışma odasında çevre güvenliğini sağladı. Masada kırılmış bir kristal viski kadehi, kurbanın cebinde yırtık bir müzayede kataloğu ve kilitli bir çelik kasa var. Dışarıdan zorla girilme izi bulunmuyor; cinayet gecesi yalıda yalnızca davetli olan kilit şüpheliler vardı.
-              </p>
+              <div className="pt-2 border-t border-zinc-800/80 text-xs text-zinc-400 font-sans space-y-1">
+                <p>
+                  <strong className="text-zinc-300">İlk Olay Yeri Tespiti:</strong> {scenario.victim.causeInitial}
+                </p>
+                <p>
+                  <strong className="text-zinc-300">Cesedin Bulunduğu Konum:</strong> {scenario.victim.locationOfBody}
+                </p>
+              </div>
             </div>
           </div>
 

@@ -16,7 +16,8 @@ import {
 } from '../services/firebase';
 import { CASE_SCENARIOS } from '../data/cases';
 import { DEMO_CUSTOM_CASE, SAMPLE_CASE_TEMPLATE } from '../data/sampleCase';
-import { CaseScenario } from '../types';
+import { CaseScenario, getScenarioTotalEnvelopes } from '../types';
+import { CaseWizardEditor } from './CaseWizardEditor';
 import { soundManager } from '../utils/audioEffects';
 import { 
   X, 
@@ -74,7 +75,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
 
   // Custom Cases State
   const [customCasesList, setCustomCasesList] = useState<CaseScenario[]>(externalCustomCases || []);
-  const [uploadMode, setUploadMode] = useState<'file' | 'json'>('file');
+  const [uploadMode, setUploadMode] = useState<'wizard' | 'file' | 'json'>('wizard');
   const [rawJsonText, setRawJsonText] = useState<string>('');
   const [pendingParsedCase, setPendingParsedCase] = useState<CaseScenario | null>(null);
   const [caseValidationErrors, setCaseValidationErrors] = useState<string[]>([]);
@@ -911,14 +912,29 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                   </div>
 
                   {/* Mode Selector */}
-                  <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-zinc-800 self-start sm:self-auto">
+                  <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-zinc-800 self-start sm:self-auto overflow-x-auto">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUploadMode('wizard');
+                        soundManager.playKeyClick();
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+                        uploadMode === 'wizard'
+                          ? 'bg-amber-600 text-zinc-950 shadow-sm font-bold'
+                          : 'text-zinc-400 hover:text-zinc-200'
+                      }`}
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Aşamalı / Zarf Zarf Editör</span>
+                    </button>
                     <button
                       type="button"
                       onClick={() => {
                         setUploadMode('file');
                         soundManager.playKeyClick();
                       }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
                         uploadMode === 'file'
                           ? 'bg-amber-600 text-zinc-950 shadow-sm'
                           : 'text-zinc-400 hover:text-zinc-200'
@@ -933,7 +949,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                         setUploadMode('json');
                         soundManager.playKeyClick();
                       }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
                         uploadMode === 'json'
                           ? 'bg-amber-600 text-zinc-950 shadow-sm'
                           : 'text-zinc-400 hover:text-zinc-200'
@@ -944,6 +960,32 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                     </button>
                   </div>
                 </div>
+
+                {/* Wizard Mode (Phase by Phase Case Builder) */}
+                {uploadMode === 'wizard' && (
+                  <CaseWizardEditor
+                    onSaveCase={async (newScenario) => {
+                      setIsSavingCase(true);
+                      try {
+                        await saveCustomCase(newScenario, currentUser);
+                        soundManager.playSuccessSound();
+                        setUploadFeedback({
+                          type: 'success',
+                          message: `"${newScenario.title}" (${newScenario.totalEnvelopes || 3} Zarf) başarıyla Firestore veritabanına kaydedildi ve yayınlandı! Artık lobide oynanabilir.`,
+                        });
+                      } catch (err: any) {
+                        soundManager.playErrorSound();
+                        setUploadFeedback({
+                          type: 'error',
+                          message: `Vaka kaydedilirken hata oluştu: ${err.message || 'Bilinmeyen hata'}`,
+                        });
+                      } finally {
+                        setIsSavingCase(false);
+                      }
+                    }}
+                    isSaving={isSavingCase}
+                  />
+                )}
 
                 {/* File Dropzone Mode */}
                 {uploadMode === 'file' && (
@@ -1072,7 +1114,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                       <div className="p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800">
                         <span className="text-[10px] text-zinc-400 block">Zarf Kapıları</span>
                         <span className="font-semibold text-zinc-200 block mt-0.5">
-                          3 Aşama
+                          {getScenarioTotalEnvelopes(pendingParsedCase)} Zarf / Aşama
                         </span>
                       </div>
                     </div>
@@ -1146,6 +1188,8 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                             <span>{sc.suspects?.length || 0} Şüpheli</span>
                             <span>·</span>
                             <span>{sc.evidence?.length || 0} Kanıt</span>
+                            <span>·</span>
+                            <span>{getScenarioTotalEnvelopes(sc)} Zarf</span>
                           </div>
                         </div>
 
@@ -1198,7 +1242,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                             id: {sc.id}
                           </span>
                           <span className="text-[10px] text-zinc-400">
-                            · {sc.difficulty} · ~{sc.estimatedMinutes} dk
+                            · {sc.difficulty} · ~{sc.estimatedMinutes} dk · {getScenarioTotalEnvelopes(sc)} Zarf
                           </span>
                         </div>
                         <h5 className="font-bold text-sm text-zinc-200">

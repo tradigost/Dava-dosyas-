@@ -494,7 +494,8 @@ export interface OnlineRoom {
   hostName: string;
   scenarioId: string;
   playerCount: number;
-  currentEnvelope: 1 | 2 | 3 | 4;
+  currentEnvelope: number;
+  totalEnvelopes?: number;
   status: 'lobby' | 'briefing' | 'playing' | 'accusation' | 'finished';
   activeInspectorId?: string | null;
   activeInspectorName?: string | null;
@@ -798,12 +799,13 @@ export async function addOnlineRoomPin(roomCode: string, pin: SharedPin): Promis
 
 export async function advanceOnlineRoomEnvelope(
   roomCode: string,
-  nextEnvelope: 1 | 2 | 3 | 4
+  nextEnvelope: number,
+  totalEnvelopes: number = 3
 ): Promise<void> {
   const roomRef = doc(db, 'rooms', roomCode);
   await updateDoc(roomRef, {
     currentEnvelope: nextEnvelope,
-    status: nextEnvelope <= 3 ? 'playing' : 'accusation',
+    status: nextEnvelope <= totalEnvelopes ? 'playing' : 'accusation',
     updatedAt: new Date().toISOString(),
   });
 }

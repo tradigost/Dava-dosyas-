@@ -11,7 +11,8 @@ import {
   AccusationSubmission, 
   GameView,
   RoleType,
-  CaseScenario
+  CaseScenario,
+  getScenarioTotalEnvelopes
 } from './types';
 import { CASE_SCENARIOS, ROLES } from './data/cases';
 import { PlayerSimulatorBar } from './components/PlayerSimulatorBar';
@@ -97,6 +98,7 @@ export default function App() {
   // Merge built-in cases with uploaded custom cases
   const allScenarios = [...CASE_SCENARIOS, ...customCases];
   const scenario = allScenarios.find((s) => s.id === selectedScenarioId) || allScenarios[0] || CASE_SCENARIOS[0];
+  const totalEnvelopes = getScenarioTotalEnvelopes(scenario);
 
   // Subscribe to uploaded custom cases from Firestore
   useEffect(() => {
@@ -391,9 +393,9 @@ export default function App() {
 
   const handleAdvanceToNextEnvelope = async () => {
     setIsGateModalOpen(false);
-    const nextEnv = (currentEnvelope === 1 ? 2 : currentEnvelope === 2 ? 3 : 4) as EnvelopeNumber;
+    const nextEnv = currentEnvelope + 1;
 
-    if (nextEnv <= 3) {
+    if (nextEnv <= totalEnvelopes) {
       const nextEnvelopeEvidence = scenario.evidence.filter((ev) => ev.envelope === nextEnv);
       const nextParticipants = players.filter((p) => {
         return nextEnvelopeEvidence.some((ev) => {
@@ -407,7 +409,7 @@ export default function App() {
       const firstInspector = nextParticipants[0] || players[0];
 
       if (onlineRoomCode) {
-        await advanceOnlineRoomEnvelope(onlineRoomCode, nextEnv);
+        await advanceOnlineRoomEnvelope(onlineRoomCode, nextEnv, totalEnvelopes);
         await passEnvelopeInspectorTurn(onlineRoomCode, {
           id: firstInspector.id,
           name: firstInspector.name,
@@ -445,7 +447,7 @@ export default function App() {
       await setOnlineRoomStatus(onlineRoomCode, 'finished');
     } else {
       setGameView('FINAL_VERDICT');
-      setCurrentEnvelope(4);
+      setCurrentEnvelope(totalEnvelopes + 1);
     }
   };
 
@@ -476,6 +478,7 @@ export default function App() {
           isBoardViewOpen={isBoardViewOpen}
           onToggleBoardView={() => setIsBoardViewOpen((prev) => !prev)}
           currentEnvelope={currentEnvelope}
+          totalEnvelopes={totalEnvelopes}
           pinnedCount={pinnedItems.length}
         />
       )}
@@ -532,6 +535,7 @@ export default function App() {
                   pins={pinnedItems}
                   suspects={scenario.suspects}
                   activeEnvelope={currentEnvelope}
+                  totalEnvelopes={totalEnvelopes}
                   onAddCustomNote={handleAddCustomNote}
                 />
               </div>
@@ -543,6 +547,7 @@ export default function App() {
                     /* Other players see ONLY logo and active inspector name */
                     <WaitingTurnView
                       currentEnvelope={currentEnvelope}
+                      totalEnvelopes={totalEnvelopes}
                       activeInspectorName={currentInspectorName}
                       activeInspectorRole={currentInspectorRole}
                     />
@@ -553,6 +558,7 @@ export default function App() {
                       allPlayers={players}
                       totalPlayers={onlineRoom?.playerCount || playerCount}
                       currentEnvelope={currentEnvelope}
+                      totalEnvelopes={totalEnvelopes}
                       evidenceList={scenario.evidence}
                       suspects={scenario.suspects}
                       pinnedEvidenceIds={pinnedEvidenceIds}
@@ -569,6 +575,7 @@ export default function App() {
                 {/* Final Accusation & Debate Phase */}
                 {gameView === 'ACCUSATION' && (
                   <AccusationPhase
+                    scenario={scenario}
                     players={players}
                     suspects={scenario.suspects}
                     activePlayerId={activePlayerId}
@@ -602,10 +609,26 @@ export default function App() {
       </main>
 
       {/* Envelope Gate Modal */}
-      {isGateModalOpen && currentEnvelope <= 3 && scenario.gates[currentEnvelope as 1 | 2 | 3] && (
+      {isGateModalOpen && currentEnvelope <= totalEnvelopes && (
         <EnvelopeGateModal
-          gate={scenario.gates[currentEnvelope as 1 | 2 | 3]}
-          currentEnvelope={currentEnvelope as 1 | 2 | 3}
+          gate={
+            scenario.gates && scenario.gates[currentEnvelope]
+              ? scenario.gates[currentEnvelope]
+              : {
+                  envelope: currentEnvelope,
+                  title: `Zarf ${currentEnvelope} İlerleme Kilidi`,
+                  instructions: 'Bir sonraki aşamaya geçmek için aşağıdaki durum tespitini ekipçe doğrulayın.',
+                  question: `Zarf ${currentEnvelope} İlerleme Doğrulaması: Ekibiniz bu zarftaki tüm kanıtları masaya yatırıp şüphelileri değerlendirdi mi?`,
+                  options: [
+                    { id: 'opt-1', text: 'Evet, tüm delilleri inceledik ve kritik bulguları paylaştık.', isCorrect: true },
+                    { id: 'opt-2', text: 'Şüpheli ifadeleri ve saat çelişkilerini henüz netleştiremedik.', isCorrect: false },
+                    { id: 'opt-3', text: 'Ortak panoda eksik parçalar var.', isCorrect: false },
+                  ],
+                  explanation: `Zarf ${currentEnvelope} başarıyla tamamlandı. İpuçları ortak panoda güncellendi.`,
+                }
+          }
+          currentEnvelope={currentEnvelope}
+          totalEnvelopes={totalEnvelopes}
           onSuccessNextEnvelope={handleAdvanceToNextEnvelope}
           onClose={() => setIsGateModalOpen(false)}
           onIncrementAttempts={handleGateIncrement}

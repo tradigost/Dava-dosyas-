@@ -16,6 +16,7 @@ interface PlayerSimulatorBarProps {
   isBoardViewOpen: boolean;
   onToggleBoardView: () => void;
   currentEnvelope: EnvelopeNumber;
+  totalEnvelopes?: number;
   pinnedCount: number;
   unreadCountByPlayer?: Record<string, number>;
   isMuted?: boolean;
@@ -31,6 +32,7 @@ export const PlayerSimulatorBar: React.FC<PlayerSimulatorBarProps> = ({
   isBoardViewOpen,
   onToggleBoardView,
   currentEnvelope,
+  totalEnvelopes = 3,
   pinnedCount,
 }) => {
   const activePlayer = players.find((p) => p.id === activePlayerId) || players[0];
@@ -63,7 +65,7 @@ export const PlayerSimulatorBar: React.FC<PlayerSimulatorBarProps> = ({
         {/* Right: Clean Envelope Indicator & Common Board Toggle */}
         <div className="flex items-center gap-3 shrink-0">
           <span className="text-xs font-mono text-zinc-400">
-            {currentEnvelope <= 3 ? `Zarf ${currentEnvelope} / 3` : 'Final Karar'}
+            {currentEnvelope <= totalEnvelopes ? `Zarf ${currentEnvelope} / ${totalEnvelopes}` : 'Final Karar'}
           </span>
 
           <button

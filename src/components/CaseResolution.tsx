@@ -237,24 +237,26 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
           Cinayetin Adım Adım Kronolojisi (Adli Rekonstrüksiyon)
         </h3>
 
-        <div className="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-zinc-800">
-          {solution.fullChronology.map((item, idx) => (
-            <div key={idx} className="relative">
-              <div className="absolute -left-6 top-1 w-3 h-3 rounded-full bg-amber-500 border-2 border-zinc-950" />
-              <div className="p-3 bg-zinc-900/60 border border-zinc-800 rounded-xl">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-bold text-amber-400 font-typewriter">{item.time}</span>
-                  <span className="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">
-                    Kanıt: {item.proof}
-                  </span>
+        {solution.fullChronology && solution.fullChronology.length > 0 && (
+          <div className="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-zinc-800">
+            {solution.fullChronology.map((item, idx) => (
+              <div key={idx} className="relative">
+                <div className="absolute -left-6 top-1 w-3 h-3 rounded-full bg-amber-500 border-2 border-zinc-950" />
+                <div className="p-3 bg-zinc-900/60 border border-zinc-800 rounded-xl">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-amber-400 font-typewriter">{item.time}</span>
+                    <span className="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">
+                      Kanıt: {item.proof}
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-200 mt-1 leading-relaxed">
+                    {item.action}
+                  </p>
                 </div>
-                <p className="text-xs text-zinc-200 mt-1 leading-relaxed">
-                  {item.action}
-                </p>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Confession Transcript */}

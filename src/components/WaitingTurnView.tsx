@@ -10,12 +10,14 @@ import { Radio, Eye } from 'lucide-react';
 
 interface WaitingTurnViewProps {
   currentEnvelope: EnvelopeNumber;
+  totalEnvelopes?: number;
   activeInspectorName: string;
   activeInspectorRole: RoleType | string;
 }
 
 export const WaitingTurnView: React.FC<WaitingTurnViewProps> = ({
   currentEnvelope,
+  totalEnvelopes = 3,
   activeInspectorName,
   activeInspectorRole,
 }) => {
@@ -40,7 +42,7 @@ export const WaitingTurnView: React.FC<WaitingTurnViewProps> = ({
         {/* Status Message */}
         <div className="space-y-2">
           <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 block font-bold">
-            ZARF {currentEnvelope} ŞU AN AÇIK
+            ZARF {currentEnvelope} / {totalEnvelopes} ŞU AN AÇIK
           </span>
           <h3 className="text-xl sm:text-2xl font-bold font-cinzel text-zinc-100">
             {activeInspectorName}

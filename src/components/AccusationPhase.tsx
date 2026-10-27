@@ -4,12 +4,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Player, Suspect, AccusationSubmission } from '../types';
+import { Player, Suspect, AccusationSubmission, CaseScenario } from '../types';
 import { soundManager } from '../utils/audioEffects';
 import { evaluateVotesConsensus } from '../utils/gameRules';
 import { Gavel, Clock, CheckCircle, AlertTriangle, ShieldCheck, UserCheck, Flame } from 'lucide-react';
 
 interface AccusationPhaseProps {
+  scenario?: CaseScenario;
   players: Player[];
   suspects: Suspect[];
   activePlayerId: string;
@@ -19,6 +20,7 @@ interface AccusationPhaseProps {
 }
 
 export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
+  scenario,
   players,
   suspects,
   activePlayerId,
@@ -83,43 +85,47 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
     return () => clearInterval(timer);
   }, [isDebateActive, debateTimeLeft]);
 
-  const motives = [
+  // Generate motives dynamically from scenario
+  const motives = scenario ? [
     {
-      id: 'zimmet',
-      label: '25 Milyon TL Zimmet & Savcılık Şantajını Engellemek',
-      suspectTarget: 'dr-kerem',
+      id: 'motive-solution',
+      label: scenario.solution.motiveTitle,
+      suspectTarget: scenario.solution.culpritId,
       isCorrect: true,
     },
-    {
-      id: 'miras',
-      label: 'Boşanma Protokolünü Aşıp 40 Milyonluk Mirasa Konmak',
-      suspectTarget: 'selin-soylu',
-      isCorrect: false,
-    },
-    {
-      id: 'sahte-tablo',
-      label: '12 Milyon TL’lik Sahte Eser Sahteciliğini Örtbas Etmek',
-      suspectTarget: 'cemil-vural',
-      isCorrect: false,
-    },
-  ];
+    ...scenario.suspects
+      .filter((s) => s.id !== scenario.solution.culpritId)
+      .map((s) => ({
+        id: `motive-${s.id}`,
+        label: s.motiveHypothesis || `${s.name} Motivasyonu`,
+        suspectTarget: s.id,
+        isCorrect: false,
+      }))
+  ] : suspects.map((s, idx) => ({
+    id: `motive-${s.id}`,
+    label: s.motiveHypothesis,
+    suspectTarget: s.id,
+    isCorrect: idx === 0,
+  }));
 
-  const keyEvidences = [
+  // Generate key evidence options dynamically from scenario
+  const keyEvidences = scenario ? [
     {
-      id: 'kapsul-gps',
-      label: 'LOT-884-K Enterik Mide Kapsülü & Araç PTS / GPS Takibi',
+      id: 'evidence-solution',
+      label: scenario.solution.keyEvidenceTitle,
       isCorrect: true,
     },
-    {
-      id: 'viski-bardagi',
-      label: 'Masadaki Kırık Viski Kadehi & Siyanür Kalıntıları',
-      isCorrect: false,
-    },
-    {
-      id: 'katalog',
-      label: 'Yelek Cebindeki 1889 Van Gogh Müzayede Kataloğu',
-      isCorrect: false,
-    },
+    ...scenario.evidence
+      .filter((ev) => ev.title !== scenario.solution.keyEvidenceTitle)
+      .slice(0, 3)
+      .map((ev) => ({
+        id: `evidence-${ev.id}`,
+        label: ev.title,
+        isCorrect: false,
+      }))
+  ] : [
+    { id: 'ev-1', label: 'Adli Tıp Olay Yeri Raporu', isCorrect: true },
+    { id: 'ev-2', label: 'Şüpheli İfadeleri & Çelişkiler', isCorrect: false },
   ];
 
   const handleLockVote = () => {
@@ -233,9 +239,9 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
                 >
                   <div className="flex items-center gap-2.5">
                     <div
-                      className={`w-9 h-9 rounded-lg border flex items-center justify-center font-bold text-xs ${suspect.photoPlaceholder.silhouetteStyle}`}
+                      className={`w-9 h-9 rounded-lg border flex items-center justify-center font-bold text-xs ${suspect.photoPlaceholder?.silhouetteStyle || 'bg-zinc-800 border-zinc-700 text-zinc-300'}`}
                     >
-                      {suspect.photoPlaceholder.initials}
+                      {suspect.photoPlaceholder?.initials || suspect.name.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="font-bold text-xs truncate">{suspect.name}</p>

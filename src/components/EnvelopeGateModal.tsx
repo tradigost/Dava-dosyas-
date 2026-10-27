@@ -10,7 +10,8 @@ import { KeyRound, ShieldAlert, CheckCircle2, XCircle, ArrowRight } from 'lucide
 
 interface EnvelopeGateModalProps {
   gate: GateQuestion;
-  currentEnvelope: 1 | 2 | 3;
+  currentEnvelope: number;
+  totalEnvelopes?: number;
   onSuccessNextEnvelope: () => void;
   onClose: () => void;
   onIncrementAttempts: () => void;
@@ -19,6 +20,7 @@ interface EnvelopeGateModalProps {
 export const EnvelopeGateModal: React.FC<EnvelopeGateModalProps> = ({
   gate,
   currentEnvelope,
+  totalEnvelopes = 3,
   onSuccessNextEnvelope,
   onClose,
   onIncrementAttempts,
@@ -56,7 +58,9 @@ export const EnvelopeGateModal: React.FC<EnvelopeGateModalProps> = ({
             <KeyRound className="w-6 h-6" />
           </div>
           <span className="text-[11px] font-typewriter text-amber-400 uppercase tracking-widest block">
-            Zarf {currentEnvelope} &rarr; Zarf {currentEnvelope + 1} Mühür Kilidi
+            {currentEnvelope < totalEnvelopes
+              ? `Zarf ${currentEnvelope} → Zarf ${currentEnvelope + 1} Mühür Kilidi`
+              : `Zarf ${currentEnvelope} → Final Suçlama Kilidi`}
           </span>
           <h3 className="text-lg sm:text-xl font-bold font-cinzel text-zinc-100 mt-1">
             {gate.title}
@@ -162,7 +166,11 @@ export const EnvelopeGateModal: React.FC<EnvelopeGateModalProps> = ({
               onClick={handleNext}
               className="flex items-center gap-1.5 px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-md animate-pulse"
             >
-              <span>Zarf {currentEnvelope + 1}’i Aç</span>
+              <span>
+                {currentEnvelope < totalEnvelopes
+                  ? `Zarf ${currentEnvelope + 1}’i Aç`
+                  : 'Bireysel Suçlama ve Oylamaya Geç'}
+              </span>
               <ArrowRight className="w-4 h-4" />
             </button>
           )}
