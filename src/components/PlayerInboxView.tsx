@@ -17,7 +17,9 @@ import {
   Users2,
   FolderOpen,
   Sparkles,
-  CheckCircle2
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 interface PlayerInboxViewProps {
@@ -99,6 +101,36 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
 
   const activeEvidence = displayedEvidenceList.find((ev) => ev.id === selectedEvidenceId) || displayedEvidenceList[0];
 
+  const currentIndex = displayedEvidenceList.findIndex((ev) => ev.id === activeEvidence?.id);
+  const safeCurrentIndex = currentIndex >= 0 ? currentIndex : 0;
+
+  const handlePrevEvidence = () => {
+    if (safeCurrentIndex > 0) {
+      soundManager.playKeyClick();
+      setSelectedEvidenceId(displayedEvidenceList[safeCurrentIndex - 1].id);
+    }
+  };
+
+  const handleNextEvidence = () => {
+    if (safeCurrentIndex < displayedEvidenceList.length - 1) {
+      soundManager.playKeyClick();
+      setSelectedEvidenceId(displayedEvidenceList[safeCurrentIndex + 1].id);
+    }
+  };
+
+  const getEvidenceIcon = (ev: EvidenceItem) => {
+    if (ev.category === 'interrogation') {
+      return <Users2 className="w-3.5 h-3.5 text-sky-400" />;
+    }
+    if (ev.mediaType === 'audio' || ev.category === 'audio') {
+      return <Headphones className="w-3.5 h-3.5 text-cyan-400" />;
+    }
+    if (ev.mediaType === 'image') {
+      return <ImageIcon className="w-3.5 h-3.5 text-amber-400" />;
+    }
+    return <FileText className="w-3.5 h-3.5 text-zinc-300" />;
+  };
+
   return (
     <div className="max-w-3xl mx-auto space-y-4 pb-12">
 
@@ -159,30 +191,92 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
         )}
       </div>
 
-      {/* File Switcher Buttons */}
+      {/* Compact Numbered Navigation Bar */}
       {displayedEvidenceList.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {displayedEvidenceList.map((ev, idx) => {
-            const isSelected = activeEvidence?.id === ev.id;
-            return (
-              <button
-                key={ev.id}
-                type="button"
-                onClick={() => {
-                  soundManager.playKeyClick();
-                  setSelectedEvidenceId(ev.id);
-                }}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap border transition-all cursor-pointer ${
-                  isSelected
-                    ? 'bg-amber-600 text-zinc-950 border-amber-400 font-bold shadow-md'
-                    : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
-                }`}
-              >
-                <FileText className="w-3.5 h-3.5" />
-                <span>Dosya {idx + 1}: {ev.title}</span>
-              </button>
-            );
-          })}
+        <div className="bg-zinc-950 border border-zinc-800/90 rounded-2xl p-2.5 sm:p-3 shadow-lg space-y-2.5">
+          {/* Top Row: Prev Arrow, Numbered Buttons (Belge 1, Belge 2, ...), Next Arrow */}
+          <div className="flex items-center justify-between gap-2">
+            
+            {/* Prev Arrow */}
+            <button
+              type="button"
+              onClick={handlePrevEvidence}
+              disabled={safeCurrentIndex <= 0}
+              className={`p-2 rounded-xl border flex items-center justify-center transition-all cursor-pointer shrink-0 ${
+                safeCurrentIndex <= 0
+                  ? 'border-zinc-800 text-zinc-600 bg-zinc-900/40 cursor-not-allowed opacity-40'
+                  : 'border-zinc-700 text-zinc-300 bg-zinc-900 hover:border-amber-500 hover:text-amber-300 active:scale-95'
+              }`}
+              title="Önceki Belge"
+              aria-label="Önceki Belge"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            {/* Compact Numbered Buttons (Belge 1, Belge 2, ...) */}
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap flex-1 min-w-0">
+              {displayedEvidenceList.map((ev, idx) => {
+                const isSelected = activeEvidence?.id === ev.id;
+                return (
+                  <button
+                    key={ev.id}
+                    type="button"
+                    onClick={() => {
+                      soundManager.playKeyClick();
+                      setSelectedEvidenceId(ev.id);
+                    }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-semibold transition-all border cursor-pointer shrink-0 ${
+                      isSelected
+                        ? 'bg-amber-600 text-zinc-950 border-amber-400 shadow-md font-bold ring-1 ring-amber-400/40'
+                        : 'bg-zinc-900/90 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                    }`}
+                  >
+                    {getEvidenceIcon(ev)}
+                    <span>Belge {idx + 1}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Next Arrow */}
+            <button
+              type="button"
+              onClick={handleNextEvidence}
+              disabled={safeCurrentIndex >= displayedEvidenceList.length - 1}
+              className={`p-2 rounded-xl border flex items-center justify-center transition-all cursor-pointer shrink-0 ${
+                safeCurrentIndex >= displayedEvidenceList.length - 1
+                  ? 'border-zinc-800 text-zinc-600 bg-zinc-900/40 cursor-not-allowed opacity-40'
+                  : 'border-zinc-700 text-zinc-300 bg-zinc-900 hover:border-amber-500 hover:text-amber-300 active:scale-95'
+              }`}
+              title="Sonraki Belge"
+              aria-label="Sonraki Belge"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Active Document Header Strip: Counter + Full Title */}
+          {activeEvidence && (
+            <div className="flex items-center justify-between gap-2.5 px-3 py-2 bg-zinc-900/80 border border-zinc-800/80 rounded-xl text-xs">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 shrink-0">
+                  {safeCurrentIndex + 1} / {displayedEvidenceList.length}
+                </span>
+                <span className="text-zinc-200 font-semibold truncate text-xs sm:text-sm">
+                  {activeEvidence.title}
+                </span>
+              </div>
+              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider shrink-0 hidden sm:inline-block">
+                {activeEvidence.category === 'interrogation'
+                  ? '⚖️ Sorgu Zabtı'
+                  : activeEvidence.category === 'toxicology'
+                  ? '🔬 Toksikoloji'
+                  : activeEvidence.mediaType === 'audio'
+                  ? '🎙️ Ses Kaydı'
+                  : '📄 Resmi Delil'}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -204,6 +298,28 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
           <h3 className="text-base sm:text-lg font-bold text-zinc-100">
             {activeEvidence.title}
           </h3>
+
+          {/* Police Interrogation Stamp Banner */}
+          {activeEvidence.category === 'interrogation' && (
+            <div className="p-3.5 bg-zinc-950/90 rounded-xl border border-sky-600/40 flex items-center justify-between gap-3 shadow-inner">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-sky-950/80 border border-sky-500/50 flex items-center justify-center text-sky-400 shrink-0">
+                  <Users2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-sky-400 block">
+                    T.C. EMNİYET MÜDÜRLÜĞÜ · RESMİ SORGU & ÇAPRAZ İFADE ZAPTI
+                  </span>
+                  <p className="text-xs text-zinc-300 font-medium">
+                    Şüpheli / Tanık Beyanları, Çapraz Sorgu Tutanakları ve İfade Çelişkileri
+                  </p>
+                </div>
+              </div>
+              <span className="text-[10px] font-mono px-2.5 py-1 rounded bg-sky-950/80 border border-sky-500/50 text-sky-300 shrink-0 font-bold uppercase">
+                POLİS SORGUSU
+              </span>
+            </div>
+          )}
 
           {/* Audio Wiretap / Recording Station */}
           {(activeEvidence.mediaType === 'audio' || activeEvidence.category === 'audio') && (

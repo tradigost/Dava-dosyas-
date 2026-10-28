@@ -1,6 +1,6 @@
 {
-  "summary":  "Ultra-minimalist redesign of the in-game investigation experience successfully implemented:\n- Clean, single-row top navigation showing only Detective Name, Role, and Envelope Number (removing all simulator switcher buttons, unread counters, and sound toggles).\n- Complete removal of the 'Diğer Dedektifteki Dosyalar' tab; players verbally share evidence at the table without phone screen distraction.\n- Realistic police dossier document with official typewriter report, key deduction, and a single 'Panoya Yansıt' button, eliminating complex multi-widget lab clutter.\n- Streamlined envelope verification and advancement bar.",
-  "updatedAt":  "2026-10-25T13:15:37.273213777Z",
+  "summary":  "Kompakt numaralı dosya geçiş çubuğu (Belge 1, Belge 2, Belge 3), önceki/sonraki yön tuşları ve aktif belge başlığı bannerı için uygulama planı.",
+  "updatedAt":  "2026-10-28T08:04:09.303485178Z",
   "requestFeedback":  true,
   "userFacing":  true
 }

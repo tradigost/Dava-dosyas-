@@ -183,6 +183,22 @@ export const CASE_SCENARIOS: CaseScenario[] = [
           confidentiality: 'ÇOK GİZLİ',
         }
       },
+      {
+        id: 'ev-1-3',
+        envelope: 1,
+        title: 'Polis Sorgu Tutanağı: Yalı Güvenlik Amiri Bekçi Niyazi',
+        category: 'interrogation',
+        roleAccess: ['field', 'profiler', 'archive', 'forensics'],
+        summary: 'Gece nöbetindeki güvenlik amirinin resmi ifadesi: Tarık Bey’in 22:30’da arka kapıdan girişi, Banu Hanım’ın 23:25’teki panik kaçışı.',
+        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ ASAYİŞ ŞUBE CİNAYET BÜRO\nTANIK İFADE VE SORGU TUTANAĞI\n\nİfade Veren: Niyazi Kalkan (54, Kandilli Yalısı Güvenlik Amiri)\nSorgulayan: Komiser Murat Kaya / Sicil: 41829\nTarih: 19 Ekim 2026 - Saat 01:15\n\nSORU: Olay gecesi yalıya kimler giriş çıkış yaptı? Bahçe kameralarında neden kesinti var?\nCEVAP: "Efendim, saat 22:30 civarı maktulün oğlu Tarık Bey bahçe demir kapısından hızla girdi. Çok gergindi, selam vermeden çalışma odasına yöneldi. Saat 23:15 gibi yukarıdan bağırma sesleri geldi; Hikmet Bey bağırıyordu. Saat 23:25’te ise Banu Hanım arka sahil kapısından elinde siyah büyük bir deri çantayla adeta koşarak çıktı. Yoldan geçen sarı bir taksiyi durdurup bindi. Kamera kesintisine gelince; müştemilattaki ana şalterden sahil kamerası saat 23:00’te kapatılmış. Şaltere yalnızca Yadigar Usta’nın atölye anahtarıyla girilebiliyor."',
+        keyDeduction: 'Tarık saat 22:30’da yalıdadır; Banu ise saat 23:25’te siyah çantayla kaçmıştır. Sahil kamerası şalteri ise saat 23:00’te içeriden kapatılmıştır.',
+        mediaType: 'text',
+        metadata: {
+          date: '19 Ekim 2026',
+          caseRef: 'SORGU-GÜV-01',
+          confidentiality: 'GİZLİ',
+        }
+      },
       // ZARF 2
       {
         id: 'ev-2-1',
@@ -205,16 +221,32 @@ export const CASE_SCENARIOS: CaseScenario[] = [
       {
         id: 'ev-2-2',
         envelope: 2,
-        title: 'Banu Ulusoy’un Çantasındaki Aşk Mektupları',
+        title: 'Cinayet Büro Sorgu Tutanağı: Şüpheli Banu Ulusoy',
         category: 'interrogation',
         roleAccess: ['profiler', 'field', 'archive', 'forensics'],
-        summary: 'Banu’nun olay gecesi kaçırdığı çantada çalıntı hançer değil; Hikmet’in genç ortağıyla yaşadığı gizli ilişkinin mektupları bulundu.',
-        fullReport: 'Emniyet Kriminal İnceleme Tutanağı:\nŞüpheli Banu Ulusoy’un Bebek’teki galerisinde ele geçirilen siyah deri çantada yapılan aramada:\n- Zümrüt hançer veya ziynet eşyası BULUNMAMIŞTIR.\n- Çantada, Banu Ulusoy ile İzmirli bir antikacı arasında 2024 yılına ait el yazısı aşk mektupları ve otel rezervasyon dökümleri bulunmuştur.\n- Banu ifadesinde: "Hikmet mektupları öğrenirse beni tek kuruşsuz sokağa atacaktı. Kasada sakladığı mektupları geri almak için odaya girdim ama Hikmet çoktan fenalaşmıştı!" demiştir.',
-        keyDeduction: 'Banu cinayet değil, şantaj ve itibarını kurtarma amacıyla hareket etmiştir (Yanıltıcı Şüpheli).',
+        summary: 'Banu Ulusoy’un Bebek’teki galeride gözaltına alınışı, çantadaki aşk mektupları ve Hikmet’in fenalaşma anına dair ifadesi.',
+        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO AMİRLİĞİ\nŞÜPHELİ SORGULAMA VE İFADE TUTANAĞI\n\nŞüpheli: Banu Ulusoy (34, Sanat Galerisi Küratörü)\nSorgulayan: Başkomiser Hakan Erdem / Avukat huzurunda\nTarih: 19 Ekim 2026 - Saat 04:30\n\nSORU: Olay gecesi yalıdan neden panik halinde kaçtınız? Çantanızda hançer mi vardı?\nCEVAP: "Yemin ederim hançere dokunmadım! Hikmet ile boşanma aşamasındaydık. Yıllar önce İzmir’deki eski ortağımla olan özel aşk mektuplarımı ele geçirmişti. Mektupları çalışma odasındaki kasada kilitli tutuyor ve beni tek kuruş tazminatsız kapıya koymakla tehdit ediyordu. Saat 23:20 sularında yukarı çıktım. Hikmet koltuğunda tuhaf nefes alıyordu, göğsünü tutuyordu. Bana \'Çay... çayda bir şey var\' diye mırıldandı. O panikle kasadaki gizli çekmeceyi açıp sadece kendi mektuplarımı aldım ve korkudan kaçtım! Kasada hançer duruyordu, ben almadım! O çayı Hikmet’e her gece Yadigar getirirdi!"\n\nAdli Psikolog Notu: Şüpheli sadakatsizlik ifşasından paniklemiş durumda. Çantada hançer bulunamadı, yalnızca mektuplar ve otel kayıtları mevcuttur. Cinayet kastı taşımıyor.',
+        keyDeduction: 'Banu hançeri çalmamış, yalnızca şantaj mektuplarını kaçırmıştır. Hikmet’in son sözü çayı Yadigar’ın getirdiğini işaret etmektedir.',
         mediaType: 'text',
         metadata: {
           date: '19 Ekim 2026',
-          caseRef: 'SORGU-BANU',
+          caseRef: 'SORGU-BANU-02',
+          confidentiality: 'GİZLİ',
+        }
+      },
+      {
+        id: 'ev-2-3',
+        envelope: 2,
+        title: 'Cinayet Büro Çapraz Sorgu Tutanağı: Şüpheli Tarık Ulusoy',
+        category: 'interrogation',
+        roleAccess: ['profiler', 'archive', 'field', 'forensics', 'cryptology'],
+        summary: 'Maktulün oğlu Tarık’ın 15 Milyon TL tefeci borcu, ceketindeki çay lekesi ve babasıyla 22:45’teki kavga itirafı.',
+        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ ASAYİŞ ŞUBE CİNAYET BÜRO\nÇAPRAZ SORGU VE İFADE TUTANAĞI\n\nŞüpheli: Tarık Ulusoy (36, Girişimci / Maktulün Oğlu)\nSorgulayan: Komiser Selim Arıkan\nTarih: 19 Ekim 2026 - Saat 06:15\n\nSORU: Üzerinizdeki gri ceketin kolundaki kahverengi leke kriminalde melisa çayı çıktı. Tefecilere 15 Milyon TL borcunuz var. Kasadaki hançeri siz mi çaldınız?\nCEVAP: "Evet, batmış durumdayım! Tefeciler kapımdaydı. Babamdan hançeri tefecilere rehin vermek için istedim. Babam suratıma tükürdü, \'Sana zırnık yok, sahtekâr Yadigar bile senden daha evlat\' dedi. Tartıştık, masadaki fincanı bana fırlattı, çay koluma döküldü. Saat 23:05’te ben odadan çıktım. O sırada merdivende Yadigar elinde taze bir demlikle yukarı çıkıyordu! \'Beyefendiye tansiyon otu yaptım Tarık Bey\' dedi. Babam ben çıktığımda dipdiriydi, bağırmaya devam ediyordu. Ben katil değilim!"\n\nKriminal Laboratuvar Notu: Tarık’ın ceketindeki çay lekesinde zehir konsantrasyonu YOKTUR. Zehir, Tarık odadan çıktıktan sonra Yadigar’ın getirdiği ikinci taze fincana katılmıştır.',
+        keyDeduction: 'Tarık babasıyla kavga etmiş ancak ceketindeki çayda zehir yoktur; zehirli fincan Tarık ayrıldıktan sonra Yadigar tarafından servis edilmiştir.',
+        mediaType: 'text',
+        metadata: {
+          date: '19 Ekim 2026',
+          caseRef: 'SORGU-TARIK-02',
           confidentiality: 'GİZLİ',
         }
       },
@@ -240,15 +272,13 @@ export const CASE_SCENARIOS: CaseScenario[] = [
       {
         id: 'ev-3-2',
         envelope: 3,
-        title: 'Yadigar Çelik’in İkinci Sorgusu & Telsiz Çözümü',
-        category: 'audio',
+        title: 'Cinayet Büro Nihai Sorgu Tutanağı: Yadigar Çelik',
+        category: 'interrogation',
         roleAccess: ['profiler', 'forensics', 'archive'],
-        summary: 'Yadigar’ın restorasyon atölyesindeki mikrofon kayıtları ve çelişkili ifadelerinin psikolojik analizi.',
-        fullReport: 'Cinayet Masası İkinci Sorgu Tutanağı:\nYadigar Çelik sorgu odasındaki kamera karşısında maktulün son günlerde unutkan olduğunu öne sürmüş, ancak İsviçre banka hesap hareketleri ve kasanın dijital logları kendisine sunulunca terlemeye başlamış ve sessiz kalma hakkını kullanmak istemiştir.\nPsikolojik Profil Uzmanı Notu: Şüpheli sadık çalışan maskesinin ardında narsistik bir haklılık duygusu barındırıyor; kurbanı "hak ettiğini" düşünmektedir.',
-        keyDeduction: 'Yadigar’ın alibisi tamamen çökmüş, suçluluk psikolojisi gözlemlenmiştir.',
-        mediaType: 'audio',
-        mediaUrl: '',
-        mediaCaption: 'Sorgu Odası Ses Kaydı #B-03: Yadigar Çelik’in çapraz sorgusu',
+        summary: 'Yadigar Çelik’in İsviçre hesapları ve digitalis faturası önüne konulduğundaki çapraz sorgu ve itiraf tutanağı.',
+        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO AMİRLİĞİ\nNİHAİ ÇAPRAZ SORGU VE İTİRAF TUTANAĞI\n\nŞüpheli: Yadigar Çelik (57, Restorasyon Uzmanı & Yalı Kâhyası)\nSorgulayan: Başkomiser Hakan Erdem & Kriminal Heyet\nTarih: 20 Ekim 2026 - Saat 11:45\n\nSORU: İsviçre UBS hesabınızdaki 2.4 Milyon Euro ve atölyenizdeki replika reçine hançer hakkında ne diyeceksiniz? Maktulün "Yarın sabah savcılıktasın" notu kasada bulundu!\nCEVAP: (Uzun süreli sessizlik, elleri titriyor, başını öne eğiyor)\n"Hikmet Bey... Beni 30 yıl boyunca asgari ücretin biraz üzerinde çalıştırdı. Milyon dolarlık tabloları, paha biçilmez hançerleri ellerimle restore ettim. Zümrüt hançerin replikasını yaptım, gerçeğini Zürih’teki bir koleksiyonere sattım. Ama Hikmet Bey son gün mikroskopla zümrüt yuvalarını incelemiş ve sentetik reçineyi fark etmiş. Akşam 21:00’de beni odaya çağırdı, \'Yarın sabah seni hapse attıracağım, hayatın zindanda bitecek\' dedi. Hayatımı mahvedecekti! Tansiyon otlarının arasına laboratuvarda saflaştırdığım yüksükotunu kattım. Fincanı masasına bıraktım. Fenalaşınca kasayı açıp geride bıraktığı ihbar notunu aldım ama panikle hançer kılıfını düşürdüm. Ben yapmasaydım o beni bitirecekti..."',
+        keyDeduction: 'Yadigar Çelik suçunu ayrıntılarıyla itiraf etmiştir. Cinayet aleti digitalis zehri ve motifi sahte antika vurgununun ortaya çıkmasını engellemektir.',
+        mediaType: 'text',
         metadata: {
           date: '20 Ekim 2026',
           caseRef: 'SES-SORGU-02',
@@ -437,6 +467,22 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         }
       },
       {
+        id: 'ev-2-1-3',
+        envelope: 1,
+        title: 'Polis Sorgu Tutanağı: Sahne Amiri Rıza Kurtuluş',
+        category: 'interrogation',
+        roleAccess: ['field', 'profiler', 'archive', 'forensics'],
+        summary: 'Sahne Amiri Rıza’nın resmi ifadesi: 20:45 ile 21:15 arası odaya girenler, Melis’in makasla çıkışı ve Gülfem’in broşu takışı.',
+        fullReport: 'T.C. KADIKÖY İLÇE EMNİYET MÜDÜRLÜĞÜ ASAYİŞ BÜRO\nTANIK İFADE VE SORGU TUTANAĞI\n\nTanık: Rıza Kurtuluş (51, Kadıköy Şehir Tiyatrosu Baş Sahne Amiri)\nSorgulayan: Komiser Selim Çetin / Sicil: 33819\nTarih: 24 Ekim 2026 - Saat 22:30\n\nSORU: Perde arasında Altan Saygın’ın odasına kimler girdi çıktı? Kronolojik sırayla anlatın.\nCEVAP: "Efendim, birinci perde 20:40’ta bitti. 20:45’te Melis Hanım ağlayarak elinde terzi makasıyla Altan’ın odasına daldı. İçeride bağrıştılar. 20:50’de Melis Hanım gözyaşları içinde kapıyı çarpıp fuayeye koştu. Hemen peşinden Caner koridorda belirdi; kapıyı yumrukladı, \'Altan konuşacağız\' dedi ama Altan kapıyı açmadı. Saat 20:55’te ise Altan’ın resmi eşi ve kostümcümüz Gülfem Hanım geldi. Elinde ahşap dikiş sepeti ve Kral Lear’ın kadife pelerini vardı. Odaya girdi. Yaklaşık 8 dakika kaldılar. Çıkarken Gülfem Hanım’a \'Kostüm hazır mı?\' diye sordum. Bana gayet sakin bir sesle, \'Broşunu yakasına bizzat taktım Rıza, bu gece son kez parlayacak\' dedi. 21:10’da anons için odaya girdiğimde Altan koltukta mosmor kesilmiş, nefes alamıyordu!"',
+        keyDeduction: 'Gülfem Saygın, olaydan hemen önce 20:55’te Altan’ın odasına girmiş ve broşu yakasına bizzat kendisi takmıştır.',
+        mediaType: 'text',
+        metadata: {
+          date: '24 Ekim 2026',
+          caseRef: 'SORGU-AMİR-01',
+          confidentiality: 'GİZLİ',
+        }
+      },
+      {
         id: 'ev-2-2-1',
         envelope: 2,
         title: 'Kimyasal Toksin Analizi & Dikiş İğnesi İzleri',
@@ -457,16 +503,32 @@ export const CASE_SCENARIOS: CaseScenario[] = [
       {
         id: 'ev-2-2-2',
         envelope: 2,
-        title: 'Caner Ertekin Kulis Sorgu Zaptı & Yedek Kostüm Deposu',
+        title: 'Asayiş Şube Sorgu Tutanağı: Şüpheli Caner Ertekin',
         category: 'interrogation',
         roleAccess: ['profiler', 'field', 'archive', 'forensics'],
-        summary: 'Caner’in kulis dolabında parçalanmış bir taç bulundu; ancak Altan’ın yakasındaki broşa dokunmadığını iddia ediyor.',
-        fullReport: 'Kadıköy Asayiş Sorgu Tutanağı:\nŞüpheli Caner Ertekin ifadesinde:\n"Evet Altan’dan nefret ediyordum. Yedek kral kostümünün pelerinini makasla kestim, oyunu rezil etmek istedim! Ama Altan’ı zehirlemedim! O broşu yakasına takan kişi Gülfem Hanım’dı, provadan hemen önce elleri titreyerek bizzat taktı!"\nProfil Uzmanı Notu: Caner’in eylemleri fevri ve kıskançlık kaynaklı basit sabotajdır; kimyasal düzenek hazırlayacak bilgi ve soğukkanlılığa sahip değildir.',
-        keyDeduction: 'Caner pelerini yırtmış ancak broşa zehir yerleştiren kişi değildir (Yanıltıcı Şüpheli).',
+        summary: 'Caner’in kulis dolabında parçalanmış pelerin bulundu; ancak zehirli broşa dokunmadığına dair çapraz sorgusu.',
+        fullReport: 'T.C. KADIKÖY ASAYİŞ ŞUBE CİNAYET MASASI\nŞÜPHELİ ÇAPRAZ SORGU TUTANAĞI\n\nŞüpheli: Caner Ertekin (47, Yedek Oyuncu)\nSorgulayan: Başkomiser Hakan Erdem\nTarih: 25 Ekim 2026 - Saat 02:45\n\nSORU: Kulis dolabınızda Kral Lear’ın yedek pelerini makasla parçalanmış bulundu. Altan’ın odasını neden yumrukladınız?\nCEVAP: "Altan’dan nefret ettiğimi inkâr etmeyeceğim. 20 yıldır onun gölgesinde figüran gibi yaşadım. Dün akşam Londra biletlerini gördüm, tiyatroyu batırıp kaçacağını duydum. Yedek kostümünü makasla kestim; tek amacım ikinci perdeye çıkamasın, oyun iptal olsun veya bana yalvarsınlar idi. Ama Altan’ın odasına giremedim bile, kapı içeriden kilitliydi! Yemin ederim zehirden zerre anlamam. O antika broşu Altan’ın yakasına takan kişi Gülfem Hanım’dı! Hatta dikiş kutusundan cımbızla çıkardı, elleri buz gibiydi!"\n\nAdli Tıp Notu: Caner’in parmaklarında ve eşyalarında toksin kalıntısına rastlanmamıştır. Yalnızca kumaş lifleri mevcuttur.',
+        keyDeduction: 'Caner yedek pelerini öfkeyle yırtmış ancak broşa zehir yerleştiren kişi değildir (Yanıltıcı Şüpheli).',
         mediaType: 'text',
         metadata: {
           date: '25 Ekim 2026',
-          caseRef: 'SORGU-CANER',
+          caseRef: 'SORGU-CANER-02',
+          confidentiality: 'GİZLİ',
+        }
+      },
+      {
+        id: 'ev-2-2-3',
+        envelope: 2,
+        title: 'Cinayet Büro Çapraz Sorgu Tutanağı: Şüpheli Melis Haznedar',
+        category: 'interrogation',
+        roleAccess: ['profiler', 'field', 'archive', 'forensics', 'cryptology'],
+        summary: 'Melis Haznedar’ın elindeki terzi makası, aynadaki ruj yazısı ve Altan’ın şantajına dair ifadesi.',
+        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO AMİRLİĞİ\nŞÜPHELİ SORGU VE İFADE ZAPTI\n\nŞüpheli: Melis Haznedar (29, Tiyatro Oyuncusu / Sahne Partneri)\nSorgulayan: Komiser Selim Çetin\nTarih: 25 Ekim 2026 - Saat 04:15\n\nSORU: Olaydan 20 dakika önce elinizde terzi makasıyla Altan’ın odasından ağlayarak çıktınız. Aynadaki kırmızı ruj da sizin çantanızdaki tonla birebir aynı. Ne yaptınız o odada?\nCEVAP: "Altan bana hayatı zehir etti! Bir yıldır süren gizli ilişkimizi bitirmek istedim. Bana \'Benden ayrılırsan seni bu sezon kadro dışı bırakırım, hiçbir sahnede rol bulamazsın\' diye şantaj yaptı. Çıldırdım! Kulis masasından terzi makasını kaptım, odasına daldım. Bana aldığı sahte pırlantalı ipek atkıyı gözünün önünde lime lime kestim! Altan’a tek bir fiziki temasım olmadı. Aynadaki ruj yazısına gelince... O ruj benim mat bordo rujum, evet. Ama ben o ruju 3 gün önce kulis makyaj masasında unuttum, herkesin erişebileceği yerdeydi! Ben odaya girdiğimde aynada o yazı yoktu. Biri benim rujumu alıp beni suçlu göstermek için aynaya o yazıyı yazmış!"\n\nKriminal Ekspertiz: Aynadaki ruj yazısının bastırılma açısı ve el yazısı solak bir şahsa aittir. Melis Haznedar sağ elini kullanmaktadır; Gülfem Saygın ise solaktır!',
+        keyDeduction: 'Melis atkıyı kesmiş ancak zehirlememiştir. Aynadaki ruj yazısı Melis’in rujunu kullanan solak biri (Gülfem) tarafından hedef saptırmak için yazılmıştır.',
+        mediaType: 'text',
+        metadata: {
+          date: '25 Ekim 2026',
+          caseRef: 'SORGU-MELIS-02',
           confidentiality: 'GİZLİ',
         }
       },
@@ -489,15 +551,13 @@ export const CASE_SCENARIOS: CaseScenario[] = [
       {
         id: 'ev-2-3-2',
         envelope: 3,
-        title: 'Gülfem Saygın Kulis Sorgusu & Ses Çözüm Tutanağı',
-        category: 'audio',
+        title: 'Cinayet Büro Resmi Sorgu ve İtiraf Tutanağı: Gülfem Saygın',
+        category: 'interrogation',
         roleAccess: ['forensics', 'profiler', 'archive'],
-        summary: 'Gülfem’in emniyetteki sorgu odasında soğukkanlı konuşması ve parmak izi kriminal raporu.',
-        fullReport: 'Sorgu Odası Ses Tutanağı:\nGülfem Saygın: "Altan 20 yılımı çaldı. Tiyatroyu iflasa sürükleyip metresiyle kaçacaktı. Ona layık olduğu ölümü sahnede, seyircilerin alkışları arasında tattırmak istedim. O taç ve kostüm ona mezar olacaktı."\nKriminal Laboratuvar Notu: Broş iğnesinin mekanik kilidinde Gülfem’in sol başparmak izi net olarak tespit edilmiştir.',
-        keyDeduction: 'Fail kesin olarak Gülfem Saygın’dır; hem maddi hem duygusal intikam motifi doğrulanmıştır.',
-        mediaType: 'audio',
-        mediaUrl: '',
-        mediaCaption: 'Sorgu Odası Ses Kaydı: Gülfem Saygın’ın itiraf anı',
+        summary: 'Gülfem Saygın’ın sorgu odasında soğukkanlı konuşması, balmumu kapsülü düzeneği ve parmak izi kriminal itirafı.',
+        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO AMİRLİĞİ\nRESMİ SORGU VE İTİRAF TUTANAĞI\n\nŞüpheli: Gülfem Saygın (46, Tiyatro Baş Kostüm Tasarımcısı)\nSorgulayan: Başkomiser Hakan Erdem / Baro Avukatı Eşliğinde\nTarih: 25 Ekim 2026 - Saat 10:15\n\nSORU: Dikiş kutunuzdaki kurar toksin tüpü, balmumu eriticisi ve broş iğnesinin kilidindeki sol başparmak iziniz tespit edildi. Aynadaki yazıyı da sol elinizle siz yazdınız. Ne diyeceksiniz?\nCEVAP: "Altan ile 15 yıl önce bu tiyatroyu sıfırdan kurduk. Ben diktim, o oynadı. Ama son iki yıldır tiyatronun bütün gişe gelirlerini, 8 Milyon TL’lik telif fonunu sahte şirketlerle Londra’ya aktardığını öğrendim. Beni bir paçavra gibi kenara atıp genç bir oyuncuyla kaçacaktı. Tiyatroyu iflasa sürüklemesine izin veremezdim. Broş iğnesine mikroskop altında mikro-kanallar açtım; vücut ısısıyla eriyen doğal balmumuyla kurar jeli mühürledim. Kostümü 20:55’te giydirirken broşu yakasına taktım. Boynu ısındıkça zehir eriyecek ve sahnede bayılacaktı. Aynaya da Melis’in masada unuttuğu rujla o yazıyı yazdım ki herkes bunu bir aşk kavgası sansın. Altan ölmedi, değil mi? Ölmesini istemedim... Sadece o uçağa binmesini engellemek istedim."',
+        keyDeduction: 'Gülfem Saygın suçunu tüm teknik detaylarıyla itiraf etmiştir. Fail kesin olarak Gülfem’dir.',
+        mediaType: 'text',
         metadata: {
           date: '25 Ekim 2026',
           caseRef: 'SES-GULFEM-03',
@@ -686,6 +746,22 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         }
       },
       {
+        id: 'ev-3-1-3',
+        envelope: 1,
+        title: 'Polis & İş Güvenliği Sorgu Tutanağı: Baş Teknisyen Celal Demir',
+        category: 'interrogation',
+        roleAccess: ['field', 'forensics', 'profiler', 'archive'],
+        summary: 'Şaft Baş Teknisyeni Celal Usta’nın ifadesi: Kurşun takoz sabotajı ve saat 21:15’te kulede görülen beyaz önlüklü kişi.',
+        fullReport: 'T.C. ZONGULDAK İL EMNİYET MÜDÜRLÜĞÜ ASAYİŞ ŞUBE\nTANIK İFADE VE TEKNİK TESPİT ZAPTI\n\nTanık: Celal Demir (58, Baş Maden Şaft Teknisyeni)\nSorgulayan: Komiser Orhan Yıldız / Sicil: 29014\nTarih: 27 Ekim 2026 - Saat 01:30\n\nSORU: Düşen asansörün halatları ve acil fren tertibatı en son ne zaman kontrol edildi? Sabotaj izi var mı?\nCEVAP: "Komiserim, o asansör 40 tonluk çelik halat taşır; bakımı iki gün önce yapıldı, sapasağlamdı! Halatın koptuğu yere mikroskopla baktık; çelik sanki tereyağı gibi köpürerek erimiş. Bu sıradan bir pas veya aşınma değil, yüksek dereceli kimyasal asit erimesi! Dahası, acil fren disklerinin arasına döküm kurşun bir takoz çakılmış. Fren tırnakları diski tutamasın diye bilerek sıkıştırılmış. Saat 21:15 sularında motor dairesinden inerken kule basamaklarında üzerinde beyaz laboratuvar önlüğü ve mavi nitril eldiven olan birinin hızla idari binaya doğru yürüdüğünü gördüm. Gece karanlığında yüzünü seçemedim ama maden işçisi değildi; işçiler sarı tulum giyer, önlük yalnızca kimya laboratuvarındakilerde vardır!"',
+        keyDeduction: 'Sabotajcı acil freni kurşun takozla kilitlemiş ve halata asit sürmüştür. Şüpheli saat 21:15’te kulede görülen beyaz önlüklü kişidir (Berna Tezcan).',
+        mediaType: 'text',
+        metadata: {
+          date: '27 Ekim 2026',
+          caseRef: 'SORGU-TEKNİK-01',
+          confidentiality: 'GİZLİ',
+        }
+      },
+      {
         id: 'ev-3-2-1',
         envelope: 2,
         title: 'Laboratuvar Asit Envanteri ve Spektrometre Eşleşmesi',
@@ -706,16 +782,32 @@ export const CASE_SCENARIOS: CaseScenario[] = [
       {
         id: 'ev-3-2-2',
         envelope: 2,
-        title: 'Vardiya Amiri Murat Çetin’in Şantiye Sorgusu & Yakıt Hırsızlığı',
+        title: 'Asayiş ve Şantiye Karakolu Sorgu Tutanağı: Şüpheli Murat Çetin',
         category: 'interrogation',
         roleAccess: ['profiler', 'field', 'archive', 'forensics'],
         summary: 'Murat Çetin olay saatinde asansör makine dairesinde görülmüştü; ancak jeneratörden mazot çaldığını itiraf etti.',
-        fullReport: 'Maden Emniyet Asayiş Zabtı:\nŞüpheli Murat Çetin ifadesinde:\n"Asansörün kablolarına asit dökmedim! Evet o saatte makine dairesindeydim ama jeneratör deposundan şirketin mazotunu bidonlara aktarıyordum. Asansörün koptuğunu duyunca bidonları bırakıp kaçtım!"\nOlay Yeri Teyidi: Makine dairesinde dökülmüş mazot ve parmak izleri Murat’ı doğrulamaktadır; asit şişelerine ait iz yoktur.',
-        keyDeduction: 'Murat adi yakıt hırsızlığı yapmış, sabotajla bir ilgisi bulunmamaktadır (Yanıltıcı Şüpheli).',
+        fullReport: 'T.C. ZONGULDAK ASAYİŞ VE ŞANTİYE KARAKOLU\nŞÜPHELİ ÇAPRAZ SORGU TUTANAĞI\n\nŞüpheli: Murat Çetin (31, Vardiya Amiri)\nSorgulayan: Başkomiser Hakan Erdem\nTarih: 27 Ekim 2026 - Saat 03:20\n\nSORU: Olaydan 40 dakika önce makine dairesinde görüldünüz. Asit deposunun anahtarı üzerinizdeydi. Asansör halatına asidi siz mi döktünüz?\nCEVAP: "Komiserim, Hasan Karaca’dan nefret ederim. Geçen yıl ihmalden kardeşimi göçükte kaybettim. Ama Erdem Soydan doğru dürüst bir mühendisti, madeni kapatmak için rapor yazıyordu. Ben onu niye öldüreyim? Makine dairesine girdiğimi inkâr etmiyorum ama jeneratör deposundan bidonlara kaçak mazot çekiyordum! Asansörün koptuğunu duyunca panikle bidonları atıp kaçtım. Asit deposuna gelince; anahtar bende ama asıl kimyasal anahtarı Berna Hanım’ın parmak iziyle açılan laboratuvar kasasındadır. Hatta dün gece 21:20 civarı laboratuvarın arka kapısından Berna Hanım’ın elinde sarı cam şişeyle çıktığını bizzat gördüm. O kadına bakın!"\n\nKriminal Teyit: Murat’ın tulumunda yalnızca mazot hidrokarbonları tespit edilmiş; florosülfonik asit izine rastlanmamıştır.',
+        keyDeduction: 'Murat yakıt hırsızlığı yapmış ancak asit kullanmamıştır (Yanıltıcı Şüpheli). Berna’nın gece 21:20’de asit şişesiyle çıktığını doğrulamıştır.',
         mediaType: 'text',
         metadata: {
           date: '27 Ekim 2026',
-          caseRef: 'SORGU-MURAT',
+          caseRef: 'SORGU-MURAT-02',
+          confidentiality: 'GİZLİ',
+        }
+      },
+      {
+        id: 'ev-3-2-3',
+        envelope: 2,
+        title: 'Cumhuriyet Savcılığı Çapraz Sorgu Tutanağı: Şüpheli Hasan Karaca',
+        category: 'interrogation',
+        roleAccess: ['profiler', 'archive', 'field', 'cryptology', 'forensics'],
+        summary: 'Maden sahibi Hasan Karaca’nın rüşvet itirafı, makam arabasındaki çanta ve iflas korkusu hakkındaki sorgusu.',
+        fullReport: 'T.C. ZONGULDAK CUMHURİYET BAŞSAVCILIĞI\nŞÜPHELİ SORGU VE İFADE TUTANAĞI\n\nŞüpheli: Hasan Karaca (52, Karaca Madencilik Tesis Sahibi)\nSorgulayan: Cumhuriyet Savcısı Avni Kaya & Cinayet Büro\nTarih: 27 Ekim 2026 - Saat 05:40\n\nSORU: Maktul Erdem Soydan’ın evrak çantası makam arabanızın bagajında bulundu. Madeni kapatmaması için 3 Milyon TL rüşvet teklif ettiğiniz dekontlarla sabit. Asansörü siz mi sabote ettirdiniz?\nCEVAP: "Sayın Savcım, evet suçluyum; rüşvet teklif ettim, inkâr etmiyorum. Erdem Bey madeni kapatırsa 400 işçi aç kalacaktı, bankalar gırtlağıma çökecekti. Çantayı akşam 18:00’de odamda unuttu, içine para teklif mektubunu koyup düşünsün diye arabamda tuttum. Ama cinayet asla! Ben aptal mıyım kendi madenimin ana şaftını patlatayım? Maden şimdi savcılık kararıyla en az 6 ay mühürlendi! Milyonlarca lira zarar ettim, asıl ben battım! Erdem madeni kapatsa sadece ceza yerdim, cinayet işlesem idamlık olurum. Bana değil, lityum laboratuvarına bakın! Berna Hanım ile Erdem dün akşam lityum patenti yüzünden koridorda birbirine girdi!"\n\nSavcılık Değerlendirmesi: Hasan Karaca rüşvet suçunu ikrar etmiştir ancak sabotaj tekniğine sahip değildir ve madenin kapanması ekonomik olarak en çok kendisine zarar vermiştir.',
+        keyDeduction: 'Hasan Karaca rüşvet vermiş ancak asansör sabotajıyla ilgisi yoktur (Yanıltıcı Şüpheli). Asıl çatışmanın patent ortaklığı olduğunu açıklamıştır.',
+        mediaType: 'text',
+        metadata: {
+          date: '27 Ekim 2026',
+          caseRef: 'SORGU-HASAN-02',
           confidentiality: 'GİZLİ',
         }
       },
@@ -738,15 +830,13 @@ export const CASE_SCENARIOS: CaseScenario[] = [
       {
         id: 'ev-3-3-2',
         envelope: 3,
-        title: 'Berna Tezcan Sorgusu & Laboratuvar Kasa Logları',
-        category: 'audio',
+        title: 'Cinayet Büro & Sanayi Casusluğu Resmi Sorgu Tutanağı: Berna Tezcan',
+        category: 'interrogation',
         roleAccess: ['forensics', 'profiler', 'archive'],
-        summary: 'Berna Tezcan’ın şifreli kasa açılış logları ve sorgu ses bandındaki çelişkiler.',
-        fullReport: 'Siber Kriminal Rapor ve Ses Tutanağı:\nBerna Tezcan: "Erdem madeni jeolojik risk var diye mühürleyecekti. Yıllarımı verdiğim 50 Milyon Dolarlık lityum projesi çöpe gidecekti! Bilimi anlamayan bir bürokratın geleceğimi karartmasına izin veremezdim!"\nDijital Kasa İncelemesi: Olay günü saat 21:30’da florosülfonik asit kasasının Berna’nın parmak iziyle açıldığı sunucu loglarında sabittir.',
-        keyDeduction: 'Berna Tezcan cinayeti soğukkanlılıkla ve bilimsel çıkar amacıyla işlemiştir.',
-        mediaType: 'audio',
-        mediaUrl: '',
-        mediaCaption: 'Sorgu Odası Ses Kaydı: Berna Tezcan’ın itirafı',
+        summary: 'Berna Tezcan’ın şifreli kasa açılış logları, dijital arama geçmişi ve 50 Milyon Dolarlık patent itiraf tutanağı.',
+        fullReport: 'T.C. ZONGULDAK EMNİYET MÜDÜRLÜĞÜ CİNAYET VE SİBER SUÇLAR BÜROSU\nRESMİ ÇAPRAZ SORGU VE İTİRAF TUTANAĞI\n\nŞüpheli: Dr. Berna Tezcan (37, Tesis Baş Jeoloğu & Kimya Laboratuvar Şefi)\nSorgulayan: Başkomiser Hakan Erdem & Bilişim Müfettişi\nTarih: 27 Ekim 2026 - Saat 11:30\n\nSORU: Bilgisayarınızda saat 19:15’te Erdem Soydan’ı 50 Milyon Dolarlık lityum patentinden sildiğiniz, saat 21:30’da florosülfonik asit kasasını parmak izinizle açtığınız ve "çelik asansör halatı asit aşınma süresi" aramalarınız tespit edildi. Açıklamanız nedir?\nCEVAP: (Gözlerini kaçırıyor, derin bir nefes alıyor)\n"Erdem ile 10 yılımızı bu laboratuvarda tükettik. Türkiye’nin en zengin lityum rezervini ben buldum. Uluslararası otomotiv devleri patent için 50 Milyon Dolar teklif ediyordu! Dün akşam Erdem yanıma geldi, \'Maden çevre standartlarına uymuyor, yarın mühür basacağım. Patent de kamuya devredilecek\' dedi. Bir bürokratın tek bir imzayla hayatımın çalışmasını çöpe atmasına izin veremezdim! Saat 21:30’da kasadan florosülfürik asit solüsyonunu aldım. Kuleye çıktım. Halatın sürtünme bölgesine fırçayla sürdüm ve acil durum freninin arasına döküm kurşun takozu çaktım. Kabine bindiğinde halatın 5 dakika içinde kopacağını hesaplamıştım. Lityum patenti benim hakkımdı... Beni anlamıyorsunuz, ben bilimi kurtarmak istedim!"',
+        keyDeduction: 'Berna Tezcan suçunu tüm adli ve bilimsel ayrıntılarıyla itiraf etmiştir. Motifi 50 Milyon Dolarlık lityum patentini tek başına ele geçirmektir.',
+        mediaType: 'text',
         metadata: {
           date: '27 Ekim 2026',
           caseRef: 'SES-BERNA-03',
