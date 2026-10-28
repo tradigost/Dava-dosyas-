@@ -5,19 +5,14 @@
 
 import React from 'react';
 import { Player, EnvelopeNumber } from '../types';
-import { soundManager } from '../utils/audioEffects';
-import { Pin } from 'lucide-react';
 import { DetectiveProfile } from '../services/firebase';
 
 interface PlayerSimulatorBarProps {
   players: Player[];
   activePlayerId: string;
-  onSelectPlayer: (id: string) => void;
-  isBoardViewOpen: boolean;
-  onToggleBoardView: () => void;
+  onSelectPlayer?: (id: string) => void;
   currentEnvelope: EnvelopeNumber;
   totalEnvelopes?: number;
-  pinnedCount: number;
   unreadCountByPlayer?: Record<string, number>;
   isMuted?: boolean;
   onToggleMute?: () => void;
@@ -29,11 +24,8 @@ interface PlayerSimulatorBarProps {
 export const PlayerSimulatorBar: React.FC<PlayerSimulatorBarProps> = ({
   players,
   activePlayerId,
-  isBoardViewOpen,
-  onToggleBoardView,
   currentEnvelope,
   totalEnvelopes = 3,
-  pinnedCount,
 }) => {
   const activePlayer = players.find((p) => p.id === activePlayerId) || players[0];
 
@@ -62,32 +54,11 @@ export const PlayerSimulatorBar: React.FC<PlayerSimulatorBarProps> = ({
           </div>
         </div>
 
-        {/* Right: Clean Envelope Indicator & Common Board Toggle */}
+        {/* Right: Clean Envelope Indicator */}
         <div className="flex items-center gap-3 shrink-0">
-          <span className="text-xs font-mono text-zinc-400">
+          <span className="text-xs font-mono text-zinc-300 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-lg">
             {currentEnvelope <= totalEnvelopes ? `Zarf ${currentEnvelope} / ${totalEnvelopes}` : 'Final Karar'}
           </span>
-
-          <button
-            type="button"
-            onClick={() => {
-              soundManager.playPinSound();
-              onToggleBoardView();
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
-              isBoardViewOpen
-                ? 'bg-amber-500/20 text-amber-200 border-amber-500/60 shadow-sm'
-                : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:text-amber-300 hover:border-zinc-700'
-            }`}
-          >
-            <Pin className="w-3.5 h-3.5 text-amber-400" />
-            <span>Ortak Pano</span>
-            {pinnedCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-amber-500/30 text-amber-300 text-[10px] font-mono">
-                {pinnedCount}
-              </span>
-            )}
-          </button>
         </div>
 
       </div>

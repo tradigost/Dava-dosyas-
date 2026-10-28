@@ -7,7 +7,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   Player, 
   EnvelopeNumber, 
-  SharedPin, 
   AccusationSubmission, 
   GameView,
   RoleType,
@@ -17,7 +16,6 @@ import {
 import { CASE_SCENARIOS, ROLES } from './data/cases';
 import { PlayerSimulatorBar } from './components/PlayerSimulatorBar';
 import { PlayerInboxView } from './components/PlayerInboxView';
-import { SharedCaseBoard } from './components/SharedCaseBoard';
 import { EnvelopeGateModal } from './components/EnvelopeGateModal';
 import { AccusationPhase } from './components/AccusationPhase';
 import { CaseResolution } from './components/CaseResolution';
@@ -34,9 +32,7 @@ import {
   checkRedirectResult,
   subscribeToRoom, 
   subscribeToRoomMembers, 
-  subscribeToRoomPins, 
   subscribeToRoomVotes,
-  addOnlineRoomPin,
   advanceOnlineRoomEnvelope,
   submitOnlineVote,
   setOnlineRoomStatus,
@@ -76,13 +72,10 @@ export default function App() {
   const [gameView, setGameView] = useState<GameView>('LOBBY');
   const [currentEnvelope, setCurrentEnvelope] = useState<EnvelopeNumber>(1);
   const [activePlayerId, setActivePlayerId] = useState<string>('p-1');
-  const [isBoardViewOpen, setIsBoardViewOpen] = useState<boolean>(false);
   const [isGateModalOpen, setIsGateModalOpen] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
 
   // Evidence tracking
-  const [pinnedItems, setPinnedItems] = useState<SharedPin[]>([]);
-  const [pinnedEvidenceIds, setPinnedEvidenceIds] = useState<Set<string>>(new Set());
   const [gateAttempts, setGateAttempts] = useState<number>(0);
 
   // Local turn tracking for offline/simulator
@@ -167,15 +160,6 @@ export default function App() {
       setOnlineMembers(members);
     });
 
-    const unsubPins = subscribeToRoomPins(onlineRoomCode, (pins) => {
-      setPinnedItems(pins);
-      const ids = new Set<string>();
-      pins.forEach((p) => {
-        if (p.evidenceId) ids.add(p.evidenceId);
-      });
-      setPinnedEvidenceIds(ids);
-    });
-
     const unsubVotes = subscribeToRoomVotes(onlineRoomCode, (votes) => {
       setSubmissions(votes);
     });
@@ -183,7 +167,6 @@ export default function App() {
     return () => {
       unsubRoom();
       unsubMembers();
-      unsubPins();
       unsubVotes();
     };
   }, [onlineRoomCode]);
@@ -298,9 +281,6 @@ export default function App() {
       setActivePlayerId(players[0].id);
       setLocalInspectorId(null);
       setLocalEnvelopeCompleted(false);
-      setIsBoardViewOpen(false);
-      setPinnedItems([]);
-      setPinnedEvidenceIds(new Set());
       setSubmissions({});
       setGateAttempts(0);
     }
@@ -352,54 +332,6 @@ export default function App() {
       next[index] = newName;
       return next;
     });
-  };
-
-  const handlePinEvidence = async (
-    title: string,
-    excerpt: string,
-    category: string,
-    evidenceId?: string
-  ) => {
-    const newPin: SharedPin = {
-      id: `pin-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-      evidenceId: evidenceId || `custom-${Date.now()}`,
-      title,
-      excerpt,
-      category,
-      pinnedByPlayerName: activePlayer.name,
-      pinnedByRole: activePlayer.role,
-      envelope: currentEnvelope,
-      timestamp: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    if (onlineRoomCode) {
-      await addOnlineRoomPin(onlineRoomCode, newPin);
-    } else {
-      setPinnedItems((prev) => [newPin, ...prev]);
-      if (evidenceId) {
-        setPinnedEvidenceIds((prev) => new Set(prev).add(evidenceId));
-      }
-    }
-  };
-
-  const handleAddCustomNote = async (text: string) => {
-    const newPin: SharedPin = {
-      id: `custom-note-${Date.now()}`,
-      evidenceId: `note-${Date.now()}`,
-      title: `Dedektif Notu: ${activePlayer.name}`,
-      excerpt: text,
-      category: 'note',
-      pinnedByPlayerName: activePlayer.name,
-      pinnedByRole: activePlayer.role,
-      envelope: currentEnvelope,
-      timestamp: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    if (onlineRoomCode) {
-      await addOnlineRoomPin(onlineRoomCode, newPin);
-    } else {
-      setPinnedItems((prev) => [newPin, ...prev]);
-    }
   };
 
   const handleAdvanceToNextEnvelope = async () => {
@@ -488,13 +420,9 @@ export default function App() {
           activePlayerId={activePlayerId}
           onSelectPlayer={(id) => {
             setActivePlayerId(id);
-            setIsBoardViewOpen(false);
           }}
-          isBoardViewOpen={isBoardViewOpen}
-          onToggleBoardView={() => setIsBoardViewOpen((prev) => !prev)}
           currentEnvelope={currentEnvelope}
           totalEnvelopes={totalEnvelopes}
-          pinnedCount={pinnedItems.length}
         />
       )}
 
@@ -529,97 +457,63 @@ export default function App() {
           />
         )}
 
-        {gameView !== 'LOBBY' && gameView !== 'BRIEFING' && (
-          <>
-            {/* If Board view toggle is active, show the Shared Board */}
-            {isBoardViewOpen ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between pb-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsBoardViewOpen(false)}
-                    className="text-xs text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1 cursor-pointer"
-                  >
-                    &larr; {activePlayer.name} ({activePlayer.role.toUpperCase()}) Telefonuna Geri Dön
-                  </button>
-                  <span className="text-xs text-zinc-400 font-mono">
-                    MASADAKİ TÜM KANITLAR
-                  </span>
-                </div>
-                <SharedCaseBoard
-                  pins={pinnedItems}
-                  suspects={scenario.suspects}
-                  activeEnvelope={currentEnvelope}
-                  totalEnvelopes={totalEnvelopes}
-                  onAddCustomNote={handleAddCustomNote}
-                />
-              </div>
-            ) : (
-              <>
-                {/* Active Envelope Inbox Screen: Either the active dossier OR the clean Waiting Screen */}
-                {gameView === 'ENVELOPE_ACTIVE' && (
-                  !isMyTurn ? (
-                    /* Other players see ONLY logo and active inspector name */
-                    <WaitingTurnView
-                      currentEnvelope={currentEnvelope}
-                      totalEnvelopes={totalEnvelopes}
-                      activeInspectorName={currentInspectorName}
-                      activeInspectorRole={currentInspectorRole}
-                    />
-                  ) : (
-                    /* Active inspector sees their confidential dossier */
-                    <PlayerInboxView
-                      player={activePlayer}
-                      allPlayers={players}
-                      totalPlayers={onlineRoom?.playerCount || playerCount}
-                      currentEnvelope={currentEnvelope}
-                      totalEnvelopes={totalEnvelopes}
-                      evidenceList={scenario.evidence}
-                      suspects={scenario.suspects}
-                      pinnedEvidenceIds={pinnedEvidenceIds}
-                      onPinEvidence={handlePinEvidence}
-                      onAdvanceEnvelope={handleAdvanceToNextEnvelope}
-                      onGoToAccusation={() => setGameView('ACCUSATION')}
-                      nextInspector={nextInspector}
-                      onPassTurn={handlePassTurn}
-                      isEnvelopeCompleted={isEnvelopeCompleted}
-                    />
-                  )
-                )}
+        {/* Active Envelope Inbox Screen: Either the active dossier OR the clean Waiting Screen */}
+        {gameView === 'ENVELOPE_ACTIVE' && (
+          !isMyTurn ? (
+            /* Other players see ONLY logo and active inspector name */
+            <WaitingTurnView
+              currentEnvelope={currentEnvelope}
+              totalEnvelopes={totalEnvelopes}
+              activeInspectorName={currentInspectorName}
+              activeInspectorRole={currentInspectorRole}
+            />
+          ) : (
+            /* Active inspector sees their confidential dossier */
+            <PlayerInboxView
+              player={activePlayer}
+              allPlayers={players}
+              totalPlayers={onlineRoom?.playerCount || playerCount}
+              currentEnvelope={currentEnvelope}
+              totalEnvelopes={totalEnvelopes}
+              evidenceList={scenario.evidence}
+              suspects={scenario.suspects}
+              onAdvanceEnvelope={handleAdvanceToNextEnvelope}
+              onGoToAccusation={() => setGameView('ACCUSATION')}
+              nextInspector={nextInspector}
+              onPassTurn={handlePassTurn}
+              isEnvelopeCompleted={isEnvelopeCompleted}
+            />
+          )
+        )}
 
-                {/* Final Accusation & Debate Phase */}
-                {gameView === 'ACCUSATION' && (
-                  <AccusationPhase
-                    scenario={scenario}
-                    players={players}
-                    suspects={scenario.suspects}
-                    activePlayerId={activePlayerId}
-                    submissions={submissions}
-                    onSubmitVote={handleSubmitVote}
-                    onProceedToVerdict={handleProceedToVerdict}
-                  />
-                )}
+        {/* Final Accusation & Debate Phase */}
+        {gameView === 'ACCUSATION' && (
+          <AccusationPhase
+            scenario={scenario}
+            players={players}
+            suspects={scenario.suspects}
+            activePlayerId={activePlayerId}
+            submissions={submissions}
+            onSubmitVote={handleSubmitVote}
+            onProceedToVerdict={handleProceedToVerdict}
+          />
+        )}
 
-                {/* Final Verdict & Scorecard Screen */}
-                {gameView === 'FINAL_VERDICT' && (
-                  <CaseResolution
-                    scenario={scenario}
-                    players={players}
-                    submissions={submissions}
-                    pinnedCount={pinnedItems.length}
-                    gateAttempts={gateAttempts}
-                    onRestartGame={handleStartGame}
-                    onBackToLobby={() => {
-                      setGameView('LOBBY');
-                      setOnlineRoomCode(null);
-                    }}
-                    currentUser={currentUser}
-                    onOpenAuthModal={() => setIsAuthModalOpen(true)}
-                  />
-                )}
-              </>
-            )}
-          </>
+        {/* Final Verdict & Scorecard Screen */}
+        {gameView === 'FINAL_VERDICT' && (
+          <CaseResolution
+            scenario={scenario}
+            players={players}
+            submissions={submissions}
+            gateAttempts={gateAttempts}
+            onRestartGame={handleStartGame}
+            onBackToLobby={() => {
+              setGameView('LOBBY');
+              setOnlineRoomCode(null);
+            }}
+            currentUser={currentUser}
+            onOpenAuthModal={() => setIsAuthModalOpen(true)}
+          />
         )}
       </main>
 

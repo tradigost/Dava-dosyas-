@@ -65,7 +65,8 @@ test('calculateDetectiveScore computes high tier for accurate deduction', () => 
     correctSuspectSelected: true,
     correctMotiveSelected: true,
     correctEvidenceSelected: true,
-    pinnedCount: 5,
+    quizCorrectCount: 3,
+    quizTotalCount: 3,
     gateAttempts: 3
   });
   assert.equal(perfect.totalScore, 100);
@@ -75,9 +76,11 @@ test('calculateDetectiveScore computes high tier for accurate deduction', () => 
     correctSuspectSelected: true,
     correctMotiveSelected: false,
     correctEvidenceSelected: true,
-    pinnedCount: 2,
+    quizCorrectCount: 1,
+    quizTotalCount: 3,
     gateAttempts: 4
   });
-  assert.equal(moderate.totalScore, 69);
+  // quiz: 13, suspect: 30, motive: 0, evidence: 15 -> total: 58
+  assert.equal(moderate.totalScore, 58);
   assert.equal(moderate.rankTitle, 'Adli Vaka Araştırmacısı');
 });

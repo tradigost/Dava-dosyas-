@@ -32,7 +32,6 @@ interface CaseResolutionProps {
   scenario: CaseScenario;
   players: Player[];
   submissions: Record<string, AccusationSubmission>;
-  pinnedCount: number;
   gateAttempts: number;
   onRestartGame: () => void;
   onBackToLobby: () => void;
@@ -44,7 +43,6 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
   scenario,
   players,
   submissions,
-  pinnedCount,
   gateAttempts,
   onRestartGame,
   onBackToLobby,
@@ -234,7 +232,6 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
               correctEvidenceSelected: isEvidenceCorrect,
               quizCorrectCount,
               quizTotalCount: gateEntries.length,
-              pinnedCount,
               gateAttempts,
             });
 

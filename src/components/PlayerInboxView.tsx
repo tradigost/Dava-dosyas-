@@ -8,7 +8,6 @@ import { Player, EvidenceItem, EnvelopeNumber, Suspect } from '../types';
 import { soundManager } from '../utils/audioEffects';
 import { 
   FileText, 
-  Pin, 
   ShieldAlert, 
   ArrowRight,
   Headphones,
@@ -29,8 +28,6 @@ interface PlayerInboxViewProps {
   totalEnvelopes?: number;
   evidenceList: EvidenceItem[];
   suspects?: Suspect[];
-  pinnedEvidenceIds: Set<string>;
-  onPinEvidence: (title: string, excerpt: string, category: string, evidenceId?: string) => void;
   onAdvanceEnvelope?: () => void;
   onGoToAccusation: () => void;
   nextInspector?: Player | null;
@@ -45,8 +42,6 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
   currentEnvelope,
   totalEnvelopes = 3,
   evidenceList,
-  pinnedEvidenceIds,
-  onPinEvidence,
   onAdvanceEnvelope,
   onGoToAccusation,
 }) => {
@@ -169,7 +164,6 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {displayedEvidenceList.map((ev, idx) => {
             const isSelected = activeEvidence?.id === ev.id;
-            const isPinned = pinnedEvidenceIds.has(ev.id);
             return (
               <button
                 key={ev.id}
@@ -186,7 +180,6 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>Dosya {idx + 1}: {ev.title}</span>
-                {isPinned && <Pin className="w-3 h-3 text-zinc-950 fill-current" />}
               </button>
             );
           })}
@@ -322,35 +315,6 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
             <div className="p-4 bg-zinc-950/70 border border-zinc-800/80 rounded-xl text-xs sm:text-sm text-zinc-300 whitespace-pre-line leading-relaxed font-mono max-h-80 overflow-y-auto">
               {activeEvidence.fullReport}
             </div>
-          </div>
-
-          {/* Pin to Common Board Button */}
-          <div className="pt-2">
-            <button
-              type="button"
-              onClick={() => {
-                soundManager.playPinSound();
-                onPinEvidence(
-                  activeEvidence.title,
-                  activeEvidence.summary,
-                  activeEvidence.category,
-                  activeEvidence.id
-                );
-              }}
-              disabled={pinnedEvidenceIds.has(activeEvidence.id)}
-              className={`w-full py-3 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 ${
-                pinnedEvidenceIds.has(activeEvidence.id)
-                  ? 'bg-zinc-800 text-zinc-400 cursor-not-allowed border border-zinc-700'
-                  : 'bg-amber-600 hover:bg-amber-500 text-zinc-950 cursor-pointer'
-              }`}
-            >
-              <Pin className="w-4 h-4" />
-              <span>
-                {pinnedEvidenceIds.has(activeEvidence.id)
-                  ? 'Panoya Yansıtıldı ✓'
-                  : '📌 Bu Bulguyu Ortak Panoya Yansıt (Arkadaşın da Görsün)'}
-              </span>
-            </button>
           </div>
 
         </div>

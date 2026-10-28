@@ -154,7 +154,6 @@ export function calculateDetectiveScore(params: {
   correctEvidenceSelected: boolean;
   quizCorrectCount?: number;
   quizTotalCount?: number;
-  pinnedCount?: number;
   gateAttempts?: number;
 }): {
   totalScore: number;
@@ -188,10 +187,8 @@ export function calculateDetectiveScore(params: {
   // 4. Evidence accuracy (15 pts)
   const evidenceScore = params.correctEvidenceSelected ? 15 : 0;
 
-  // Bonus: pinned evidence collaboration (up to 5 pts bonus)
-  const bonusScore = Math.min((params.pinnedCount || 0) * 1, 5);
-
-  const totalScore = Math.min(100, quizScore + suspectScore + motiveScore + evidenceScore + bonusScore);
+  const bonusScore = 0;
+  const totalScore = Math.min(100, quizScore + suspectScore + motiveScore + evidenceScore);
 
   let rankTitle = 'Stajyer Dedektif';
   let badge = '🔍';
