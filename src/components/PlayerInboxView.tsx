@@ -27,7 +27,9 @@ interface PlayerInboxViewProps {
   allPlayers?: Player[];
   totalPlayers?: number;
   currentEnvelope: EnvelopeNumber;
+  unlockedEnvelope?: number;
   totalEnvelopes?: number;
+  onSelectEnvelope?: (envNum: number) => void;
   evidenceList: EvidenceItem[];
   suspects?: Suspect[];
   onAdvanceEnvelope?: () => void;
@@ -42,11 +44,14 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
   allPlayers = [],
   totalPlayers = 2,
   currentEnvelope,
+  unlockedEnvelope,
   totalEnvelopes = 3,
+  onSelectEnvelope,
   evidenceList,
   onAdvanceEnvelope,
   onGoToAccusation,
 }) => {
+  const effectiveUnlocked = unlockedEnvelope !== undefined ? unlockedEnvelope : currentEnvelope;
   const isSoloMode = totalPlayers === 1 || allPlayers.length === 1;
   const isTwoPlayerMode = !isSoloMode && (totalPlayers === 2 || allPlayers.length === 2);
 
@@ -133,6 +138,100 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
 
   return (
     <div className="max-w-3xl mx-auto space-y-4 pb-12">
+
+      {/* Envelope Navigation & Archive Switcher Tabs */}
+      <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-2.5 sm:p-3 shadow-lg flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-mono text-zinc-400 font-bold uppercase tracking-wider pl-1">
+            ZARFLAR:
+          </span>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {Array.from({ length: totalEnvelopes }).map((_, idx) => {
+              const envNum = idx + 1;
+              const isUnlocked = envNum <= effectiveUnlocked;
+              const isViewing = envNum === currentEnvelope;
+
+              return (
+                <button
+                  key={envNum}
+                  type="button"
+                  disabled={!isUnlocked}
+                  onClick={() => {
+                    if (isUnlocked && onSelectEnvelope) {
+                      soundManager.playKeyClick();
+                      onSelectEnvelope(envNum);
+                    }
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border flex items-center gap-1.5 ${
+                    isViewing
+                      ? 'bg-amber-600 text-zinc-950 border-amber-400 shadow-md ring-1 ring-amber-400/40 cursor-default'
+                      : isUnlocked
+                      ? 'bg-zinc-900 border-zinc-700 text-zinc-300 hover:border-amber-500 hover:text-amber-300 cursor-pointer active:scale-95'
+                      : 'bg-zinc-950/80 border-zinc-900 text-zinc-600 cursor-not-allowed opacity-50'
+                  }`}
+                  title={
+                    isViewing
+                      ? `Zarf ${envNum} (Şu an incelenen dosya)`
+                      : isUnlocked
+                      ? `Zarf ${envNum} Arşivine Göz At`
+                      : `Zarf ${envNum} Henüz Açılmadı`
+                  }
+                >
+                  <span>Zarf {envNum}</span>
+                  {!isUnlocked ? (
+                    <span className="text-[10px]">🔒</span>
+                  ) : isViewing ? (
+                    <span className="text-[9px] bg-zinc-950/40 px-1 py-0.5 rounded text-zinc-950 font-sans font-bold">Aktif</span>
+                  ) : (
+                    <span className="text-[10px] text-emerald-400">✓</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Quick jump to latest open envelope if browsing archive */}
+        {currentEnvelope < effectiveUnlocked && (
+          <button
+            type="button"
+            onClick={() => {
+              if (onSelectEnvelope) {
+                soundManager.playKeyClick();
+                onSelectEnvelope(effectiveUnlocked);
+              }
+            }}
+            className="px-3 py-1.5 rounded-xl bg-amber-950/70 border border-amber-500/60 text-amber-300 text-xs font-bold hover:bg-amber-900/80 transition-all flex items-center gap-1 cursor-pointer shrink-0"
+          >
+            <span>Açık Zarfa Dön (Zarf {effectiveUnlocked})</span>
+            <ArrowRight className="w-3.5 h-3.5 text-amber-400" />
+          </button>
+        )}
+      </div>
+
+      {/* Archive Warning Banner when reviewing previous envelopes */}
+      {currentEnvelope < effectiveUnlocked && (
+        <div className="p-3 bg-amber-950/40 border border-amber-500/50 rounded-2xl text-xs text-amber-200 flex flex-wrap items-center justify-between gap-3 shadow-md">
+          <div className="flex items-center gap-2">
+            <span className="text-base">📜</span>
+            <p>
+              <strong>ARŞİV İNCELEME MODU:</strong> Şu an daha önce açılmış olan <strong>Zarf {currentEnvelope}</strong> belgelerini inceliyorsunuz. Masanızın ulaştığı en güncel açık zarf: <strong>Zarf {effectiveUnlocked}</strong>.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (onSelectEnvelope) {
+                soundManager.playKeyClick();
+                onSelectEnvelope(effectiveUnlocked);
+              }
+            }}
+            className="px-2.5 py-1 rounded-lg bg-amber-600 text-zinc-950 font-bold text-xs hover:bg-amber-500 transition-all cursor-pointer shrink-0"
+          >
+            Zarf {effectiveUnlocked}’e Git →
+          </button>
+        </div>
+      )}
 
       {/* Detective & Envelope Header Bar */}
       <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg">
@@ -436,9 +535,33 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
         </div>
       ) : null}
 
-      {/* Direct Envelope Advancement Buttons */}
+      {/* Direct Envelope Advancement & Navigation Buttons */}
       <div className="pt-2 space-y-2">
-        {currentEnvelope < totalEnvelopes ? (
+        {currentEnvelope < effectiveUnlocked ? (
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playKeyClick();
+                if (onSelectEnvelope) onSelectEnvelope(effectiveUnlocked);
+              }}
+              className="w-full py-3.5 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>← Arşivden Çık: Güncel Açık Zarfa Dön (Zarf {effectiveUnlocked})</span>
+              <ArrowRight className="w-4 h-4 text-zinc-950" />
+            </button>
+            {effectiveUnlocked >= totalEnvelopes && (
+              <button
+                type="button"
+                onClick={onGoToAccusation}
+                className="w-full py-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 font-medium rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <ShieldAlert className="w-4 h-4 text-amber-400" />
+                <span>Final Suçlama ve Test Aşamasına Doğrudan Geç &rarr;</span>
+              </button>
+            )}
+          </div>
+        ) : effectiveUnlocked < totalEnvelopes ? (
           <button
             type="button"
             onClick={() => {
@@ -447,7 +570,7 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
             }}
             className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-800 border-2 border-amber-500/60 hover:border-amber-400 text-amber-300 font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer ring-2 ring-amber-500/20"
           >
-            <span>✓ Zarf {currentEnvelope} İncelendi — Zarf {currentEnvelope + 1}’i Aç</span>
+            <span>✓ Zarf {effectiveUnlocked} İncelendi — Zarf {effectiveUnlocked + 1}’i Aç</span>
             <ArrowRight className="w-4 h-4 text-amber-400" />
           </button>
         ) : (
@@ -461,7 +584,7 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
           </button>
         )}
         <p className="text-[11px] text-zinc-400 text-center font-sans">
-          * Masadaki arkadaşınızla dosyaları inceleyip tartıştığınızda bir sonraki zarfa geçebilirsiniz.
+          * İstediğiniz zaman yukarıdaki zarf sekmelerinden önceki zarflara dönüp belgeleri tekrar inceleyebilirsiniz.
         </p>
       </div>
 

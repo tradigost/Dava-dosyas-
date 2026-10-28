@@ -71,6 +71,7 @@ export default function App() {
   // Active game view
   const [gameView, setGameView] = useState<GameView>('LOBBY');
   const [currentEnvelope, setCurrentEnvelope] = useState<EnvelopeNumber>(1);
+  const [viewingEnvelope, setViewingEnvelope] = useState<EnvelopeNumber>(1);
   const [activePlayerId, setActivePlayerId] = useState<string>('p-1');
   const [isGateModalOpen, setIsGateModalOpen] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
@@ -141,6 +142,10 @@ export default function App() {
         setCurrentEnvelope(room.currentEnvelope);
         setSelectedScenarioId(room.scenarioId);
         setGateAttempts(room.gateAttempts || 0);
+
+        if (room.currentEnvelope) {
+          setViewingEnvelope((prev) => (room.currentEnvelope > prev ? room.currentEnvelope : prev));
+        }
 
         if (room.status === 'briefing') {
           setGameView('BRIEFING');
@@ -275,9 +280,11 @@ export default function App() {
     if (onlineRoomCode) {
       await setOnlineRoomStatus(onlineRoomCode, 'briefing');
       await advanceOnlineRoomEnvelope(onlineRoomCode, 1);
+      setViewingEnvelope(1);
     } else {
       setGameView('BRIEFING');
       setCurrentEnvelope(1);
+      setViewingEnvelope(1);
       setActivePlayerId(players[0].id);
       setLocalInspectorId(null);
       setLocalEnvelopeCompleted(false);
@@ -334,6 +341,10 @@ export default function App() {
     });
   };
 
+  const handleSelectEnvelope = (envNum: number) => {
+    setViewingEnvelope(envNum as EnvelopeNumber);
+  };
+
   const handleAdvanceToNextEnvelope = async () => {
     setIsGateModalOpen(false);
     const nextEnv = currentEnvelope + 1;
@@ -353,6 +364,7 @@ export default function App() {
 
       if (onlineRoomCode) {
         await advanceOnlineRoomEnvelope(onlineRoomCode, nextEnv, totalEnvelopes);
+        setViewingEnvelope(nextEnv);
         await passEnvelopeInspectorTurn(onlineRoomCode, {
           id: firstInspector.id,
           name: firstInspector.name,
@@ -360,6 +372,7 @@ export default function App() {
         });
       } else {
         setCurrentEnvelope(nextEnv);
+        setViewingEnvelope(nextEnv);
         setLocalInspectorId(firstInspector.id);
         setActivePlayerId(firstInspector.id);
         setLocalEnvelopeCompleted(false);
@@ -395,6 +408,7 @@ export default function App() {
     } else {
       setGameView('FINAL_VERDICT');
       setCurrentEnvelope(totalEnvelopes + 1);
+      setViewingEnvelope(totalEnvelopes + 1);
     }
   };
 
@@ -411,6 +425,8 @@ export default function App() {
     }
   };
 
+  const unlockedEnvelope = onlineRoom?.currentEnvelope || currentEnvelope;
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans">
       {/* Top Bar (only visible when actively playing an envelope or viewing board) */}
@@ -421,8 +437,10 @@ export default function App() {
           onSelectPlayer={(id) => {
             setActivePlayerId(id);
           }}
-          currentEnvelope={currentEnvelope}
+          currentEnvelope={viewingEnvelope}
+          unlockedEnvelope={unlockedEnvelope}
           totalEnvelopes={totalEnvelopes}
+          onSelectEnvelope={handleSelectEnvelope}
         />
       )}
 
@@ -462,7 +480,7 @@ export default function App() {
           !isMyTurn ? (
             /* Other players see ONLY logo and active inspector name */
             <WaitingTurnView
-              currentEnvelope={currentEnvelope}
+              currentEnvelope={viewingEnvelope}
               totalEnvelopes={totalEnvelopes}
               activeInspectorName={currentInspectorName}
               activeInspectorRole={currentInspectorRole}
@@ -473,8 +491,10 @@ export default function App() {
               player={activePlayer}
               allPlayers={players}
               totalPlayers={onlineRoom?.playerCount || playerCount}
-              currentEnvelope={currentEnvelope}
+              currentEnvelope={viewingEnvelope}
+              unlockedEnvelope={unlockedEnvelope}
               totalEnvelopes={totalEnvelopes}
+              onSelectEnvelope={handleSelectEnvelope}
               evidenceList={scenario.evidence}
               suspects={scenario.suspects}
               onAdvanceEnvelope={handleAdvanceToNextEnvelope}

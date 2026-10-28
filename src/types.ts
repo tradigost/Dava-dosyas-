@@ -122,6 +122,7 @@ export interface CaseSolution {
     proof: string;
   }[];
   verdictSummary: string;
+  confessionLetter?: string;
   confessionAudioTranscript?: string;
 }
 

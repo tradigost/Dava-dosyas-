@@ -346,16 +346,42 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
         </div>
       )}
 
-      {/* 5. FAİLİN İTİRAFI VEYA SORGU TUTANAĞI */}
-      {solution.confessionAudioTranscript && (
-        <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6">
-          <h3 className="font-cinzel text-base sm:text-lg font-bold text-zinc-100 mb-3 flex items-center gap-2">
-            <AlertOctagon className="w-5 h-5 text-rose-500" />
-            {solution.culpritName} &mdash; Sorgu ve İtiraf Kaydı
-          </h3>
-          <div className="p-4 bg-zinc-900/80 border border-zinc-800 rounded-xl font-typewriter text-xs text-zinc-300 whitespace-pre-line leading-relaxed">
-            {solution.confessionAudioTranscript}
+      {/* 5. KATİLİN GİZLİ İTİRAF MEKTUBU & ADLİ İTİRAF ZAPTI */}
+      {(solution.confessionLetter || solution.confessionAudioTranscript) && (
+        <div className="bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 border-2 border-rose-900/60 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-rose-900/40">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-rose-950/80 border border-rose-600/50 flex items-center justify-center text-rose-400 shrink-0">
+                <FileText className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono font-bold tracking-widest text-rose-400 uppercase block">
+                  ADLİ EMANET KASASI · RESMİ DELİL #İTR-FINAL
+                </span>
+                <h3 className="font-cinzel text-lg sm:text-xl font-bold text-amber-200">
+                  Katilin Gizli İtiraf Mektubu & Suçun İtirafı
+                </h3>
+              </div>
+            </div>
+            <span className="text-[11px] font-mono px-3 py-1 rounded-lg bg-rose-950/60 border border-rose-600/40 text-rose-300 font-bold">
+              FAİL: {solution.culpritName.toUpperCase()}
+            </span>
           </div>
+
+          {solution.confessionLetter && (
+            <div className="p-5 sm:p-6 bg-zinc-950/90 rounded-2xl border border-rose-900/40 font-mono text-xs sm:text-sm text-zinc-300 whitespace-pre-line leading-relaxed relative">
+              <span className="text-rose-400 font-bold block mb-2 font-cinzel text-xs uppercase tracking-wider">
+                [OYLAMA SONRASI AÇILAN GİZLİ İTİRAF BELGESİ]
+              </span>
+              {solution.confessionLetter}
+            </div>
+          )}
+
+          {solution.confessionAudioTranscript && !solution.confessionLetter && (
+            <div className="p-4 bg-zinc-950/90 border border-rose-900/40 rounded-xl font-mono text-xs text-zinc-300 whitespace-pre-line leading-relaxed">
+              {solution.confessionAudioTranscript}
+            </div>
+          )}
         </div>
       )}
 
