@@ -13,10 +13,10 @@ import {
   ShieldCheck, 
   UserCheck, 
   Flame, 
-  HelpCircle, 
-  Award,
   Users2,
-  FileCheck
+  FileCheck,
+  AlertTriangle,
+  RotateCcw
 } from 'lucide-react';
 
 interface AccusationPhaseProps {
@@ -38,8 +38,14 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
   onSubmitVote,
   onProceedToVerdict,
 }) => {
-  const activePlayer = players.find((p) => p.id === activePlayerId) || players[0];
-  const currentSub = submissions[activePlayer.id];
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string>(activePlayerId);
+
+  useEffect(() => {
+    setSelectedPlayerId(activePlayerId);
+  }, [activePlayerId]);
+
+  const effectivePlayer = players.find((p) => p.id === selectedPlayerId) || players[0];
+  const currentSub = submissions[effectivePlayer.id];
 
   const [selectedSuspectId, setSelectedSuspectId] = useState<string>(currentSub?.suspectId || '');
   const [selectedMotive, setSelectedMotive] = useState<string>(currentSub?.motiveId || '');
@@ -47,6 +53,7 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
   const [quizAnswers, setQuizAnswers] = useState<Record<number, string>>(
     currentSub?.quizAnswers || {}
   );
+  const [validationWarning, setValidationWarning] = useState<string | null>(null);
 
   // 120s debate timer
   const [debateTimeLeft, setDebateTimeLeft] = useState<number>(120);
@@ -66,7 +73,8 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
       setSelectedEvidence('');
       setQuizAnswers({});
     }
-  }, [currentSub, activePlayerId]);
+    setValidationWarning(null);
+  }, [currentSub, selectedPlayerId]);
 
   const allPlayersVoted = players.every((p) => !!submissions[p.id]);
 
@@ -139,7 +147,7 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
     },
     ...scenario.evidence
       .filter((ev) => ev.title !== scenario.solution.keyEvidenceTitle)
-      .slice(0, 3)
+      .slice(0, 4)
       .map((ev) => ({
         id: `evidence-${ev.id}`,
         label: ev.title,
@@ -165,7 +173,18 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
   };
 
   const handleLockVote = () => {
-    if (!selectedSuspectId || !selectedMotive || !selectedEvidence) return;
+    const missing: string[] = [];
+    if (!selectedSuspectId) missing.push('1. Katil Adayı (Şüpheli)');
+    if (!selectedMotive) missing.push('2. Suç Motifi (Cinayet Sebebi)');
+    if (!selectedEvidence) missing.push('3. Kilit Kanıt');
+
+    if (missing.length > 0) {
+      soundManager.playErrorSound();
+      setValidationWarning(`Kararınızı kilitlemek için lütfen aşağıdaki eksik alanları seçin: ${missing.join(', ')}.`);
+      return;
+    }
+
+    setValidationWarning(null);
 
     // Calculate individual score
     let correctQuizCount = 0;
@@ -190,10 +209,12 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
     const individualTotal = quizScore + suspectScore + motiveScore + evidenceScore;
 
     soundManager.playPinSound();
+    soundManager.playSuccessSound();
+
     onSubmitVote({
-      playerId: activePlayer.id,
-      playerName: activePlayer.name,
-      role: activePlayer.role,
+      playerId: effectivePlayer.id,
+      playerName: effectivePlayer.name,
+      role: effectivePlayer.role,
       suspectId: selectedSuspectId,
       motiveId: selectedMotive,
       evidenceId: selectedEvidence,
@@ -218,17 +239,50 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
             </div>
             <p className="text-xs text-zinc-300 mt-1 max-w-2xl leading-relaxed">
               Katil oylaması <strong>ortak masa kararıdır</strong>: Çoğunluk gerçek katili bulursa masa oyunu kazanır. 
-              Aşağıdaki soruşturma test soruları ise dedektiflere <strong>bireysel başarı puanı</strong> kazandırır!
+              Soruşturma sınav soruları ise dedektiflere <strong>bireysel başarı puanı</strong> (100 üzerinden) kazandırır!
             </p>
           </div>
 
-          <div className="flex items-center gap-2 bg-zinc-950 px-3 py-1.5 rounded-lg border border-zinc-800 text-xs">
+          <div className="flex items-center gap-2 bg-zinc-950 px-3.5 py-2 rounded-xl border border-zinc-800 text-xs">
             <UserCheck className="w-4 h-4 text-emerald-400" />
-            <span className="text-zinc-300">
+            <span className="text-zinc-300 font-mono">
               Kilitlenen Oylar: <strong className="text-emerald-400">{Object.keys(submissions).length} / {players.length}</strong>
             </span>
           </div>
         </div>
+
+        {/* Multi-Player Seat Switcher Bar */}
+        {players.length > 1 && (
+          <div className="mt-4 pt-3 border-t border-zinc-800/80 flex items-center gap-2 overflow-x-auto scrollbar-none">
+            <span className="text-[11px] font-mono text-zinc-400 whitespace-nowrap">
+              Dedektif Koltuğu:
+            </span>
+            {players.map((p) => {
+              const isSelected = p.id === effectivePlayer.id;
+              const hasVoted = Boolean(submissions[p.id]);
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => {
+                    soundManager.playKeyClick();
+                    setSelectedPlayerId(p.id);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap border ${
+                    isSelected
+                      ? 'bg-amber-600 text-zinc-950 border-amber-400 shadow-md font-bold'
+                      : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  <span>{p.name} ({p.role.toUpperCase()})</span>
+                  {hasVoted && (
+                    <span className="text-[10px] text-emerald-400 font-mono">✓ Kilitlendi</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Debate Timer Bar if triggered */}
         {isDebateActive && (
@@ -265,17 +319,35 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-amber-500 animate-ping" />
             <h3 className="font-bold text-sm sm:text-base text-zinc-100">
-              📱 {activePlayer.name} ({activePlayer.role.toUpperCase()}) Karar ve Sınav Kağıdı
+              📱 {effectivePlayer.name} ({effectivePlayer.role.toUpperCase()}) Karar ve Sınav Kağıdı
             </h3>
           </div>
           {currentSub ? (
-            <span className="text-xs text-emerald-400 flex items-center gap-1 font-semibold">
-              <CheckCircle className="w-3.5 h-3.5" /> OYUNUZ KİLİTLENDİ (Skor: {currentSub.individualScore || 0}/100)
+            <span className="text-xs text-emerald-400 flex items-center gap-1 font-bold">
+              <CheckCircle className="w-4 h-4" /> OYUNUZ KİLİTLENDİ ({currentSub.individualScore || 0}/100 Puan)
             </span>
           ) : (
             <span className="text-xs text-amber-400 font-medium">Karar Bekleniyor</span>
           )}
         </div>
+
+        {/* Lock feedback banner if already submitted */}
+        {currentSub && (
+          <div className="p-3.5 bg-emerald-950/70 border border-emerald-600/60 rounded-xl text-emerald-200 text-xs flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
+              <div>
+                <p className="font-bold">Oyunuz ve Sınavınız Başarıyla Kilitlendi!</p>
+                <p className="text-[11px] text-emerald-300/80 mt-0.5">
+                  Tahmini Bireysel Puanınız: <strong>{currentSub.individualScore || 0} / 100 Puan</strong> &mdash; Dilerseniz seçimlerinizi değiştirip tekrar kilitleyebilirsiniz.
+                </p>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono bg-emerald-900/80 px-2.5 py-1 rounded text-emerald-300 font-bold shrink-0">
+              KAYDEDİLDİ ✓
+            </span>
+          </div>
+        )}
 
         {/* 1. Final Adli Soruşturma Sınavı (Bireysel Puan Kazandıran Test Soruları) */}
         {gateEntries.length > 0 && (
@@ -292,7 +364,7 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
               </span>
             </div>
             <p className="text-xs text-zinc-400">
-              Her zarftaki bulguları ne kadar dikkatli incelediniz? Soruları doğru yanıtlayarak dedektiflik puanınızı yükseltin:
+              Zarflardaki bulguları ne kadar dikkatli incelediniz? Aşağıdaki soruları yanıtlayarak bireysel dedektiflik puanınızı yükseltin:
             </p>
 
             <div className="space-y-4">
@@ -317,10 +389,10 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
                             key={option.id || optIdx}
                             type="button"
                             onClick={() => handleSelectQuizAnswer(envelopeNum, option.id)}
-                            className={`p-2.5 rounded-lg border text-left text-xs transition-all flex items-center gap-2 ${
+                            className={`p-2.5 rounded-lg border text-left text-xs transition-all flex items-center gap-2 cursor-pointer ${
                               isChosen
                                 ? 'bg-amber-950/70 border-amber-500 text-amber-100 font-semibold shadow-sm ring-1 ring-amber-500/40'
-                                : 'bg-zinc-900/50 border-zinc-800 text-zinc-300 hover:border-zinc-700'
+                                : 'bg-zinc-900/50 border-zinc-800 text-zinc-300 hover:border-zinc-700 hover:text-zinc-100'
                             }`}
                           >
                             <span className={`w-4 h-4 rounded-full border shrink-0 flex items-center justify-center text-[10px] ${
@@ -341,17 +413,17 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
         )}
 
         {/* 2. Katil Suçlaması (Ortak Masa Oylaması Bölümü) */}
-        <div className="p-4 sm:p-5 bg-zinc-900/40 border border-zinc-800 rounded-2xl space-y-4">
+        <div className="p-4 sm:p-5 bg-zinc-900/40 border border-zinc-800 rounded-2xl space-y-5">
           <div className="flex items-center gap-2 border-b border-zinc-800 pb-2">
             <Users2 className="w-5 h-5 text-amber-500" />
             <h4 className="font-cinzel font-bold text-sm text-zinc-100">
-              Aşama 2: Katil Suçlama & Ortak Masa Oylaması
+              Aşama 2: Katil Suçlama & Ortak Masa Oylaması (60 Puan)
             </h4>
           </div>
 
           {/* Suspect Selection */}
-          <div>
-            <label className="text-xs font-typewriter uppercase tracking-wider text-amber-300/90 block mb-2">
+          <div className={`p-3 rounded-xl border transition-colors ${!selectedSuspectId && validationWarning ? 'border-rose-500/80 bg-rose-950/20' : 'border-transparent'}`}>
+            <label className="text-xs font-typewriter uppercase tracking-wider text-amber-300/90 block mb-2 font-bold">
               1. Katil Adayınız Kim? (Masanın Çoğunluk Oyu Belirleyicidir):
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -364,10 +436,11 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
                     onClick={() => {
                       soundManager.playKeyClick();
                       setSelectedSuspectId(suspect.id);
+                      setValidationWarning(null);
                     }}
-                    className={`p-3.5 rounded-xl border text-left transition-all relative ${
+                    className={`p-3.5 rounded-xl border text-left transition-all relative cursor-pointer ${
                       isSelected
-                        ? 'bg-amber-950/70 border-amber-500 text-amber-100 shadow-md ring-1 ring-amber-500/50'
+                        ? 'bg-amber-950/70 border-amber-500 text-amber-100 shadow-md ring-2 ring-amber-500/50'
                         : 'bg-zinc-900/50 border-zinc-800 text-zinc-300 hover:border-zinc-700'
                     }`}
                   >
@@ -389,8 +462,8 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
           </div>
 
           {/* Motive Selection */}
-          <div className="mt-4">
-            <label className="text-xs font-typewriter uppercase tracking-wider text-amber-300/90 block mb-2">
+          <div className={`p-3 rounded-xl border transition-colors ${!selectedMotive && validationWarning ? 'border-rose-500/80 bg-rose-950/20' : 'border-transparent'}`}>
+            <label className="text-xs font-typewriter uppercase tracking-wider text-amber-300/90 block mb-2 font-bold">
               2. Asıl Motif (Cinayet / Hırsızlık Sebebi):
             </label>
             <div className="space-y-2">
@@ -403,10 +476,11 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
                     onClick={() => {
                       soundManager.playKeyClick();
                       setSelectedMotive(motive.id);
+                      setValidationWarning(null);
                     }}
-                    className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all flex items-center gap-2.5 ${
+                    className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all flex items-center gap-2.5 cursor-pointer ${
                       isSelected
-                        ? 'bg-amber-950/70 border-amber-500 text-amber-100 font-semibold shadow-md'
+                        ? 'bg-amber-950/70 border-amber-500 text-amber-100 font-semibold shadow-md ring-1 ring-amber-500/40'
                         : 'bg-zinc-900/40 border-zinc-800 text-zinc-300 hover:border-zinc-700'
                     }`}
                   >
@@ -425,8 +499,8 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
           </div>
 
           {/* Key Evidence Selection */}
-          <div className="mt-4">
-            <label className="text-xs font-typewriter uppercase tracking-wider text-amber-300/90 block mb-2">
+          <div className={`p-3 rounded-xl border transition-colors ${!selectedEvidence && validationWarning ? 'border-rose-500/80 bg-rose-950/20' : 'border-transparent'}`}>
+            <label className="text-xs font-typewriter uppercase tracking-wider text-amber-300/90 block mb-2 font-bold">
               3. Katili Ele Veren Kilit Kanıt:
             </label>
             <div className="space-y-2">
@@ -439,10 +513,11 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
                     onClick={() => {
                       soundManager.playKeyClick();
                       setSelectedEvidence(evi.id);
+                      setValidationWarning(null);
                     }}
-                    className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all flex items-center gap-2.5 ${
+                    className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all flex items-center gap-2.5 cursor-pointer ${
                       isSelected
-                        ? 'bg-amber-950/70 border-amber-500 text-amber-100 font-semibold shadow-md'
+                        ? 'bg-amber-950/70 border-amber-500 text-amber-100 font-semibold shadow-md ring-1 ring-amber-500/40'
                         : 'bg-zinc-900/40 border-zinc-800 text-zinc-300 hover:border-zinc-700'
                     }`}
                   >
@@ -461,26 +536,57 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
           </div>
         </div>
 
+        {/* Live Decision Summary Checklist */}
+        <div className="p-3.5 bg-zinc-900/80 border border-zinc-800 rounded-xl space-y-1.5 text-xs font-sans">
+          <div className="flex items-center justify-between">
+            <span className="text-zinc-400">1. Zarf Soruşturma Sınavı:</span>
+            <span className={Object.keys(quizAnswers).length >= gateEntries.length ? 'text-emerald-400 font-bold font-mono' : 'text-amber-400 font-mono'}>
+              {Object.keys(quizAnswers).length} / {gateEntries.length} Soru Yanıtlandı
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-zinc-400">2. Katil Adayı (Şüpheli):</span>
+            <span className={selectedSuspectId ? 'text-emerald-400 font-bold' : 'text-rose-400 font-semibold'}>
+              {selectedSuspectId ? `${suspects.find((s) => s.id === selectedSuspectId)?.name} ✓` : '⚠️ Seçilmedi'}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-zinc-400">3. Suç Motifi:</span>
+            <span className={selectedMotive ? 'text-emerald-400 font-bold' : 'text-rose-400 font-semibold'}>
+              {selectedMotive ? 'Seçildi ✓' : '⚠️ Seçilmedi'}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-zinc-400">4. Kilit Kanıt:</span>
+            <span className={selectedEvidence ? 'text-emerald-400 font-bold' : 'text-rose-400 font-semibold'}>
+              {selectedEvidence ? 'Seçildi ✓' : '⚠️ Seçilmedi'}
+            </span>
+          </div>
+        </div>
+
+        {/* Validation Warning Alert if any field is missing on click */}
+        {validationWarning && (
+          <div className="p-3 bg-rose-950/80 border border-rose-600 rounded-xl text-rose-200 text-xs flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+            <span>{validationWarning}</span>
+          </div>
+        )}
+
         {/* Lock In Button */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-zinc-800">
           <p className="text-xs text-zinc-400">
             {currentSub
-              ? 'Kararınız ve test yanıtlarınız sisteme kilitlendi. İsterseniz yukarıdan başka bir oyuncu telefonuna geçerek onların kararını verebilirsiniz.'
-              : 'Tüm sınav sorularını ve suçlama seçimlerinizi yaptıktan sonra oyunuzu kilitleyin.'}
+              ? 'Kararınız ve sınav yanıtlarınız kilitlendi. Dilerseniz yukarıdaki seçimleri güncelleyip butona tekrar basabilirsiniz.'
+              : 'Seçimlerinizi yaptıktan sonra butona basarak oyunuzu ve sınavınızı sisteme kilitleyin.'}
           </p>
 
           <button
             type="button"
-            disabled={!selectedSuspectId || !selectedMotive || !selectedEvidence}
             onClick={handleLockVote}
-            className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              selectedSuspectId && selectedMotive && selectedEvidence
-                ? 'bg-amber-600 hover:bg-amber-500 text-zinc-950 shadow-md cursor-pointer'
-                : 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
-            }`}
+            className="w-full sm:w-auto px-6 py-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-lg bg-amber-600 hover:bg-amber-500 text-zinc-950 cursor-pointer"
           >
             <ShieldCheck className="w-4 h-4" />
-            {currentSub ? 'Kararımı & Sınavımı Güncelle' : 'Kararımı & Sınavımı Kesinleştir'}
+            <span>{currentSub ? '✓ Kararımı ve Sınavımı Güncelle' : '🔒 Kararımı ve Sınavımı Kesinleştir'}</span>
           </button>
         </div>
       </div>

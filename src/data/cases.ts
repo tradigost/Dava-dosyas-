@@ -189,7 +189,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         envelope: 2,
         title: 'Adli Tıp Toksikoloji Raporu: Digitalis Zehirlenmesi',
         category: 'toxicology',
-        roleAccess: ['forensics', 'cryptology'],
+        roleAccess: ['forensics', 'cryptology', 'profiler', 'field'],
         summary: 'Maktulün kanında ve kırık fincan kalıntısında ölümcül dozda saf yüksükotu (Digitalis purpurea) glikozidi tespit edildi.',
         fullReport: 'Adli Tıp Kurumu Toksikoloji İhtisas Dairesi Raporu:\nMaktulün mide içeriğinde ve kırık fincanda 4.8 mg/L oranında Digoksin/Digitalis tespit edilmiştir. Bu oran normal kalp hastası terapisinin 10 katı olup 20-30 dakika içinde ventriküler fibrilasyon ve kalp durmasına neden olur. Zehrin tadı aromatik melisa çayıyla ustalıkla gizlenmiştir. Yüksükotu glikozitleri yalnızca profesyonel biyokimya laboratuvarlarında veya ileri düzey botanik restorasyon atölyelerinde saflaştırılabilir.',
         keyDeduction: 'Zehir ani tesir etmemiş, 23:10-23:20 sularında içilen çaya katılmıştır.',
@@ -207,7 +207,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         envelope: 2,
         title: 'Banu Ulusoy’un Çantasındaki Aşk Mektupları',
         category: 'interrogation',
-        roleAccess: ['profiler', 'field', 'archive'],
+        roleAccess: ['profiler', 'field', 'archive', 'forensics'],
         summary: 'Banu’nun olay gecesi kaçırdığı çantada çalıntı hançer değil; Hikmet’in genç ortağıyla yaşadığı gizli ilişkinin mektupları bulundu.',
         fullReport: 'Emniyet Kriminal İnceleme Tutanağı:\nŞüpheli Banu Ulusoy’un Bebek’teki galerisinde ele geçirilen siyah deri çantada yapılan aramada:\n- Zümrüt hançer veya ziynet eşyası BULUNMAMIŞTIR.\n- Çantada, Banu Ulusoy ile İzmirli bir antikacı arasında 2024 yılına ait el yazısı aşk mektupları ve otel rezervasyon dökümleri bulunmuştur.\n- Banu ifadesinde: "Hikmet mektupları öğrenirse beni tek kuruşsuz sokağa atacaktı. Kasada sakladığı mektupları geri almak için odaya girdim ama Hikmet çoktan fenalaşmıştı!" demiştir.',
         keyDeduction: 'Banu cinayet değil, şantaj ve itibarını kurtarma amacıyla hareket etmiştir (Yanıltıcı Şüpheli).',
@@ -224,7 +224,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         envelope: 3,
         title: 'Restorasyon Atölyesi ve Gizli Sahtecilik Defteri',
         category: 'document',
-        roleAccess: ['cryptology', 'archive', 'forensics'],
+        roleAccess: ['cryptology', 'archive', 'forensics', 'profiler', 'field'],
         summary: 'Yadigar Çelik’in atölyesindeki gizli dolapta, zümrüt hançerin sahte bir replikası ve digitalis saflaştırma cam tüpleri bulundu!',
         fullReport: 'Kriminalistik Arama El Koyma Tutanağı:\nYalı müştemilatındaki restorasyon laboratuvarında yapılan detaylı aramada:\n1. 18. yüzyıl zümrüt hançerin aslına uygun yapılmış reçine-zirkon replikası.\n2. Bir Alman kimya firmasından sipariş edilmiş saf digitalis tohumu faturası.\n3. Yadigar Çelik’in İsviçre UBS bankasında açılmış gizli hesabı: Hesaba son 3 yılda 2.4 Milyon Euro "Sanat Danışmanlığı" adı altında transfer edilmiştir.\n4. Hikmet Ulusoy’un ölmeden 2 saat önce yazdığı ve kasaya koyduğu not: "Yadigar, müzayedeye koyduğun hançerin sahte olduğunu anladım. Yarın sabah savcılıktasın."',
         keyDeduction: 'Katil Yadigar Çelik’tir! Hikmet sahteciliği çözünce ifşa olmamak için tansiyon çayına digitalis katmış ve suçu oğluna/eşine yıkmak için kasanın kapısını açık bırakmıştır.',
@@ -234,6 +234,24 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         metadata: {
           date: '20 Ekim 2026',
           caseRef: 'KRM-YADIGAR',
+          confidentiality: 'ÇOK GİZLİ',
+        }
+      },
+      {
+        id: 'ev-3-2',
+        envelope: 3,
+        title: 'Yadigar Çelik’in İkinci Sorgusu & Telsiz Çözümü',
+        category: 'audio',
+        roleAccess: ['profiler', 'forensics', 'archive'],
+        summary: 'Yadigar’ın restorasyon atölyesindeki mikrofon kayıtları ve çelişkili ifadelerinin psikolojik analizi.',
+        fullReport: 'Cinayet Masası İkinci Sorgu Tutanağı:\nYadigar Çelik sorgu odasındaki kamera karşısında maktulün son günlerde unutkan olduğunu öne sürmüş, ancak İsviçre banka hesap hareketleri ve kasanın dijital logları kendisine sunulunca terlemeye başlamış ve sessiz kalma hakkını kullanmak istemiştir.\nPsikolojik Profil Uzmanı Notu: Şüpheli sadık çalışan maskesinin ardında narsistik bir haklılık duygusu barındırıyor; kurbanı "hak ettiğini" düşünmektedir.',
+        keyDeduction: 'Yadigar’ın alibisi tamamen çökmüş, suçluluk psikolojisi gözlemlenmiştir.',
+        mediaType: 'audio',
+        mediaUrl: '',
+        mediaCaption: 'Sorgu Odası Ses Kaydı #B-03: Yadigar Çelik’in çapraz sorgusu',
+        metadata: {
+          date: '20 Ekim 2026',
+          caseRef: 'SES-SORGU-02',
           confidentiality: 'ÇOK GİZLİ',
         }
       }
@@ -423,7 +441,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         envelope: 2,
         title: 'Kimyasal Toksin Analizi & Dikiş İğnesi İzleri',
         category: 'toxicology',
-        roleAccess: ['forensics', 'ballistics'],
+        roleAccess: ['forensics', 'ballistics', 'profiler', 'field'],
         summary: 'Broş iğnesine mikroskobik balmumu kapsülü yerleştirilmiş; vücut ısısıyla eriyen kapsül zehri kana zerk etmiş.',
         fullReport: 'Kriminal Kimya ve Lif İhtisas Raporu:\nBroş iğnesi üzerindeki kimyasal incelemede güney Amerika kökenli kobra-toksin/kurar analoğu tespit edilmiştir. İğnenin gövdesine mikro-kanallar açılmış ve balmumu ile mühürlenmiştir. Oyuncu kostümü giyip boyun sıcaklığı 36.5 dereceye ulaştığında balmumu 10 dakika içinde eriyip zehri serbest bırakmıştır. Bu düzenek yalnızca usta bir terzi veya kostüm tasarımcısı tarafından mikroskop altında hazırlanabilir.',
         keyDeduction: 'Cinayet teşebbüsü tesadüf değildir; kostüm tasarımcısının doğrudan uzmanlığıdır.',
@@ -437,11 +455,27 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         }
       },
       {
+        id: 'ev-2-2-2',
+        envelope: 2,
+        title: 'Caner Ertekin Kulis Sorgu Zaptı & Yedek Kostüm Deposu',
+        category: 'interrogation',
+        roleAccess: ['profiler', 'field', 'archive', 'forensics'],
+        summary: 'Caner’in kulis dolabında parçalanmış bir taç bulundu; ancak Altan’ın yakasındaki broşa dokunmadığını iddia ediyor.',
+        fullReport: 'Kadıköy Asayiş Sorgu Tutanağı:\nŞüpheli Caner Ertekin ifadesinde:\n"Evet Altan’dan nefret ediyordum. Yedek kral kostümünün pelerinini makasla kestim, oyunu rezil etmek istedim! Ama Altan’ı zehirlemedim! O broşu yakasına takan kişi Gülfem Hanım’dı, provadan hemen önce elleri titreyerek bizzat taktı!"\nProfil Uzmanı Notu: Caner’in eylemleri fevri ve kıskançlık kaynaklı basit sabotajdır; kimyasal düzenek hazırlayacak bilgi ve soğukkanlılığa sahip değildir.',
+        keyDeduction: 'Caner pelerini yırtmış ancak broşa zehir yerleştiren kişi değildir (Yanıltıcı Şüpheli).',
+        mediaType: 'text',
+        metadata: {
+          date: '25 Ekim 2026',
+          caseRef: 'SORGU-CANER',
+          confidentiality: 'GİZLİ',
+        }
+      },
+      {
         id: 'ev-2-3-1',
         envelope: 3,
         title: 'Londra Kaçış Planı ve Gülfem’in İtiraf Mektubu',
         category: 'document',
-        roleAccess: ['archive', 'profiler', 'cryptology'],
+        roleAccess: ['archive', 'profiler', 'cryptology', 'forensics', 'field'],
         summary: 'Altan’ın çantasında tiyatronun kasasını boşaltma planı; Gülfem’in çekmecesinde ise balmumu ve zehir tüpü bulundu.',
         fullReport: 'Emniyet Mali Şube ve Arama Tutanağı:\n1. Altan Saygın’ın bavulunda tiyatronun resmi banka hesaplarından Londra’ya transfer edilmiş 8 Milyon TL’lik dekont bulunmuştur.\n2. Gülfem Saygın’ın dikiş atölyesindeki gizli iplik kutusunda toksin tüpü ve balmumu eriticisi ele geçirilmiştir.\n3. Aynadaki ruj yazısı: Gülfem, şüpheleri Melis’e yıkmak için Melis’in kuliste bıraktığı ruju kullanarak aynaya tehdit yazmıştır.',
         keyDeduction: 'Gülfem Saygın, hem tiyatronun servetini korumak hem de kendisini terk eden kocasını sahne kostümünde cezalandırmak için komployu kurmuştur.',
@@ -449,6 +483,24 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         metadata: {
           date: '25 Ekim 2026',
           caseRef: 'MALİ-GULFEM',
+          confidentiality: 'ÇOK GİZLİ',
+        }
+      },
+      {
+        id: 'ev-2-3-2',
+        envelope: 3,
+        title: 'Gülfem Saygın Kulis Sorgusu & Ses Çözüm Tutanağı',
+        category: 'audio',
+        roleAccess: ['forensics', 'profiler', 'archive'],
+        summary: 'Gülfem’in emniyetteki sorgu odasında soğukkanlı konuşması ve parmak izi kriminal raporu.',
+        fullReport: 'Sorgu Odası Ses Tutanağı:\nGülfem Saygın: "Altan 20 yılımı çaldı. Tiyatroyu iflasa sürükleyip metresiyle kaçacaktı. Ona layık olduğu ölümü sahnede, seyircilerin alkışları arasında tattırmak istedim. O taç ve kostüm ona mezar olacaktı."\nKriminal Laboratuvar Notu: Broş iğnesinin mekanik kilidinde Gülfem’in sol başparmak izi net olarak tespit edilmiştir.',
+        keyDeduction: 'Fail kesin olarak Gülfem Saygın’dır; hem maddi hem duygusal intikam motifi doğrulanmıştır.',
+        mediaType: 'audio',
+        mediaUrl: '',
+        mediaCaption: 'Sorgu Odası Ses Kaydı: Gülfem Saygın’ın itiraf anı',
+        metadata: {
+          date: '25 Ekim 2026',
+          caseRef: 'SES-GULFEM-03',
           confidentiality: 'ÇOK GİZLİ',
         }
       }
@@ -620,7 +672,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         envelope: 1,
         title: 'Şaft Telsiz Panik ve Alarm Ses Bandı',
         category: 'audio',
-        roleAccess: ['cryptology', 'profiler', 'archive'],
+        roleAccess: ['cryptology', 'profiler', 'archive', 'forensics'],
         summary: 'Asansör düşmeden 25 saniye önceki telsiz anonsu ve Erdem Soydan’ın son sözleri.',
         fullReport: 'Telsiz Kayıt Bandı #M-03 (Saat 22:09:40):\nErdem Soydan: "Merkez! Şaft kabini kayıyor, acil durdurma devreye girmiyor! Biri kabloları kurcalamış!"\nMerkez Operatörü: "Erdem Bey freni manuel çekin!"\nErdem Soydan: "Manuel fren sıkışmış! Berna... Berna’nın raporundaki veriler doğruydu, maden değil laboratuvar..." (Şiddetli gürültü ve telsiz paraziti)\nSaat 22:10:05 - Çarpma sesi ve hat kesintisi.',
         keyDeduction: 'Erdem son anlarında laboratuvar verilerine ve Berna’ya dikkat çekmektedir.',
@@ -638,7 +690,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         envelope: 2,
         title: 'Laboratuvar Asit Envanteri ve Spektrometre Eşleşmesi',
         category: 'toxicology',
-        roleAccess: ['forensics', 'cryptology'],
+        roleAccess: ['forensics', 'cryptology', 'profiler', 'field'],
         summary: 'Halattaki asidin yalnızca Berna Tezcan’ın özel jeokimya projesinde kullanılan florosülfonik asit formülü olduğu kanıtlandı.',
         fullReport: 'Adli Kimya İhtisas Raporu:\nÇelik halat üzerindeki korozyon kalıntısı gaz kromatografisiyle analiz edilmiştir. Kullanılan asit sıradan bir sanayi asidi olmayıp, yalnızca Berna Tezcan’ın lityum zenginleştirme deneylerinde kullandığı özel florosülfürik katalizör karışımıdır. Bu kimyasal tesiste yalnızca Berna’nın parmak iziyle açılan özel çelik kasasında saklanmaktadır.',
         keyDeduction: 'Kimyasal doğrudan Berna Tezcan’ın kilitli laboratuvar kasasından alınmıştır.',
@@ -652,11 +704,27 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         }
       },
       {
+        id: 'ev-3-2-2',
+        envelope: 2,
+        title: 'Vardiya Amiri Murat Çetin’in Şantiye Sorgusu & Yakıt Hırsızlığı',
+        category: 'interrogation',
+        roleAccess: ['profiler', 'field', 'archive', 'forensics'],
+        summary: 'Murat Çetin olay saatinde asansör makine dairesinde görülmüştü; ancak jeneratörden mazot çaldığını itiraf etti.',
+        fullReport: 'Maden Emniyet Asayiş Zabtı:\nŞüpheli Murat Çetin ifadesinde:\n"Asansörün kablolarına asit dökmedim! Evet o saatte makine dairesindeydim ama jeneratör deposundan şirketin mazotunu bidonlara aktarıyordum. Asansörün koptuğunu duyunca bidonları bırakıp kaçtım!"\nOlay Yeri Teyidi: Makine dairesinde dökülmüş mazot ve parmak izleri Murat’ı doğrulamaktadır; asit şişelerine ait iz yoktur.',
+        keyDeduction: 'Murat adi yakıt hırsızlığı yapmış, sabotajla bir ilgisi bulunmamaktadır (Yanıltıcı Şüpheli).',
+        mediaType: 'text',
+        metadata: {
+          date: '27 Ekim 2026',
+          caseRef: 'SORGU-MURAT',
+          confidentiality: 'GİZLİ',
+        }
+      },
+      {
         id: 'ev-3-3-1',
         envelope: 3,
         title: 'Berna Tezcan’ın Gizli Patent Başvurusu ve Bilgisayar Kayıtları',
         category: 'document',
-        roleAccess: ['archive', 'cryptology', 'field'],
+        roleAccess: ['archive', 'cryptology', 'field', 'forensics', 'profiler'],
         summary: 'Berna’nın cinayetten 3 saat önce Türk Patent Enstitüsü’ne tek başına 50 Milyon Dolarlık lityum patenti başvurduğu belgelendi!',
         fullReport: 'Siber Suçlar ve Mali İnceleme Raporu:\n1. Berna Tezcan’ın dizüstü bilgisayarında yapılan adli bilişim incelemesinde:\n- Olay günü saat 19:15’te Erdem Soydan’ın adını patent ortaklığından silerek tek isimle başvuru yaptığı tespit edilmiştir.\n- Bilgisayar arama geçmişinde: "Çelik asansör halatı kopma süresi", "Florosülfonik asit metal aşınma hızı" aramaları bulunmuştur.\n2. Hasan Karaca’nın rüşvet çantası: Hasan Karaca madenin kapanmasını önlemek için Erdem’e para teklif etmiş ancak cinayet sabotajından tamamen habersizdir.',
         keyDeduction: 'Fail Berna Tezcan’dır. Patentin tek sahibi olmak ve Erdem’in madeni kapatarak lityum çıkarımını engellemesini önlemek için sabotajı planlamıştır.',
@@ -664,6 +732,24 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         metadata: {
           date: '27 Ekim 2026',
           caseRef: 'SİBER-PATENT',
+          confidentiality: 'ÇOK GİZLİ',
+        }
+      },
+      {
+        id: 'ev-3-3-2',
+        envelope: 3,
+        title: 'Berna Tezcan Sorgusu & Laboratuvar Kasa Logları',
+        category: 'audio',
+        roleAccess: ['forensics', 'profiler', 'archive'],
+        summary: 'Berna Tezcan’ın şifreli kasa açılış logları ve sorgu ses bandındaki çelişkiler.',
+        fullReport: 'Siber Kriminal Rapor ve Ses Tutanağı:\nBerna Tezcan: "Erdem madeni jeolojik risk var diye mühürleyecekti. Yıllarımı verdiğim 50 Milyon Dolarlık lityum projesi çöpe gidecekti! Bilimi anlamayan bir bürokratın geleceğimi karartmasına izin veremezdim!"\nDijital Kasa İncelemesi: Olay günü saat 21:30’da florosülfonik asit kasasının Berna’nın parmak iziyle açıldığı sunucu loglarında sabittir.',
+        keyDeduction: 'Berna Tezcan cinayeti soğukkanlılıkla ve bilimsel çıkar amacıyla işlemiştir.',
+        mediaType: 'audio',
+        mediaUrl: '',
+        mediaCaption: 'Sorgu Odası Ses Kaydı: Berna Tezcan’ın itirafı',
+        metadata: {
+          date: '27 Ekim 2026',
+          caseRef: 'SES-BERNA-03',
           confidentiality: 'ÇOK GİZLİ',
         }
       }

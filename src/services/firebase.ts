@@ -778,11 +778,16 @@ export function subscribeToRoomVotes(
   roomCode: string,
   onUpdate: (votes: Record<string, AccusationSubmission>) => void
 ): () => void {
-  const votesRef = collection(db, 'rooms', roomCode, 'votes');
+  const cleanCode = roomCode.trim().toUpperCase();
+  const votesRef = collection(db, 'rooms', cleanCode, 'votes');
   return onSnapshot(votesRef, (snapshot) => {
     const votesMap: Record<string, AccusationSubmission> = {};
     snapshot.docs.forEach((d) => {
-      votesMap[d.id] = d.data() as AccusationSubmission;
+      const data = d.data() as AccusationSubmission;
+      votesMap[d.id] = data;
+      if (data.playerId) {
+        votesMap[data.playerId] = data;
+      }
     });
     onUpdate(votesMap);
   });
@@ -814,9 +819,10 @@ export async function submitOnlineVote(
   roomCode: string,
   vote: AccusationSubmission
 ): Promise<void> {
-  if (!auth.currentUser) return;
-  const voteRef = doc(db, 'rooms', roomCode, 'votes', auth.currentUser.uid);
-  await setDoc(voteRef, vote);
+  const cleanCode = roomCode.trim().toUpperCase();
+  const voterKey = vote.playerId || auth.currentUser?.uid || `voter_${Date.now()}`;
+  const voteRef = doc(db, 'rooms', cleanCode, 'votes', voterKey);
+  await setDoc(voteRef, vote, { merge: true });
 }
 
 export async function setOnlineRoomStatus(

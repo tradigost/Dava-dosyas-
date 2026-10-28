@@ -218,10 +218,22 @@ export default function App() {
 
   // If in online mode with members, ensure activePlayer strictly locks to the current user
   useEffect(() => {
-    if (onlineRoomCode && currentUser && onlineMembers.length > 0) {
-      const myMember = onlineMembers.find((m) => m.userId === currentUser.uid);
-      if (myMember) {
-        setActivePlayerId(myMember.userId);
+    if (onlineRoomCode && onlineMembers.length > 0) {
+      let myUid = currentUser?.uid;
+      if (!myUid) {
+        try {
+          const saved = localStorage.getItem('detective_local_user');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            myUid = parsed.uid;
+          }
+        } catch (e) {}
+      }
+      if (myUid) {
+        const myMember = onlineMembers.find((m) => m.userId === myUid);
+        if (myMember) {
+          setActivePlayerId(myMember.userId);
+        }
       }
     }
   }, [onlineRoomCode, currentUser, onlineMembers]);
@@ -269,11 +281,10 @@ export default function App() {
     ? participatingPlayers[currentInspectorIndex + 1]
     : null;
 
-  // Determine if this user is allowed to view the open dossier right now
-  const isMyTurn = isSolo || isEnvelopeCompleted || (
-    onlineRoomCode && currentUser
-      ? currentInspectorId === currentUser.uid
-      : activePlayerId === currentInspectorId
+  // In online multiplayer rooms, every player investigates the active envelope simultaneously on their own device!
+  // WaitingTurnView is only for single-device pass-and-play offline mode.
+  const isMyTurn = Boolean(onlineRoomCode) || isSolo || isEnvelopeCompleted || (
+    activePlayerId === currentInspectorId
   );
 
   // Host starts the game from Lobby (moves to Briefing)
@@ -431,13 +442,17 @@ export default function App() {
   };
 
   const handleSubmitVote = async (sub: AccusationSubmission) => {
+    // Optimistically update local submissions state immediately
+    setSubmissions((prev) => ({
+      ...prev,
+      [sub.playerId]: sub,
+    }));
     if (onlineRoomCode) {
-      await submitOnlineVote(onlineRoomCode, sub);
-    } else {
-      setSubmissions((prev) => ({
-        ...prev,
-        [sub.playerId]: sub,
-      }));
+      try {
+        await submitOnlineVote(onlineRoomCode, sub);
+      } catch (err) {
+        console.error('Error submitting vote to room:', err);
+      }
     }
   };
 

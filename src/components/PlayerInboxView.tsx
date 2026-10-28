@@ -9,19 +9,16 @@ import { soundManager } from '../utils/audioEffects';
 import { 
   FileText, 
   Pin, 
-  KeyRound, 
   ShieldAlert, 
   ArrowRight,
-  CheckCircle2,
-  Volume2,
-  Play,
-  Pause,
+  Headphones,
   Video,
   Image as ImageIcon,
-  Maximize2,
   X,
-  Headphones,
-  Radio
+  Users2,
+  FolderOpen,
+  Sparkles,
+  CheckCircle2
 } from 'lucide-react';
 
 interface PlayerInboxViewProps {
@@ -52,55 +49,125 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
   onPinEvidence,
   onAdvanceEnvelope,
   onGoToAccusation,
-  nextInspector,
-  onPassTurn,
-  isEnvelopeCompleted = false,
 }) => {
   const isSoloMode = totalPlayers === 1 || allPlayers.length === 1;
   const isTwoPlayerMode = !isSoloMode && (totalPlayers === 2 || allPlayers.length === 2);
 
-  // Filter evidence accessible to this player in this envelope
-  const myEvidence = evidenceList.filter((ev) => {
-    if (ev.envelope !== currentEnvelope) return false;
-    // In solo mode, the single player or shared single screen has access to ALL evidence
+  // All files in this envelope
+  const allEnvelopeEvidence = evidenceList.filter((ev) => ev.envelope === currentEnvelope);
+
+  // Evidence specifically targeted to this player's role
+  const specialistEvidence = allEnvelopeEvidence.filter((ev) => {
     if (isSoloMode) return true;
     if (isTwoPlayerMode) {
       if (player.role === 'forensics') {
-        return ev.roleAccess.includes('forensics') || ev.roleAccess.includes('cryptology');
+        return ev.roleAccess.includes('forensics') || ev.roleAccess.includes('cryptology') || ev.roleAccess.includes('ballistics');
       }
       if (player.role === 'profiler') {
-        const isLabFile = ev.roleAccess.includes('forensics') || ev.roleAccess.includes('cryptology');
-        return !isLabFile;
+        return ev.roleAccess.includes('profiler') || ev.roleAccess.includes('field') || ev.roleAccess.includes('archive');
       }
     }
     return ev.roleAccess.includes(player.role);
   });
 
+  // Default view mode: 'specialist' if they have role files, otherwise 'all'
+  const [viewScope, setViewScope] = useState<'specialist' | 'all'>('specialist');
+
+  const displayedEvidenceList = (viewScope === 'specialist' && specialistEvidence.length > 0)
+    ? specialistEvidence
+    : allEnvelopeEvidence;
+
   const [selectedEvidenceId, setSelectedEvidenceId] = useState<string | null>(
-    myEvidence.length > 0 ? myEvidence[0].id : null
+    displayedEvidenceList.length > 0 ? displayedEvidenceList[0].id : null
   );
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState<boolean>(false);
 
-  // Sync selected evidence when envelope or player changes
+  // Sync selected evidence when envelope, player, or viewScope changes
   useEffect(() => {
-    if (myEvidence.length > 0) {
-      setSelectedEvidenceId(myEvidence[0].id);
+    if (specialistEvidence.length === 0) {
+      setViewScope('all');
+    }
+  }, [currentEnvelope, specialistEvidence.length]);
+
+  useEffect(() => {
+    if (displayedEvidenceList.length > 0) {
+      const exists = displayedEvidenceList.some((e) => e.id === selectedEvidenceId);
+      if (!exists) {
+        setSelectedEvidenceId(displayedEvidenceList[0].id);
+      }
     } else {
       setSelectedEvidenceId(null);
     }
     setIsPlayingAudio(false);
-  }, [currentEnvelope, player.id]);
+  }, [currentEnvelope, player.id, viewScope, displayedEvidenceList]);
 
-  const activeEvidence = myEvidence.find((ev) => ev.id === selectedEvidenceId) || myEvidence[0];
+  const activeEvidence = displayedEvidenceList.find((ev) => ev.id === selectedEvidenceId) || displayedEvidenceList[0];
 
   return (
-    <div className="max-w-3xl mx-auto space-y-4 pb-10">
-      
-      {/* File switcher if player holds multiple files in this envelope */}
-      {myEvidence.length > 1 && (
+    <div className="max-w-3xl mx-auto space-y-4 pb-12">
+
+      {/* Detective & Envelope Header Bar */}
+      <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center font-bold text-amber-400 font-mono text-sm">
+            Z{currentEnvelope}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-cinzel font-bold text-sm text-zinc-100">
+                ZARF {currentEnvelope} &mdash; ADLİ SORUŞTURMA
+              </span>
+              <span className="text-[10px] bg-emerald-950/60 border border-emerald-600/40 text-emerald-300 font-mono px-2 py-0.5 rounded font-bold">
+                CANLI SENKRON
+              </span>
+            </div>
+            <p className="text-[11px] text-zinc-400">
+              Masa Şefi: <strong className="text-zinc-200">{player.name}</strong> ({player.role.toUpperCase()})
+            </p>
+          </div>
+        </div>
+
+        {/* View Scope Toggle: Specialist vs All Envelope Files */}
+        {allEnvelopeEvidence.length > 1 && (
+          <div className="flex bg-zinc-900 border border-zinc-800 p-1 rounded-xl text-xs">
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playKeyClick();
+                setViewScope('specialist');
+              }}
+              className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                viewScope === 'specialist'
+                  ? 'bg-amber-600 text-zinc-950 shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              <span>Bana Özel ({specialistEvidence.length})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playKeyClick();
+                setViewScope('all');
+              }}
+              className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                viewScope === 'all'
+                  ? 'bg-amber-600 text-zinc-950 shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              <FolderOpen className="w-3.5 h-3.5" />
+              <span>Tüm Zarftaki Dosyalar ({allEnvelopeEvidence.length})</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* File Switcher Buttons */}
+      {displayedEvidenceList.length > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {myEvidence.map((ev, idx) => {
+          {displayedEvidenceList.map((ev, idx) => {
             const isSelected = activeEvidence?.id === ev.id;
             const isPinned = pinnedEvidenceIds.has(ev.id);
             return (
@@ -126,16 +193,8 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
         </div>
       )}
 
-      {/* Main Dossier Paper */}
-      {myEvidence.length === 0 ? (
-        <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-8 text-center text-zinc-400 text-xs">
-          <ShieldAlert className="w-8 h-8 text-zinc-600 mx-auto mb-2" />
-          <p className="font-semibold text-zinc-300">Bu zarfta doğrudan uzmanlığınıza ait yeni dosya bulunmuyor.</p>
-          <p className="mt-1 text-zinc-500">
-            Masadaki arkadaşınızın paylaştığı bilgileri dinleyerek ortak dava panosuna odaklanın.
-          </p>
-        </div>
-      ) : activeEvidence ? (
+      {/* Active Dossier Paper */}
+      {activeEvidence ? (
         <div className="bg-zinc-900/90 rounded-2xl p-5 sm:p-6 shadow-xl relative text-zinc-200 border border-zinc-800 space-y-4">
           
           {/* Top Stamp & Case Reference */}
@@ -180,113 +239,67 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
                   )}
                 </div>
               ) : (
-                /* Interactive Simulated Wiretap Deck */
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        soundManager.playKeyClick();
-                        setIsPlayingAudio((prev) => !prev);
-                      }}
-                      className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-zinc-950 rounded-xl font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-md"
-                    >
-                      {isPlayingAudio ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                      <span>{isPlayingAudio ? 'Kaydı Durdur' : 'Teybi Dinle'}</span>
-                    </button>
-                    
-                    {/* Simulated Waveform */}
-                    <div className="flex items-center gap-1 h-6 px-3">
-                      {[12, 24, 18, 32, 20, 28, 14, 26, 30, 16, 22, 10, 24, 18, 28, 14].map((h, i) => (
-                        <div
-                          key={i}
-                          className={`w-1 rounded-full transition-all duration-300 ${
-                            isPlayingAudio ? 'bg-amber-400 animate-pulse' : 'bg-zinc-700'
-                          }`}
-                          style={{ height: isPlayingAudio ? `${Math.max(6, (h * (i % 3 + 1)) % 24)}px` : '6px' }}
-                        />
-                      ))}
-                    </div>
-
-                    <span className="text-[11px] font-mono text-zinc-400">
-                      {isPlayingAudio ? '01:24 / 03:10' : '00:00 / 03:10'}
-                    </span>
+                <div className="p-3 bg-zinc-900/60 rounded-xl border border-zinc-800/80 flex items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <p className="text-xs text-zinc-200 font-semibold font-mono">
+                      🎙️ {activeEvidence.mediaCaption || '112 & Telsiz Dinleme Bandı'}
+                    </p>
+                    <p className="text-[11px] text-zinc-400">
+                      Ses çözümü aşağıdaki resmi metin tutanağına aktarılmıştır.
+                    </p>
                   </div>
-                  {activeEvidence.mediaCaption && (
-                    <p className="text-[11px] text-zinc-400 italic font-sans">{activeEvidence.mediaCaption}</p>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundManager.playKeyClick();
+                      soundManager.playSuccessSound();
+                    }}
+                    className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-zinc-950 rounded-lg text-xs font-bold font-mono transition-colors shrink-0 cursor-pointer"
+                  >
+                    Bandı Oynat
+                  </button>
                 </div>
               )}
             </div>
           )}
 
-          {/* Visual Evidence / Crime Scene Polaroid */}
-          {(activeEvidence.mediaType === 'image' || (activeEvidence.mediaUrl && activeEvidence.mediaUrl.match(/\.(jpg|jpeg|png|webp|gif)/i))) && (
-            <div className="space-y-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-                <ImageIcon className="w-3.5 h-3.5" />
-                <span>OLAY YERİ / DELİL GÖRSELİ</span>
-              </span>
+          {/* Crime Scene Photo Embed */}
+          {activeEvidence.mediaType === 'image' && activeEvidence.mediaUrl && (
+            <div className="p-3.5 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="flex items-center gap-2 text-zinc-300 font-bold">
+                  <ImageIcon className="w-4 h-4 text-amber-400" />
+                  <span>OLAY YERİ DELİL FOTOĞRAFI</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsPhotoModalOpen(true)}
+                  className="text-[11px] text-amber-400 hover:text-amber-300 font-medium cursor-pointer"
+                >
+                  Büyüt 🔍
+                </button>
+              </div>
+
               <div 
                 onClick={() => setIsPhotoModalOpen(true)}
-                className="group relative cursor-pointer overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 hover:border-amber-500/60 transition-all shadow-lg"
+                className="relative rounded-xl overflow-hidden border border-zinc-800 max-h-72 cursor-pointer group bg-black flex items-center justify-center"
               >
                 <img
-                  src={activeEvidence.mediaUrl || 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80'}
+                  src={activeEvidence.mediaUrl}
                   alt={activeEvidence.title}
-                  className="w-full max-h-72 object-cover object-center group-hover:scale-102 transition-transform duration-300 opacity-90 group-hover:opacity-100"
+                  className="w-full h-auto max-h-72 object-cover object-center group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 flex items-end justify-between p-3.5">
-                  <span className="text-xs text-zinc-200 font-medium font-sans">
-                    {activeEvidence.mediaCaption || activeEvidence.title}
-                  </span>
-                  <span className="flex items-center gap-1 text-[11px] text-amber-400 bg-zinc-950/80 px-2.5 py-1 rounded-lg border border-amber-500/40 font-mono">
-                    <Maximize2 className="w-3 h-3" /> İncele / Büyüt
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <span className="px-3 py-1.5 rounded-lg bg-zinc-900/90 text-amber-300 text-xs font-bold border border-amber-500/40">
+                    Büyük Boy İncele
                   </span>
                 </div>
               </div>
-            </div>
-          )}
 
-          {/* Video / Surveillance Camera Embed */}
-          {activeEvidence.mediaType === 'video' && (
-            <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="flex items-center gap-2 text-rose-400 font-bold">
-                  <Video className="w-4 h-4" />
-                  <span>GÜVENLİK KAMERASI / SORGULAMA VİDEOSU</span>
-                </span>
-                <span className="text-[10px] text-rose-400 bg-rose-950/50 px-2 py-0.5 rounded border border-rose-800 font-bold flex items-center gap-1.5 animate-pulse">
-                  <span className="w-2 h-2 rounded-full bg-rose-500" /> REC [CAM-02]
-                </span>
-              </div>
-
-              {activeEvidence.mediaUrl && (activeEvidence.mediaUrl.includes('youtube.com') || activeEvidence.mediaUrl.includes('youtu.be') || activeEvidence.mediaUrl.includes('vimeo.com')) ? (
-                <div className="aspect-video w-full rounded-xl overflow-hidden border border-zinc-800 bg-black">
-                  <iframe
-                    src={activeEvidence.mediaUrl.replace('watch?v=', 'embed/')}
-                    title={activeEvidence.title}
-                    className="w-full h-full border-0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                </div>
-              ) : activeEvidence.mediaUrl ? (
-                <div className="aspect-video w-full rounded-xl overflow-hidden border border-zinc-800 bg-black">
-                  <video
-                    src={activeEvidence.mediaUrl}
-                    controls
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              ) : (
-                <div className="aspect-video w-full rounded-xl border border-zinc-800 bg-zinc-900/80 flex flex-col items-center justify-center text-center p-6 space-y-2">
-                  <Video className="w-10 h-10 text-zinc-600 animate-pulse" />
-                  <p className="text-xs font-mono text-zinc-300 font-semibold">[KAPALI DEVRE SORGULAMA KAMERASI]</p>
-                  <p className="text-[11px] text-zinc-500 max-w-sm">
-                    {activeEvidence.mediaCaption || 'Kamera kaydı emniyet sunucusunda arşivlenmiştir. Çözüm tutanağı aşağıdaki resmi rapor metnindedir.'}
-                  </p>
-                </div>
+              {activeEvidence.mediaCaption && (
+                <p className="text-[11px] text-zinc-400 italic font-mono pt-1">
+                  {activeEvidence.mediaCaption}
+                </p>
               )}
             </div>
           )}
@@ -311,7 +324,7 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
             </div>
           </div>
 
-          {/* Single Pin to Common Board Button */}
+          {/* Pin to Common Board Button */}
           <div className="pt-2">
             <button
               type="button"
@@ -335,71 +348,42 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
               <span>
                 {pinnedEvidenceIds.has(activeEvidence.id)
                   ? 'Panoya Yansıtıldı ✓'
-                  : '📌 Bu Bulguyu Ortak Panoya Yansıt'}
+                  : '📌 Bu Bulguyu Ortak Panoya Yansıt (Arkadaşın da Görsün)'}
               </span>
             </button>
           </div>
 
-          {/* Close Dossier & Pass Turn Button */}
-          {onPassTurn && !isEnvelopeCompleted && (
-            <div className="pt-3 border-t border-zinc-800/80">
-              <button
-                type="button"
-                onClick={() => {
-                  soundManager.playSuccessSound();
-                  onPassTurn();
-                }}
-                className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span>
-                  {isSoloMode
-                    ? '📁 Dosyaları İnceledim - Doğrulama Sorusunu Çözmeye Geç'
-                    : nextInspector
-                    ? `📁 Dosyayı Okudum, Sırayı ${nextInspector.name}'e Devret`
-                    : '📁 Zarfı İnceledim & Masaya Bırak (Tüm Dosyalar Tamamlandı)'}
-                </span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-              <p className="text-[11px] text-zinc-400 text-center mt-1.5">
-                {isSoloMode
-                  ? '* İncelemeniz bittiğinde butona basarak şifreli doğrulama aşamasını açabilirsiniz.'
-                  : nextInspector
-                  ? `* Butona bastığınızda dosyanız kapanacak ve sıradaki zarf ${nextInspector.name} ekranında açılacaktır.`
-                  : '* Masadaki tüm dosyalar incelendi. Şimdi doğrulama sorusunu çözebilirsiniz.'}
-              </p>
-            </div>
-          )}
-
         </div>
       ) : null}
 
-      {/* Envelope Advancement Gate: Appears once all players in the envelope have reviewed files */}
-      {isEnvelopeCompleted && (
-        <div className="pt-2">
-          {currentEnvelope < totalEnvelopes ? (
-            <button
-              type="button"
-              onClick={() => {
-                soundManager.playSuccessSound();
-                if (onAdvanceEnvelope) onAdvanceEnvelope();
-              }}
-              className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-800 border border-amber-500/50 hover:border-amber-400 text-amber-300 font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer ring-2 ring-amber-500/20"
-            >
-              <span>✓ Zarf {currentEnvelope} İncelendi — Zarf {currentEnvelope + 1}’i Aç</span>
-              <ArrowRight className="w-4 h-4 text-amber-400" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={onGoToAccusation}
-              className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-xl flex items-center justify-center gap-2 animate-pulse cursor-pointer"
-            >
-              <ShieldAlert className="w-4 h-4" />
-              <span>✓ Son Zarf ({totalEnvelopes}) Tamamlandı — Final Suçlama ve Test Aşamasına Geç &rarr;</span>
-            </button>
-          )}
-        </div>
-      )}
+      {/* Direct Envelope Advancement Buttons */}
+      <div className="pt-2 space-y-2">
+        {currentEnvelope < totalEnvelopes ? (
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playSuccessSound();
+              if (onAdvanceEnvelope) onAdvanceEnvelope();
+            }}
+            className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-800 border-2 border-amber-500/60 hover:border-amber-400 text-amber-300 font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer ring-2 ring-amber-500/20"
+          >
+            <span>✓ Zarf {currentEnvelope} İncelendi — Zarf {currentEnvelope + 1}’i Aç</span>
+            <ArrowRight className="w-4 h-4 text-amber-400" />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onGoToAccusation}
+            className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-xl flex items-center justify-center gap-2 animate-pulse cursor-pointer"
+          >
+            <ShieldAlert className="w-4 h-4" />
+            <span>✓ Son Zarf ({totalEnvelopes}) Tamamlandı — Final Suçlama ve Test Aşamasına Geç &rarr;</span>
+          </button>
+        )}
+        <p className="text-[11px] text-zinc-400 text-center font-sans">
+          * Masadaki arkadaşınızla dosyaları inceleyip tartıştığınızda bir sonraki zarfa geçebilirsiniz.
+        </p>
+      </div>
 
       {/* Forensic Photo Zoom Lightbox Modal */}
       {isPhotoModalOpen && activeEvidence && (
