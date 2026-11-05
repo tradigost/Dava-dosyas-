@@ -109,6 +109,20 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
   const currentIndex = displayedEvidenceList.findIndex((ev) => ev.id === activeEvidence?.id);
   const safeCurrentIndex = currentIndex >= 0 ? currentIndex : 0;
 
+  // Check if video URL is YouTube or Vimeo embed
+  const getVideoEmbedUrl = (url?: string) => {
+    if (!url) return '';
+    const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (ytMatch && ytMatch[1]) {
+      return `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?autoplay=0&rel=0`;
+    }
+    const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?([0-9]+)/);
+    if (vimeoMatch && vimeoMatch[1]) {
+      return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    }
+    return '';
+  };
+
   const handlePrevEvidence = () => {
     if (safeCurrentIndex > 0) {
       soundManager.playKeyClick();
@@ -503,6 +517,76 @@ export const PlayerInboxView: React.FC<PlayerInboxViewProps> = ({
                   </span>
                 </div>
               </div>
+
+              {activeEvidence.mediaCaption && (
+                <p className="text-[11px] text-zinc-400 italic font-mono pt-1">
+                  {activeEvidence.mediaCaption}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* CCTV Surveillance Video Player */}
+          {activeEvidence.mediaType === 'video' && (
+            <div className="p-3.5 sm:p-4 bg-zinc-950 rounded-2xl border border-rose-500/30 space-y-2.5">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="flex items-center gap-2 text-rose-400 font-bold">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping inline-block" />
+                  <Video className="w-4 h-4 text-rose-400" />
+                  <span>CCTV GÜVENLİK KAMERASI · [CAM-02 ÇEVRE KAYDI]</span>
+                </span>
+                <span className="text-[10px] text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                  REC ● 23:45:12
+                </span>
+              </div>
+
+              {activeEvidence.mediaUrl ? (
+                <div className="relative rounded-xl overflow-hidden border border-zinc-800 bg-black">
+                  {getVideoEmbedUrl(activeEvidence.mediaUrl) ? (
+                    <div className="relative aspect-video w-full">
+                      <iframe
+                        src={getVideoEmbedUrl(activeEvidence.mediaUrl)}
+                        title={activeEvidence.title}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                  ) : (
+                    <video
+                      src={activeEvidence.mediaUrl}
+                      controls
+                      playsInline
+                      className="w-full max-h-80 object-contain bg-black"
+                    />
+                  )}
+                  {/* Subtle CCTV timestamp watermark overlay */}
+                  <div className="absolute top-2 left-2 pointer-events-none px-2 py-0.5 rounded bg-black/60 text-[10px] font-mono text-emerald-400 border border-emerald-500/30">
+                    CAM_SEC_02 · {activeEvidence.metadata?.date || '2026-11-04'}
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 bg-zinc-900/60 rounded-xl border border-zinc-800/80 flex items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <p className="text-xs text-zinc-200 font-semibold font-mono">
+                      📹 {activeEvidence.mediaCaption || 'Güvenlik Kamerası Video Bandı İncelendi'}
+                    </p>
+                    <p className="text-[11px] text-zinc-400">
+                      Kamera görüntüleri ve hareket logları aşağıdaki resmi rapora aktarılmıştır.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundManager.playKeyClick();
+                      soundManager.playSuccessSound();
+                    }}
+                    className="px-3 py-1.5 bg-rose-950/80 hover:bg-rose-900 border border-rose-600/50 text-rose-300 rounded-lg text-xs font-bold font-mono transition-colors shrink-0 cursor-pointer"
+                  >
+                    Kayıt Logunu Aç
+                  </button>
+                </div>
+              )}
 
               {activeEvidence.mediaCaption && (
                 <p className="text-[11px] text-zinc-400 italic font-mono pt-1">

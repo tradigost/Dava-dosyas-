@@ -26,8 +26,11 @@ import {
   Download,
   Sparkles,
   HelpCircle,
-  Eye
+  Eye,
+  Copy,
+  Check
 } from 'lucide-react';
+import { MediaDropzoneUploader } from './MediaDropzoneUploader';
 
 interface CaseWizardEditorProps {
   onSaveCase: (scenario: CaseScenario) => Promise<void>;
@@ -145,6 +148,10 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
   const [motiveTitle, setMotiveTitle] = useState('');
   const [keyEvidenceTitle, setKeyEvidenceTitle] = useState('');
   const [verdictSummary, setVerdictSummary] = useState('');
+  const [confessionLetter, setConfessionLetter] = useState(
+    'Bu mektubu okuyorsanız oyun bitti demektir... O gece salona girdiğimde Selim çoktan şüphelenmişti. Kadehe zehri damlattığım an geri dönüş yoktu. Bıraktığım sahte izlerin sizi yanıltacağını düşünmüştüm ama adaletten kaçamadım.'
+  );
+  const [isCopied, setIsCopied] = useState(false);
 
   // Handle adding a suspect
   const handleAddSuspect = () => {
@@ -327,6 +334,7 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
         motiveTitle: motiveTitle.trim() || 'Maddi Çıkar ve İntikam',
         keyEvidenceTitle: keyEvidenceTitle.trim() || 'Olay Yeri Ses ve Kamera Kayıtları',
         verdictSummary: verdictSummary.trim() || 'Dedektif ekibinin titiz çalışması sonucu katil suçunu itiraf etmiştir.',
+        confessionLetter: confessionLetter.trim() || undefined,
       },
     };
   };
@@ -354,6 +362,42 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
+  };
+
+  // Copy JSON to clipboard for GitHub / codebase commits with fallback
+  const handleCopyJSON = async () => {
+    soundManager.playKeyClick();
+    const scenario = assembleScenario();
+    const textToCopy = JSON.stringify(scenario, null, 2);
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(textToCopy);
+      } else {
+        throw new Error('Clipboard API unavailable');
+      }
+      setIsCopied(true);
+      soundManager.playSuccessSound();
+      setTimeout(() => setIsCopied(false), 3000);
+    } catch {
+      // Fallback for iFrame or headless without clipboard-write permission
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = textToCopy;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        textArea.remove();
+        setIsCopied(true);
+        soundManager.playSuccessSound();
+        setTimeout(() => setIsCopied(false), 3000);
+      } catch (err) {
+        console.error('All clipboard copy attempts failed', err);
+      }
+    }
   };
 
   // Publish to Firestore
@@ -944,38 +988,15 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                         </select>
                       </div>
 
-                      {/* Media URL Input if Audio, Image, or Video */}
+                      {/* Drag & Drop Media Uploader and Live Preview Studio */}
                       {(ev.mediaType === 'audio' || ev.mediaType === 'image' || ev.mediaType === 'video') && (
-                        <div className="sm:col-span-2">
-                          <label className="block text-zinc-400 mb-1 flex items-center justify-between">
-                            <span className="text-amber-400 font-bold">
-                              {ev.mediaType === 'audio' ? '🎧 Ses Dosyası Linki (.mp3, .wav URL veya Boş Bırakın)' : ev.mediaType === 'image' ? '📸 Görsel Linki (Görsel URL veya Boş Bırakın)' : '🎥 Video Linki (YouTube, Vimeo veya .mp4 URL)'}
-                            </span>
-                            <span className="text-[10px] text-zinc-500 font-mono">
-                              (Boş bırakılırsa interaktif retro arayüz çalışır)
-                            </span>
-                          </label>
-                          <input
-                            type="text"
-                            value={ev.mediaUrl || ''}
-                            onChange={(e) => updateEvidenceField(ev.id, 'mediaUrl', e.target.value)}
-                            placeholder={ev.mediaType === 'audio' ? 'https://example.com/kayit.mp3' : ev.mediaType === 'image' ? 'https://images.unsplash.com/...' : 'https://youtube.com/watch?v=...'}
-                            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 font-mono text-[11px] focus:outline-none focus:border-amber-400"
-                          />
-                        </div>
-                      )}
-
-                      {(ev.mediaType === 'audio' || ev.mediaType === 'image' || ev.mediaType === 'video') && (
-                        <div>
-                          <label className="block text-zinc-400 mb-1">Medya Alt Açıklaması</label>
-                          <input
-                            type="text"
-                            value={ev.mediaCaption || ''}
-                            onChange={(e) => updateEvidenceField(ev.id, 'mediaCaption', e.target.value)}
-                            placeholder="örn: Gece 23:45 güvenlik kamerası kaydı"
-                            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 text-[11px] focus:outline-none focus:border-amber-400"
-                          />
-                        </div>
+                        <MediaDropzoneUploader
+                          mediaType={ev.mediaType}
+                          mediaUrl={ev.mediaUrl || ''}
+                          mediaCaption={ev.mediaCaption || ''}
+                          onUpdateUrl={(url) => updateEvidenceField(ev.id, 'mediaUrl', url)}
+                          onUpdateCaption={(caption) => updateEvidenceField(ev.id, 'mediaCaption', caption)}
+                        />
                       )}
 
                       {/* Role checkboxes */}
@@ -1184,14 +1205,41 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-zinc-300 mb-1 font-bold">Final İtiraf & Karar Metni (Olayın Gerçek Perde Arkası)</label>
+                <label className="block text-zinc-300 mb-1 font-bold">Resmi Dava Kapanış & Karar Özeti (Olayın Gerçek Perde Arkası)</label>
                 <textarea
                   value={verdictSummary}
                   onChange={(e) => setVerdictSummary(e.target.value)}
-                  rows={5}
+                  rows={4}
                   placeholder="Cinayetin nasıl işlendiğini, katilin cinayeti nasıl planladığını ve dedektiflerin hangi kritik ipucunu yakalayarak olayı çözdüğünü detaylıca yazın..."
                   className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 leading-relaxed font-sans focus:outline-none focus:border-amber-400"
                 />
+              </div>
+
+              {/* Katilin Gizli İtiraf Mektubu (Post-Voting Dramatic Reveal) */}
+              <div className="sm:col-span-2 bg-gradient-to-b from-amber-950/30 to-zinc-950/80 border border-amber-600/40 rounded-2xl p-4 sm:p-5 space-y-2.5 shadow-lg">
+                <div className="flex items-center justify-between pb-2 border-b border-amber-600/20">
+                  <label className="text-amber-300 font-bold flex items-center gap-2 text-sm">
+                    <FileText className="w-4 h-4 text-amber-400" />
+                    <span>Katilin Gizli İtiraf Mektubu (Oylama Sonrası Açılacak Belge) *</span>
+                  </label>
+                  <span className="text-[10px] text-amber-400 font-mono px-2 py-0.5 rounded bg-amber-950/60 border border-amber-500/40">
+                    OYLAMA SONRASI DRAMATİK İFŞA
+                  </span>
+                </div>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Dedektifler son suçlama oylamasını bitirdiğinde bu mektup ekranda mühürlü bir itiraf belgesi olarak açılır. Katilin kendi ağzından cinayeti nasıl planladığını, sorguda dedektifleri şaşırtmak için hangi yalanları söylediğini ve cinayet gecesi yaşananları anlattığı can alıcı mektuptur.
+                </p>
+                <textarea
+                  value={confessionLetter}
+                  onChange={(e) => setConfessionLetter(e.target.value)}
+                  rows={6}
+                  placeholder="Bu mektubu okuyorsanız artık oyun bitti demektir... O gece Selim’in kadehine zehri ben damlattım. Yıllardır şirket hisselerini üzerime geçirmemi engelliyordu..."
+                  className="w-full bg-zinc-950 border border-amber-800/50 rounded-xl p-3 text-amber-100 font-mono text-xs leading-relaxed focus:outline-none focus:border-amber-400 shadow-inner"
+                />
+                <div className="flex items-center justify-between text-[11px] text-zinc-500 font-mono">
+                  <span>Dedektiflerin tüm soru işaretlerini aydınlatacak detayları ekleyin.</span>
+                  <span>{confessionLetter.length} karakter</span>
+                </div>
               </div>
             </div>
           </div>
@@ -1307,11 +1355,25 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
               <button
                 type="button"
                 onClick={handleDownloadJSON}
-                className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer border border-zinc-700 transition-colors"
-                title="Vakanın JSON kopyasını bilgisayarınıza kaydedin"
+                className="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer border border-zinc-700 transition-colors"
+                title="Vakanın JSON dosyasını bilgisayarınıza kaydedin"
               >
                 <Download className="w-3.5 h-3.5 text-amber-400" />
-                <span>JSON Olarak İndir (.json)</span>
+                <span>İndir (.json)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCopyJSON}
+                className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer border border-zinc-700 transition-colors"
+                title="Vaka JSON kodunu kopyalayıp GitHub reposundaki src/data/cases.ts içine doğrudan yapıştırabilirsiniz"
+              >
+                {isCopied ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5 text-amber-400" />
+                )}
+                <span>{isCopied ? 'Kopyalandı!' : 'JSON Kodunu Kopyala (GitHub)'}</span>
               </button>
             </div>
 

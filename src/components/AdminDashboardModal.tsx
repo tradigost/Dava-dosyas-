@@ -490,7 +490,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
             }`}
           >
             <FolderPlus className="w-4 h-4" />
-            <span>Vaka Yükleme & Yönetimi ({CASE_SCENARIOS.length + customCasesList.length})</span>
+            <span>Vaka Tasarım Stüdyosu & Yönetimi ({CASE_SCENARIOS.length + customCasesList.length})</span>
           </button>
 
           <button
@@ -1026,11 +1026,11 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-zinc-800 gap-2">
                   <div>
                     <h4 className="font-bold text-sm text-zinc-200 flex items-center gap-2">
-                      <Upload className="w-4 h-4 text-amber-400" />
-                      <span>Yeni Vaka Dosyası Ekle</span>
+                      <Sparkles className="w-4 h-4 text-amber-400" />
+                      <span>Vaka Tasarım Stüdyosu & Yeni Vaka Oluştur</span>
                     </h4>
                     <p className="text-xs text-zinc-400 mt-0.5">
-                      JSON dosyası yükleyin veya doğrudan JSON kodunu yapıştırın.
+                      Zarf zarf delil ekleyin, ses ve video yükleyin veya hazır JSON şablonlarını kullanın.
                     </p>
                   </div>
 
@@ -1049,7 +1049,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                       }`}
                     >
                       <Sparkles className="w-3.5 h-3.5" />
-                      <span>Aşamalı / Zarf Zarf Editör</span>
+                      <span>🎨 Tasarım Stüdyosu (Zarf Zarf)</span>
                     </button>
                     <button
                       type="button"
