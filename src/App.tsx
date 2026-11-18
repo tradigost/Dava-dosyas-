@@ -428,7 +428,7 @@ export default function App() {
   const unlockedEnvelope = onlineRoom?.currentEnvelope || currentEnvelope;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-paper-desk text-[#1f1c18] flex flex-col font-typewriter">
       {/* Top Bar (only visible when actively playing an envelope or viewing board) */}
       {gameView !== 'LOBBY' && gameView !== 'BRIEFING' && (
         <PlayerSimulatorBar
@@ -575,7 +575,7 @@ export default function App() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-zinc-900 bg-zinc-950/80 py-4 px-4 text-center text-xs text-zinc-400">
+      <footer className="border-t border-[#d6cdbc] bg-[#e4ddd0]/80 py-4 px-4 text-center text-xs text-[#575046]">
         <p>Masadaki Dosya (Case Link) · Asimetrik Couch Co-Op Türkçe Dedektiflik Deneyimi</p>
       </footer>
     </div>

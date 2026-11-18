@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+.aider*
+!.aider.conf.yml
+package-lock.json

@@ -6,7 +6,7 @@
 import React from 'react';
 import { CaseScenario, Player } from '../types';
 import { soundManager } from '../utils/audioEffects';
-import { ShieldCheck, Play, Radio, Volume2 } from 'lucide-react';
+import { Play } from 'lucide-react';
 
 interface BriefingViewProps {
   scenario: CaseScenario;
@@ -27,53 +27,52 @@ export const BriefingView: React.FC<BriefingViewProps> = ({
     <div className="max-w-3xl mx-auto py-6 sm:py-10 px-3 sm:px-4">
       {isHost ? (
         /* Host View: Reads the case prologue aloud to the table */
-        <div className="bg-zinc-950 border border-amber-600/60 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
+        <div className="bg-[#fffdf8] border border-[#d6cdbc] rounded-sm p-6 sm:p-8 shadow-[0_2px_12px_rgba(31,28,24,0.08)] space-y-6 relative overflow-hidden">
           
           {/* Header Banner */}
-          <div className="border-b border-zinc-800 pb-4">
-            <div className="flex items-center gap-2 text-amber-400 text-xs font-mono font-bold uppercase tracking-widest mb-1.5">
-              <Volume2 className="w-4 h-4 animate-pulse" />
-              <span>MASA ŞEFİ OLAY YERİ BRİFİNGİ</span>
+          <div className="border-b border-[#1f1c18] pb-3">
+            <div className="flex items-center gap-2 text-[#8b1e1e] text-xs font-typewriter font-bold uppercase tracking-widest mb-1.5">
+              MASA ŞEFİ OLAY YERİ BRİFİNGİ
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold font-cinzel text-zinc-100 tracking-tight">
-              {scenario.title}
+            <h2 className="text-2xl sm:text-3xl font-bold font-typewriter text-[#1f1c18] tracking-tight">
+              {scenario.title.toUpperCase()}
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+            <p className="text-sm text-[#575046] mt-1">
               {scenario.subtitle}
             </p>
           </div>
 
           {/* Attention Directive Box */}
-          <div className="p-3.5 bg-amber-950/30 border border-amber-600/40 rounded-2xl text-xs sm:text-sm text-amber-200 leading-relaxed">
+          <div className="border-l-2 border-[#8b1e1e] bg-[#faf6ed] p-3 text-xs sm:text-sm text-[#1f1c18] leading-relaxed">
             📢 <strong>Masadaki Dedektiflerin Dikkatini Toplayın:</strong> Lütfen aşağıdaki olay yeri özetini masadaki arkadaşlarınıza <strong>yüksek sesle</strong> okuyun.
           </div>
 
           {/* Victim & Crime Scene Dossier Sheet */}
-          <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-5 space-y-4 text-xs sm:text-sm leading-relaxed">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-3 border-b border-zinc-800/80 text-zinc-300">
+          <div className="bg-[#faf6ed] border border-[#d6cdbc] rounded-sm p-5 space-y-4 text-xs sm:text-sm leading-relaxed">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-3 border-y border-dashed border-[#c8bfae] py-3">
               <div>
-                <span className="text-[10px] font-mono text-zinc-500 uppercase block">Maktul:</span>
-                <strong className="text-zinc-100">{scenario.victim.name} ({scenario.victim.age})</strong>
-                <span className="text-zinc-400 block text-[11px]">{scenario.victim.title}</span>
+                <span className="text-[10px] font-typewriter text-[#575046] uppercase block">Maktul:</span>
+                <strong className="text-[#1f1c18]">{scenario.victim.name} ({scenario.victim.age})</strong>
+                <span className="text-[#4a443c] block text-[11px]">{scenario.victim.title}</span>
               </div>
               <div>
-                <span className="text-[10px] font-mono text-zinc-500 uppercase block">Olay Yeri & Tahmini Saat:</span>
-                <span className="text-zinc-200">{scenario.victim.locationOfBody}</span>
-                <span className="text-amber-400 block font-mono text-[11px]">{scenario.victim.timeOfDeath}</span>
+                <span className="text-[10px] font-typewriter text-[#575046] uppercase block">Olay Yeri & Tahmini Saat:</span>
+                <span className="text-[#1f1c18]">{scenario.victim.locationOfBody}</span>
+                <span className="text-[#8b1e1e] block font-typewriter text-[11px]">{scenario.victim.timeOfDeath}</span>
               </div>
             </div>
 
             {/* Narrative Story */}
-            <div className="text-zinc-200 font-serif text-sm sm:text-base leading-relaxed space-y-3 bg-zinc-950/60 p-4 rounded-xl border border-zinc-800/50">
+            <div className="text-[#1f1c18] font-typewriter text-sm sm:text-base leading-relaxed space-y-3">
               <p>
                 {scenario.synopsis}
               </p>
-              <div className="pt-2 border-t border-zinc-800/80 text-xs text-zinc-400 font-sans space-y-1">
+              <div className="pt-2 border-t border-[#c8bfae] text-xs text-[#4a443c] font-typewriter space-y-1">
                 <p>
-                  <strong className="text-zinc-300">İlk Olay Yeri Tespiti:</strong> {scenario.victim.causeInitial}
+                  <strong className="text-[#1f1c18]">İlk Olay Yeri Tespiti:</strong> {scenario.victim.causeInitial}
                 </p>
                 <p>
-                  <strong className="text-zinc-300">Cesedin Bulunduğu Konum:</strong> {scenario.victim.locationOfBody}
+                  <strong className="text-[#1f1c18]">Cesedin Bulunduğu Konum:</strong> {scenario.victim.locationOfBody}
                 </p>
               </div>
             </div>
@@ -87,42 +86,38 @@ export const BriefingView: React.FC<BriefingViewProps> = ({
                 soundManager.playSuccessSound();
                 onFinishBriefing();
               }}
-              className="w-full py-4 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer ring-2 ring-amber-400/40 animate-pulse"
+              className="w-full py-4 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] font-bold rounded-sm uppercase tracking-wider text-sm sm:text-base transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
             >
               <Play className="w-4 h-4 fill-current" />
               <span>
-                🎙️ Masaya Sesli Okudum, 1. Zarfı {firstInspector.name}&apos;e Teslim Et &amp; Başlat
+                MASAYA SESLİ OKUDUM · 1. ZARFI BAŞLAT
               </span>
             </button>
-            <p className="text-[11px] text-zinc-500 text-center mt-2 font-mono">
-              * Devam ettiğinizde 1. Zarf doğrudan {firstInspector.name} ({firstInspector.role.toUpperCase()}) ekranında açılacaktır.
+            <p className="text-[11px] text-[#575046] text-center mt-2 font-typewriter">
+              * Devam ettiğinizde 1. Zarf doğrudan {firstInspector.name}&apos;e teslim edilecektir.
             </p>
           </div>
 
         </div>
       ) : (
         /* Guest View: Shows logo & waiting status */
-        <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-8 sm:p-12 text-center shadow-2xl space-y-6">
-          <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/40 flex items-center justify-center mx-auto text-amber-400">
-            <Volume2 className="w-8 h-8 animate-pulse text-amber-400" />
+        <div className="bg-[#fffdf8] border border-[#d6cdbc] rounded-sm p-8 sm:p-12 text-center shadow-[0_2px_12px_rgba(31,28,24,0.08)] space-y-6">
+          <div className="w-16 h-16 rounded-full bg-[#8b1e1e]/10 border border-[#8b1e1e]/40 flex items-center justify-center mx-auto text-[#8b1e1e]">
+            <Play className="w-8 h-8 text-[#8b1e1e]" />
           </div>
 
           <div className="space-y-2">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 block">
+            <span className="text-[10px] font-typewriter uppercase tracking-widest text-[#8b1e1e] block">
               MASADAKİ DOSYA · VAKA BRİFİNGİ
             </span>
-            <h2 className="text-xl sm:text-2xl font-bold font-cinzel text-zinc-100">
+            <h2 className="text-xl sm:text-2xl font-bold font-typewriter text-[#1f1c18]">
               Masa Şefi ({hostName}) Olay Yeri Brifingini Okuyor...
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#4a443c] max-w-md mx-auto leading-relaxed">
               Lütfen masa şefinizin sesli anlatımını dinleyin. Olayın genel tablosu dinlendikten sonra 1. Zarf ilgili uzmanın telefonunda açılacaktır.
             </p>
           </div>
 
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs text-zinc-400">
-            <Radio className="w-3.5 h-3.5 text-amber-500 animate-ping" />
-            <span>Şefin onayı bekleniyor...</span>
-          </div>
         </div>
       )}
     </div>

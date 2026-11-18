@@ -42,6 +42,7 @@ export interface EvidenceItem {
   mediaType?: 'text' | 'image' | 'audio' | 'video';
   mediaUrl?: string;
   mediaCaption?: string;
+  narrationUrl?: string;
   hasInteractiveTool?: 'toxicology' | 'terminal' | 'profiler-highlighter' | 'gps-map';
   interactiveToolTitle?: string;
   interactiveToolSubtitle?: string;

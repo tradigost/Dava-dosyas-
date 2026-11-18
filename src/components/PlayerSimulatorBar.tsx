@@ -44,16 +44,16 @@ export const PlayerSimulatorBar: React.FC<PlayerSimulatorBarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-zinc-950/95 backdrop-blur border-b border-zinc-800/80 shadow-md">
+    <header className="sticky top-0 z-40 bg-[#faf6ed]/95 backdrop-blur border-b border-[#d6cdbc] shadow-md">
       <div className="max-w-4xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
         
         {/* Left: Detective Name & Role */}
         <div className="flex items-center gap-2 min-w-0">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-[#8b1e1e] shrink-0" />
           <div className="truncate text-xs sm:text-sm">
-            <span className="font-bold text-zinc-100">{activePlayer.name}</span>
-            <span className="text-zinc-500 mx-1.5 font-mono">·</span>
-            <span className="text-amber-300 font-medium text-xs">
+            <span className="font-bold text-[#1f1c18]">{activePlayer.name}</span>
+            <span className="text-[#575046] mx-1.5 font-mono">·</span>
+            <span className="text-[#575046] font-medium text-xs">
               {roleLabels[activePlayer.role] || activePlayer.role}
             </span>
           </div>
@@ -76,12 +76,12 @@ export const PlayerSimulatorBar: React.FC<PlayerSimulatorBarProps> = ({
                     onSelectEnvelope(envNum);
                   }
                 }}
-                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[11px] sm:text-xs font-mono font-bold transition-all border ${
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[11px] sm:text-xs font-typewriter font-bold transition-all border ${
                   isViewing
-                    ? 'bg-amber-600 text-zinc-950 border-amber-400 shadow ring-1 ring-amber-400/40 cursor-default'
+                    ? 'bg-[#1f1c18] text-[#faf6ed] border-[#1f1c18] shadow ring-1 ring-[#1f1c18]/40 cursor-default'
                     : isUnlocked
-                    ? 'bg-zinc-900 border-zinc-700 text-zinc-300 hover:border-amber-500 hover:text-amber-300 cursor-pointer active:scale-95'
-                    : 'bg-zinc-950/60 border-zinc-900 text-zinc-600 cursor-not-allowed opacity-50'
+                    ? 'bg-[#fffdf8] border-[#c8bfae] text-[#1f1c18] hover:border-[#1f1c18] cursor-pointer active:scale-95'
+                    : 'bg-[#ebe5d8] border-[#d6cdbc] text-[#7c7265] cursor-not-allowed opacity-60'
                 }`}
                 title={
                   isViewing

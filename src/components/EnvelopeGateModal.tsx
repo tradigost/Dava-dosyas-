@@ -50,32 +50,30 @@ export const EnvelopeGateModal: React.FC<EnvelopeGateModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-zinc-950 border border-amber-600/50 rounded-2xl max-w-xl w-full p-5 sm:p-6 shadow-2xl relative text-zinc-100 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-[#1f1c18]/60 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-[#fffdf8] border border-[#d6cdbc] rounded-sm max-w-xl w-full p-5 sm:p-6 shadow-[0_6px_28px_rgba(31,28,24,0.2)] text-[#1f1c18] font-typewriter max-h-[90vh] overflow-y-auto">
         {/* Seal Icon Header */}
-        <div className="text-center pb-4 border-b border-zinc-800">
-          <div className="w-12 h-12 bg-amber-500/10 border border-amber-500/30 rounded-full flex items-center justify-center mx-auto mb-2 text-amber-400">
+        <div className="text-center pb-4 border-b border-dashed border-[#c8bfae]">
+          <div className="w-12 h-12 bg-[#8b1e1e]/10 border border-[#8b1e1e]/30 rounded-full flex items-center justify-center mx-auto mb-2 text-[#8b1e1e]">
             <KeyRound className="w-6 h-6" />
           </div>
-          <span className="text-[11px] font-typewriter text-amber-400 uppercase tracking-widest block">
+          <span className="text-[11px] text-[#8b1e1e] uppercase tracking-widest block">
             {currentEnvelope < totalEnvelopes
               ? `Zarf ${currentEnvelope} → Zarf ${currentEnvelope + 1} Mühür Kilidi`
               : `Zarf ${currentEnvelope} → Final Suçlama Kilidi`}
           </span>
-          <h3 className="text-lg sm:text-xl font-bold font-cinzel text-zinc-100 mt-1">
+          <h3 className="text-lg sm:text-xl font-bold uppercase text-[#1f1c18] mt-1">
             {gate.title}
           </h3>
-          <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">
+          <p className="text-xs text-[#575046] mt-1.5 leading-relaxed">
             {gate.instructions}
           </p>
         </div>
 
         {/* Question Body */}
         <div className="mt-4">
-          <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-lg">
-            <p className="text-xs sm:text-sm font-semibold text-amber-200 leading-relaxed">
-              ❓ {gate.question}
-            </p>
+          <div className="p-3.5 bg-[#faf6ed] border-l-2 border-[#8b1e1e] text-xs sm:text-sm font-bold text-[#1f1c18]">
+            {gate.question}
           </div>
 
           {/* Options */}
@@ -92,18 +90,18 @@ export const EnvelopeGateModal: React.FC<EnvelopeGateModalProps> = ({
                     setSelectedOptionId(option.id);
                     setHasSubmitted(false);
                   }}
-                  className={`w-full p-3 text-left rounded-xl border text-xs sm:text-sm transition-all flex items-start gap-3 ${
+                  className={`w-full p-3 text-left rounded-sm border text-xs sm:text-sm transition-all flex items-start gap-3 ${
                     isSelected
-                      ? 'bg-amber-950/60 border-amber-500 text-amber-100 font-medium shadow-md'
-                      : 'bg-zinc-900/50 border-zinc-800 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900'
+                      ? 'bg-[#fffdf8] border-[#1f1c18] ring-1 ring-[#1f1c18] text-[#1f1c18] font-semibold'
+                      : 'bg-[#faf6ed] border-[#d6cdbc] text-[#4a443c] hover:border-[#8c8273]'
                   }`}
                 >
                   <div
                     className={`w-4 h-4 rounded-full border shrink-0 mt-0.5 flex items-center justify-center ${
-                      isSelected ? 'border-amber-400 bg-amber-500' : 'border-zinc-600'
+                      isSelected ? 'border-[#1f1c18] bg-[#1f1c18]' : 'border-[#d6cdbc]'
                     }`}
                   >
-                    {isSelected && <div className="w-1.5 h-1.5 bg-zinc-950 rounded-full" />}
+                    {isSelected && <div className="w-1.5 h-1.5 bg-[#fffdf8] rounded-full" />}
                   </div>
                   <span className="leading-relaxed">{option.text}</span>
                 </button>
@@ -114,16 +112,16 @@ export const EnvelopeGateModal: React.FC<EnvelopeGateModalProps> = ({
           {/* Result Alert */}
           {hasSubmitted && (
             <div
-              className={`mt-4 p-3.5 rounded-xl border flex items-start gap-2.5 text-xs ${
+              className={`mt-4 p-3.5 rounded-sm border flex items-start gap-2.5 text-xs ${
                 isCorrect
-                  ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200'
-                  : 'bg-rose-950/40 border-rose-500/60 text-rose-200'
+                  ? 'bg-[#f0f7f2] border border-[#276749] text-[#1e4e38]'
+                  : 'bg-[#fdf2f2] border border-[#8b1e1e] text-[#8b1e1e]'
               }`}
             >
               {isCorrect ? (
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-5 h-5 text-[#276749] shrink-0 mt-0.5" />
               ) : (
-                <XCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+                <XCircle className="w-5 h-5 text-[#8b1e1e] shrink-0 mt-0.5" />
               )}
               <div>
                 <p className="font-bold text-sm">
@@ -138,11 +136,11 @@ export const EnvelopeGateModal: React.FC<EnvelopeGateModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="mt-6 flex items-center justify-between gap-3 pt-3 border-t border-zinc-800">
+        <div className="mt-6 flex items-center justify-between gap-3 pt-3 border-t border-dashed border-[#c8bfae]">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors"
+            className="px-4 py-2 text-xs text-[#575046] hover:text-[#1f1c18] transition-colors underline-offset-4 hover:underline"
           >
             Masaya Geri Dön
           </button>
@@ -152,10 +150,10 @@ export const EnvelopeGateModal: React.FC<EnvelopeGateModalProps> = ({
               type="button"
               disabled={!selectedOptionId}
               onClick={handleSubmit}
-              className={`px-5 py-2 rounded-lg text-xs font-bold transition-all ${
+              className={`px-5 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider transition-all ${
                 selectedOptionId
-                  ? 'bg-amber-600 hover:bg-amber-500 text-zinc-950 shadow-md'
-                  : 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
+                  ? 'bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed]'
+                  : 'bg-[#d6cdbc] text-[#4a443c] cursor-not-allowed'
               }`}
             >
               Mührü Doğrula
@@ -164,7 +162,7 @@ export const EnvelopeGateModal: React.FC<EnvelopeGateModalProps> = ({
             <button
               type="button"
               onClick={handleNext}
-              className="flex items-center gap-1.5 px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-md animate-pulse"
+              className="flex items-center gap-1.5 px-5 py-2.5 bg-[#8b1e1e] hover:bg-[#701616] text-[#faf6ed] rounded-sm text-xs font-bold uppercase tracking-wider"
             >
               <span>
                 {currentEnvelope < totalEnvelopes

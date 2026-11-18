@@ -1,0 +1,7 @@
+# Aider local configuration (RTX 3090 + Ollama)
+model: ollama_chat/qwen3-coder:30b
+yes-always: true
+auto-commits: false
+dark-mode: true
+edit-format: whole
+stream: true
