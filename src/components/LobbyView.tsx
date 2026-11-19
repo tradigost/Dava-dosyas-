@@ -8,10 +8,13 @@ import { CaseScenario, getScenarioTotalEnvelopes } from '../types';
 import { ROLES } from '../data/cases';
 import { canStartScenario } from '../utils/gameRules';
 import { soundManager } from '../utils/audioEffects';
-import { 
-  DetectiveProfile, 
-  fetchScenarioRatings 
+import {
+  DetectiveProfile,
+  fetchScenarioRatings,
+  auth,
+  ADMIN_EMAIL,
 } from '../services/firebase';
+import { isVerifiedAdminUser } from '../utils/scenarioUtils';
 import {
   Play,
   LogIn,
@@ -140,7 +143,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
             <Smartphone className="w-3.5 h-3.5" />
             <span>{onlineRoomCode ? `Oda: ${onlineRoomCode}` : 'Online Masa'}</span>
           </button>
-          {currentUser?.email?.toLowerCase() === 'altayyigitozan@gmail.com' && (
+          {isVerifiedAdminUser(auth.currentUser, ADMIN_EMAIL) && (
             <button
               type="button"
               onClick={onOpenAdminModal}

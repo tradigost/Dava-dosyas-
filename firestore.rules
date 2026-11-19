@@ -1,4 +1,77 @@
 rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users
+// Document ID: {userId} (Firebase Auth UID, or guest_* / user_email_* fallback UID)
+// Fields:
+//   - uid: string (required, immutable, == userId, 1..128 chars)
+//   - displayName: string (required, 1..150 chars)
+//   - email: string (optional, 0..200 chars)
+//   - photoURL: string (optional, 0..2048 chars)
+//   - isGuest: bool (optional)
+//   - createdAt: string (optional, 0..64 chars)
+//   - roleTitle: string (optional, 0..100 chars)
+//
+// Collection: case_ratings
+// Document ID: {ratingId} (rate_{scenarioId}_{userId})
+// Fields:
+//   - id: string (required, immutable, == ratingId)
+//   - scenarioId: string (required, immutable, valid ID)
+//   - scenarioTitle: string (optional, 0..200 chars)
+//   - userId: string (required, immutable, valid ID)
+//   - userName: string (optional, 0..150 chars)
+//   - userDisplayName: string (optional, 0..150 chars)
+//   - userEmail: string (optional, 0..200 chars)
+//   - rating: number (required, 1..5)
+//   - comment: string (optional, 0..2000 chars)
+//   - createdAt: string (optional, 0..64 chars)
+//
+// Collection: custom_cases
+// Document ID: {caseId} (slug/ID, 1..128 chars)
+// Fields:
+//   - id: string (required, == caseId)
+//   - title: string (required, 1..200 chars)
+//   - synopsis: string (required, 0..5000 chars)
+//   - victim: map (required, contains non-empty name <= 200 chars)
+//   - suspects: list (required, 2..20 items)
+//   - evidence: list (required, 1..100 items)
+//   - gates: map (required)
+//   - solution: map (required, contains non-empty culpritName <= 300 chars)
+//   - status: string (optional, 'published' | 'draft')
+//   - subtitle, difficulty, bannerTag, uploadedBy, createdAt, updatedAt (optional strings)
+//   - estimatedMinutes, minPlayers, maxPlayers, totalEnvelopes (optional numbers)
+//
+// Collection: rooms
+// Document ID: {roomId} (e.g. KND-884)
+// Fields:
+//   - roomCode: string (required, immutable, == roomId)
+//   - hostId: string (required, immutable, valid ID)
+//   - hostName: string (required, 1..150 chars)
+//   - scenarioId: string (required, immutable, valid ID)
+//   - playerCount: number (required, immutable, 1..12)
+//   - currentEnvelope: number (required, 1..20)
+//   - totalEnvelopes: number (optional, 1..20)
+//   - status: string (required, 'lobby' | 'briefing' | 'playing' | 'accusation' | 'finished')
+//   - activeInspectorId: string | null (optional, <= 128 chars)
+//   - activeInspectorName: string | null (optional, <= 150 chars)
+//   - activeInspectorRole: string | null (optional, valid role)
+//   - gateAttempts: number (required, 0..1000)
+//   - debateStartedAt: number | null (optional, >= 0)
+//   - createdAt: string (required, immutable, 0..64 chars)
+//   - updatedAt: string (optional, 0..64 chars)
+//
+// Subcollections under /rooms/{roomId}:
+//   - members/{memberId}: userId (== memberId), displayName, photoURL, role, joinedAt
+//   - pins/{pinId}: id (== pinId), evidenceId, title, excerpt, category, pinnedByUserId,
+//                   pinnedByPlayerName, pinnedByRole, envelope, timestamp, createdAt, notes
+//   - votes/{voterId}: playerId (== voterId), playerName, role, suspectId, motiveId,
+//                      evidenceId, individualScore, quizAnswers, statementNotes, submittedAt
+//
+// ===============================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
     // Default-deny catch-all
@@ -6,48 +79,359 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    function isValidId(id) {
-      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
     }
 
-    // User profile documents (supports Google Auth, Email/Password, and Guest Profiles)
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return request.auth != null
+        && 'email' in request.auth.token
+        && request.auth.token.email == 'altayyigitozan@gmail.com'
+        && 'email_verified' in request.auth.token
+        && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string
+        && id.size() > 0
+        && id.size() <= 128
+        && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidCompositeId(id) {
+      return id is string
+        && id.size() > 0
+        && id.size() <= 256
+        && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isGuestOrFallbackUid(id) {
+      return isValidId(id) && id.matches('^(guest_|user_email_)[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Allows verified admin, matching Firebase Auth owner, or local guest/email fallback UIDs
+    function canActAsUser(targetUserId) {
+      return isAdmin()
+        || isOwner(targetUserId)
+        || isGuestOrFallbackUid(targetUserId);
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidOptionalString(data, field, minLen, maxLen) {
+      return !(field in data)
+        || (data[field] is string
+          && data[field].size() >= minLen
+          && data[field].size() <= maxLen);
+    }
+
+    function isValidRole(role) {
+      return role in ['forensics', 'cryptology', 'profiler', 'field', 'ballistics', 'archive'];
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(userId, data) {
+      return hasRequiredFields(['uid', 'displayName'])
+        && hasOnlyAllowedFields(['uid', 'displayName', 'email', 'photoURL', 'isGuest', 'createdAt', 'roleTitle'])
+        && data.uid is string
+        && data.uid == userId
+        && data.displayName is string
+        && data.displayName.size() > 0
+        && data.displayName.size() <= 150
+        && isValidOptionalString(data, 'email', 0, 200)
+        && isValidOptionalString(data, 'photoURL', 0, 2048)
+        && (!('isGuest' in data) || data.isGuest is bool)
+        && isValidOptionalString(data, 'createdAt', 0, 64)
+        && isValidOptionalString(data, 'roleTitle', 0, 100);
+    }
+
+    function isValidCaseRating(ratingId, data) {
+      return hasRequiredFields(['id', 'scenarioId', 'userId', 'rating'])
+        && hasOnlyAllowedFields(['id', 'scenarioId', 'scenarioTitle', 'userId', 'userName', 'userDisplayName', 'userEmail', 'rating', 'comment', 'createdAt'])
+        && data.id is string
+        && data.id == ratingId
+        && isValidId(data.scenarioId)
+        && isValidId(data.userId)
+        && data.id == 'rate_' + data.scenarioId + '_' + data.userId
+        && data.rating is number
+        && data.rating >= 1
+        && data.rating <= 5
+        && isValidOptionalString(data, 'scenarioTitle', 0, 200)
+        && isValidOptionalString(data, 'userName', 0, 150)
+        && isValidOptionalString(data, 'userDisplayName', 0, 150)
+        && isValidOptionalString(data, 'userEmail', 0, 200)
+        && isValidOptionalString(data, 'comment', 0, 2000)
+        && isValidOptionalString(data, 'createdAt', 0, 64);
+    }
+
+    function isValidCustomCase(caseId, data) {
+      return hasRequiredFields(['id', 'title', 'synopsis', 'victim', 'suspects', 'evidence', 'gates', 'solution'])
+        && data.id is string
+        && data.id == caseId
+        && data.title is string
+        && data.title.size() > 0
+        && data.title.size() <= 200
+        && data.synopsis is string
+        && data.synopsis.size() <= 5000
+        && data.victim is map
+        && 'name' in data.victim
+        && data.victim.name is string
+        && data.victim.name.size() > 0
+        && data.victim.name.size() <= 200
+        && data.suspects is list
+        && data.suspects.size() >= 2
+        && data.suspects.size() <= 20
+        && data.evidence is list
+        && data.evidence.size() >= 1
+        && data.evidence.size() <= 100
+        && data.gates is map
+        && data.solution is map
+        && 'culpritName' in data.solution
+        && data.solution.culpritName is string
+        && data.solution.culpritName.size() > 0
+        && data.solution.culpritName.size() <= 300
+        && (!('status' in data) || data.status in ['published', 'draft'])
+        && isValidOptionalString(data, 'subtitle', 0, 500)
+        && isValidOptionalString(data, 'difficulty', 0, 50)
+        && isValidOptionalString(data, 'bannerTag', 0, 120)
+        && isValidOptionalString(data, 'uploadedBy', 0, 200)
+        && isValidOptionalString(data, 'createdAt', 0, 64)
+        && isValidOptionalString(data, 'updatedAt', 0, 64)
+        && (!('estimatedMinutes' in data) || (data.estimatedMinutes is number && data.estimatedMinutes >= 0 && data.estimatedMinutes <= 1000))
+        && (!('minPlayers' in data) || (data.minPlayers is number && data.minPlayers >= 1 && data.minPlayers <= 20))
+        && (!('maxPlayers' in data) || (data.maxPlayers is number && data.maxPlayers >= 1 && data.maxPlayers <= 20))
+        && (!('totalEnvelopes' in data) || (data.totalEnvelopes is number && data.totalEnvelopes >= 1 && data.totalEnvelopes <= 20));
+    }
+
+    function isValidRoom(roomId, data) {
+      return hasRequiredFields(['roomCode', 'hostId', 'hostName', 'scenarioId', 'playerCount', 'currentEnvelope', 'status', 'gateAttempts', 'createdAt'])
+        && hasOnlyAllowedFields([
+          'roomCode', 'hostId', 'hostName', 'scenarioId', 'playerCount',
+          'currentEnvelope', 'totalEnvelopes', 'status',
+          'activeInspectorId', 'activeInspectorName', 'activeInspectorRole',
+          'gateAttempts', 'debateStartedAt', 'createdAt', 'updatedAt'
+        ])
+        && data.roomCode is string
+        && data.roomCode == roomId
+        && isValidId(data.hostId)
+        && data.hostName is string
+        && data.hostName.size() > 0
+        && data.hostName.size() <= 150
+        && isValidId(data.scenarioId)
+        && data.playerCount is number
+        && data.playerCount >= 1
+        && data.playerCount <= 12
+        && data.currentEnvelope is number
+        && data.currentEnvelope >= 1
+        && data.currentEnvelope <= 20
+        && (!('totalEnvelopes' in data) || (data.totalEnvelopes is number && data.totalEnvelopes >= 1 && data.totalEnvelopes <= 20))
+        && data.status in ['lobby', 'briefing', 'playing', 'accusation', 'finished']
+        && (!('activeInspectorId' in data) || data.activeInspectorId == null || (data.activeInspectorId is string && data.activeInspectorId.size() <= 128))
+        && (!('activeInspectorName' in data) || data.activeInspectorName == null || (data.activeInspectorName is string && data.activeInspectorName.size() <= 150))
+        && (!('activeInspectorRole' in data) || data.activeInspectorRole == null || isValidRole(data.activeInspectorRole))
+        && data.gateAttempts is number
+        && data.gateAttempts >= 0
+        && data.gateAttempts <= 1000
+        && (!('debateStartedAt' in data) || data.debateStartedAt == null || (data.debateStartedAt is number && data.debateStartedAt >= 0))
+        && data.createdAt is string
+        && data.createdAt.size() <= 64
+        && isValidOptionalString(data, 'updatedAt', 0, 64);
+    }
+
+    function isValidRoomMember(memberId, data) {
+      return hasRequiredFields(['userId', 'displayName', 'role', 'joinedAt'])
+        && hasOnlyAllowedFields(['userId', 'displayName', 'photoURL', 'role', 'joinedAt'])
+        && data.userId is string
+        && data.userId == memberId
+        && data.displayName is string
+        && data.displayName.size() > 0
+        && data.displayName.size() <= 150
+        && isValidOptionalString(data, 'photoURL', 0, 2048)
+        && isValidRole(data.role)
+        && data.joinedAt is string
+        && data.joinedAt.size() <= 64;
+    }
+
+    function isValidRoomPin(pinId, data) {
+      return hasRequiredFields(['id', 'evidenceId', 'title', 'excerpt', 'pinnedByUserId', 'pinnedByPlayerName', 'pinnedByRole', 'envelope'])
+        && hasOnlyAllowedFields(['id', 'evidenceId', 'title', 'excerpt', 'category', 'pinnedByUserId', 'pinnedByPlayerName', 'pinnedByRole', 'envelope', 'timestamp', 'createdAt', 'notes'])
+        && data.id is string
+        && data.id == pinId
+        && data.evidenceId is string
+        && data.evidenceId.size() > 0
+        && data.evidenceId.size() <= 128
+        && data.title is string
+        && data.title.size() > 0
+        && data.title.size() <= 300
+        && data.excerpt is string
+        && data.excerpt.size() <= 2000
+        && isValidOptionalString(data, 'category', 0, 100)
+        && data.pinnedByUserId is string
+        && data.pinnedByUserId.size() > 0
+        && data.pinnedByUserId.size() <= 128
+        && data.pinnedByPlayerName is string
+        && data.pinnedByPlayerName.size() > 0
+        && data.pinnedByPlayerName.size() <= 150
+        && isValidRole(data.pinnedByRole)
+        && data.envelope is number
+        && data.envelope >= 1
+        && data.envelope <= 20
+        && isValidOptionalString(data, 'timestamp', 0, 64)
+        && isValidOptionalString(data, 'createdAt', 0, 64)
+        && isValidOptionalString(data, 'notes', 0, 2000);
+    }
+
+    function isValidRoomVote(voterId, data) {
+      return hasRequiredFields(['playerId', 'playerName', 'role', 'suspectId', 'motiveId', 'evidenceId'])
+        && hasOnlyAllowedFields(['playerId', 'playerName', 'role', 'suspectId', 'motiveId', 'evidenceId', 'individualScore', 'quizAnswers', 'statementNotes', 'submittedAt'])
+        && data.playerId is string
+        && data.playerId == voterId
+        && data.playerName is string
+        && data.playerName.size() > 0
+        && data.playerName.size() <= 150
+        && isValidRole(data.role)
+        && data.suspectId is string
+        && data.suspectId.size() > 0
+        && data.suspectId.size() <= 128
+        && data.motiveId is string
+        && data.motiveId.size() <= 300
+        && data.evidenceId is string
+        && data.evidenceId.size() <= 256
+        && (!('individualScore' in data) || (data.individualScore is number && data.individualScore >= 0 && data.individualScore <= 1000))
+        && (!('quizAnswers' in data) || (data.quizAnswers is map && data.quizAnswers.size() <= 30))
+        && isValidOptionalString(data, 'statementNotes', 0, 2000)
+        && isValidOptionalString(data, 'submittedAt', 0, 64);
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // User profile documents (supports Google Auth, Email/Password, Anonymous, and Guest Fallback Profiles)
     match /users/{userId} {
-      allow read: if true;
-      allow create, update: if isValidId(userId);
+      allow get: if isAdmin() || isOwner(userId) || isGuestOrFallbackUid(userId);
+      allow list: if isAdmin();
+      allow create: if isValidId(userId)
+        && isValidUser(userId, request.resource.data)
+        && canActAsUser(userId);
+      allow update: if isValidId(userId)
+        && isValidUser(userId, request.resource.data)
+        && canActAsUser(userId)
+        && request.resource.data.uid == resource.data.uid;
       allow delete: if false;
     }
 
     // Case Ratings (5-star ratings & reviews submitted by detectives)
     match /case_ratings/{ratingId} {
       allow read: if true;
-      allow create, update, delete: if isValidId(ratingId);
+      allow create: if isValidCompositeId(ratingId)
+        && isValidCaseRating(ratingId, request.resource.data)
+        && canActAsUser(request.resource.data.userId);
+      allow update: if isValidCompositeId(ratingId)
+        && isValidCaseRating(ratingId, request.resource.data)
+        && canActAsUser(resource.data.userId)
+        && request.resource.data.id == resource.data.id
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.scenarioId == resource.data.scenarioId;
+      allow delete: if isAdmin();
     }
 
-    // Custom Case Scenarios uploaded by Admin
+    // Custom Case Scenarios uploaded and managed strictly by verified Admin
     match /custom_cases/{caseId} {
       allow read: if true;
-      allow create, update, delete: if isValidId(caseId);
+      allow create, update: if isAdmin()
+        && isValidId(caseId)
+        && isValidCustomCase(caseId, request.resource.data);
+      allow delete: if isAdmin() && isValidId(caseId);
     }
 
-    // Investigation Rooms (Co-op multiplayer room sync)
+    // Investigation Rooms (Co-op multiplayer room sync; supports guest & auth detectives)
     match /rooms/{roomId} {
-      allow read: if true;
-      allow create, update: if isValidId(roomId);
-      allow delete: if isValidId(roomId);
+      allow get: if isValidId(roomId);
+      allow list: if isAdmin();
+      allow create: if isValidId(roomId)
+        && isValidRoom(roomId, request.resource.data)
+        && canActAsUser(request.resource.data.hostId)
+        && request.resource.data.status == 'lobby'
+        && request.resource.data.currentEnvelope == 1
+        && request.resource.data.gateAttempts == 0;
+      allow update: if isValidId(roomId)
+        && isValidRoom(roomId, request.resource.data)
+        && request.resource.data.roomCode == resource.data.roomCode
+        && request.resource.data.hostId == resource.data.hostId
+        && request.resource.data.scenarioId == resource.data.scenarioId
+        && request.resource.data.playerCount == resource.data.playerCount
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin()
+        || (isAuthenticated() && resource.data.hostId == request.auth.uid);
 
       // Room members
       match /members/{memberId} {
-        allow read, write: if isValidId(roomId);
+        allow read: if isValidId(roomId);
+        allow create, update: if isValidId(roomId)
+          && isValidId(memberId)
+          && exists(/databases/$(database)/documents/rooms/$(roomId))
+          && isValidRoomMember(memberId, request.resource.data)
+          && canActAsUser(memberId);
+        allow delete: if isValidId(roomId)
+          && isValidId(memberId)
+          && (isAdmin()
+            || isOwner(memberId)
+            || isGuestOrFallbackUid(memberId)
+            || (isAuthenticated()
+              && exists(/databases/$(database)/documents/rooms/$(roomId))
+              && get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid));
       }
 
       // Room shared pins (evidence pinned to the common detective board)
       match /pins/{pinId} {
-        allow read, write: if isValidId(roomId);
+        allow read: if isValidId(roomId);
+        allow create: if isValidId(roomId)
+          && isValidId(pinId)
+          && exists(/databases/$(database)/documents/rooms/$(roomId))
+          && isValidRoomPin(pinId, request.resource.data);
+        allow update: if isValidId(roomId)
+          && isValidId(pinId)
+          && exists(/databases/$(database)/documents/rooms/$(roomId))
+          && isValidRoomPin(pinId, request.resource.data)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.pinnedByUserId == resource.data.pinnedByUserId;
+        allow delete: if isAdmin()
+          || (isAuthenticated()
+            && exists(/databases/$(database)/documents/rooms/$(roomId))
+            && get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid);
       }
 
       // Room accusation votes
       match /votes/{voterId} {
-        allow read, write: if isValidId(roomId);
+        allow read: if isValidId(roomId);
+        allow create: if isValidId(roomId)
+          && isValidId(voterId)
+          && exists(/databases/$(database)/documents/rooms/$(roomId))
+          && isValidRoomVote(voterId, request.resource.data);
+        allow update: if isValidId(roomId)
+          && isValidId(voterId)
+          && exists(/databases/$(database)/documents/rooms/$(roomId))
+          && isValidRoomVote(voterId, request.resource.data)
+          && request.resource.data.playerId == resource.data.playerId;
+        allow delete: if isAdmin();
       }
     }
   }

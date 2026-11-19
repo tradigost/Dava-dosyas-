@@ -1,0 +1,12 @@
+{
+  "firestore": {
+    "database": "ai-studio-masadakidosyatrk-f9621994-3cfe-421b-86e9-4f126b6cc05d",
+    "location": "us-west1",
+    "edition": "enterprise",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  }
+}

@@ -4,41 +4,43 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { 
-  AdminDashboardData, 
-  fetchAdminDashboardData, 
+import {
+  AdminDashboardData,
+  fetchAdminDashboardData,
   DetectiveProfile,
   loginWithGoogle,
   saveCustomCase,
   deleteCustomCase,
   validateCaseScenario,
-  subscribeToCustomCases
+  subscribeToCustomCases,
+  auth,
+  ADMIN_EMAIL,
 } from '../services/firebase';
 import { CASE_SCENARIOS } from '../data/cases';
 import { DEMO_CUSTOM_CASE, SAMPLE_CASE_TEMPLATE } from '../data/sampleCase';
 import { CaseScenario, getScenarioTotalEnvelopes } from '../types';
 import { CaseWizardEditor } from './CaseWizardEditor';
 import { soundManager } from '../utils/audioEffects';
-import { 
-  X, 
-  BarChart3, 
-  Users, 
-  Star, 
-  Smartphone, 
-  RefreshCw, 
-  ShieldAlert, 
-  Search, 
-  ExternalLink, 
-  CheckCircle2, 
-  Sparkles, 
-  Apple, 
+import { isVerifiedAdminUser } from '../utils/scenarioUtils';
+import {
+  X,
+  BarChart3,
+  Users,
+  Star,
+  Smartphone,
+  RefreshCw,
+  ShieldAlert,
+  Search,
+  ExternalLink,
+  CheckCircle2,
+  Sparkles,
+  Apple,
   Play,
   Terminal,
   FileCode2,
   HelpCircle,
   Lock,
   LogIn,
-  KeyRound,
   FolderPlus,
   Upload,
   Download,
@@ -50,16 +52,20 @@ import {
   FileText,
   Clock,
   UserCheck,
-  BookOpen
+  BookOpen,
+  Edit3,
+  Copy,
+  Globe,
+  EyeOff,
 } from 'lucide-react';
+
+export { ADMIN_EMAIL };
 
 interface AdminDashboardModalProps {
   currentUser: DetectiveProfile | null;
   onClose: () => void;
   customCases?: CaseScenario[];
 }
-
-export const ADMIN_EMAIL = 'altayyigitozan@gmail.com';
 
 export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   currentUser,
@@ -83,16 +89,17 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   const [isSavingCase, setIsSavingCase] = useState<boolean>(false);
   const [previewCase, setPreviewCase] = useState<CaseScenario | null>(null);
   const [caseToDelete, setCaseToDelete] = useState<string | null>(null);
+  const [editingCase, setEditingCase] = useState<CaseScenario | null>(null);
+  const [isEditingExisting, setIsEditingExisting] = useState<boolean>(false);
 
-  const hasAdminParam = typeof window !== 'undefined' && (
-    window.location.search.includes('admin=1') ||
-    window.location.search.includes('admin=true') ||
-    localStorage.getItem('detective_admin_mode') === '1'
-  );
-  const [adminKeyUnlocked, setAdminKeyUnlocked] = useState<boolean>(hasAdminParam);
-  const [adminPassInput, setAdminPassInput] = useState<string>('');
+  // Clear any legacy local admin bypass flag on mount
+  useEffect(() => {
+    try {
+      localStorage.removeItem('detective_admin_mode');
+    } catch (e) {}
+  }, []);
 
-  const isAuthorized = adminKeyUnlocked || currentUser?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  const isAuthorized = isVerifiedAdminUser(auth.currentUser, ADMIN_EMAIL);
 
   const handleAdminGoogleLogin = async () => {
     setIsLoggingIn(true);
@@ -100,32 +107,19 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     try {
       soundManager.playKeyClick();
       const profile = await loginWithGoogle();
-      if (profile?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+      if (isVerifiedAdminUser(auth.currentUser, ADMIN_EMAIL)) {
         soundManager.playSuccessSound();
       } else {
         soundManager.playErrorSound();
-        setAuthError(`"${profile?.email || 'Bu hesap'}" yönetici olarak tanımlı değil. Lütfen "${ADMIN_EMAIL}" hesabı ile giriş yapın.`);
+        setAuthError(
+          `"${profile?.email || 'Bu hesap'}" doğrulanmış yönetici olarak tanımlı değil. Lütfen "${ADMIN_EMAIL}" Google hesabı ile giriş yapın.`
+        );
       }
     } catch (e: any) {
       soundManager.playErrorSound();
       setAuthError(e.message || 'Giriş yapılamadı.');
     } finally {
       setIsLoggingIn(false);
-    }
-  };
-
-  const handlePasscodeUnlock = (e: React.FormEvent) => {
-    e.preventDefault();
-    const clean = adminPassInput.trim().toLowerCase();
-    if (clean === 'admin' || clean === 'altay' || clean === '1923' || clean === 'masadakidosya') {
-      soundManager.playSuccessSound();
-      setAdminKeyUnlocked(true);
-      try {
-        localStorage.setItem('detective_admin_mode', '1');
-      } catch (e) {}
-    } else {
-      soundManager.playErrorSound();
-      setAuthError('Geçersiz yönetici anahtarı. Lütfen tekrar deneyin.');
     }
   };
 
@@ -244,17 +238,21 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   };
 
   // Save Pending Case to Firestore
-  const handlePublishCase = async () => {
+  const handlePublishCase = async (targetStatus: 'published' | 'draft' = 'published') => {
     if (!pendingParsedCase) return;
     setIsSavingCase(true);
     setUploadFeedback(null);
     try {
       soundManager.playKeyClick();
-      await saveCustomCase(pendingParsedCase, currentUser);
+      const casePayload: CaseScenario = { ...pendingParsedCase, status: targetStatus };
+      await saveCustomCase(casePayload, currentUser);
       soundManager.playSuccessSound();
       setUploadFeedback({
         type: 'success',
-        message: `"${pendingParsedCase.title}" başarıyla yüklendi! Vaka lobide aktif hale geldi.`
+        message:
+          targetStatus === 'draft'
+            ? `"${casePayload.title}" taslak olarak kaydedildi (lobide gizli).`
+            : `"${casePayload.title}" başarıyla yüklendi! Vaka lobide aktif hale geldi.`,
       });
       setPendingParsedCase(null);
       setRawJsonText('');
@@ -263,7 +261,34 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
       soundManager.playErrorSound();
       setUploadFeedback({
         type: 'error',
-        message: `Yükleme başarısız: ${err.message || 'Yetki veya bağlantı hatası'}`
+        message: `Yükleme başarısız: ${err.message || 'Yetki veya bağlantı hatası'}`,
+      });
+    } finally {
+      setIsSavingCase(false);
+    }
+  };
+
+  // Toggle published / draft status on an existing custom case
+  const handleToggleCaseStatus = async (sc: CaseScenario) => {
+    const nextStatus: 'published' | 'draft' = sc.status === 'draft' ? 'published' : 'draft';
+    setIsSavingCase(true);
+    setUploadFeedback(null);
+    try {
+      soundManager.playKeyClick();
+      await saveCustomCase({ ...sc, status: nextStatus }, currentUser);
+      soundManager.playSuccessSound();
+      setUploadFeedback({
+        type: 'success',
+        message:
+          nextStatus === 'published'
+            ? `"${sc.title}" canlıda yayınlandı! Artık lobide oyunculara açık.`
+            : `"${sc.title}" taslağa alındı (lobiden gizlendi).`,
+      });
+    } catch (err: any) {
+      soundManager.playErrorSound();
+      setUploadFeedback({
+        type: 'error',
+        message: err?.message || 'Vaka durumu güncellenirken hata oluştu.',
       });
     } finally {
       setIsSavingCase(false);
@@ -279,13 +304,13 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
       setCaseToDelete(null);
       setUploadFeedback({
         type: 'success',
-        message: 'Vaka sistemden başarıyla silindi.'
+        message: 'Vaka sistemden başarıyla silindi.',
       });
     } catch (err: any) {
       soundManager.playErrorSound();
       setUploadFeedback({
         type: 'error',
-        message: 'Vaka silinirken bir hata oluştu.'
+        message: err?.message || 'Vaka silinirken bir hata oluştu.',
       });
     }
   };
@@ -350,28 +375,6 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
               <span>{isLoggingIn ? 'Giriş Yapılıyor...' : `Google ile Giriş Yap (${ADMIN_EMAIL})`}</span>
             </button>
 
-            {/* Quick Admin Passcode Unlock Form */}
-            <form onSubmit={handlePasscodeUnlock} className="p-3 bg-zinc-900/80 border border-zinc-800 rounded-2xl text-left space-y-2">
-              <label className="text-[11px] font-mono text-zinc-400 block">
-                Veya Yönetici Anahtar Kodu ile Doğrula:
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="password"
-                  value={adminPassInput}
-                  onChange={(e) => setAdminPassInput(e.target.value)}
-                  placeholder="Yönetici anahtarı (admin / 1923)..."
-                  className="flex-1 px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-amber-400 font-mono"
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-amber-300 font-bold rounded-xl text-xs transition-colors shrink-0 cursor-pointer"
-                >
-                  Doğrula
-                </button>
-              </div>
-            </form>
-
             <button
               type="button"
               onClick={onClose}
@@ -382,7 +385,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
           </div>
 
           <div className="mt-4 pt-3 border-t border-zinc-900 text-[11px] text-zinc-500 font-mono">
-            İpucu: Bu panele istediğiniz zaman adresinize <code className="text-zinc-400">?admin=1</code> ekleyerek doğrudan erişebilirsiniz.
+            Güvenlik gereği yönetici paneli yalnızca doğrulanmış Google Auth oturumu ile açılır.
           </div>
         </div>
       </div>
@@ -1087,15 +1090,28 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                 {/* Wizard Mode (Phase by Phase Case Builder) */}
                 {uploadMode === 'wizard' && (
                   <CaseWizardEditor
+                    key={editingCase ? `${isEditingExisting ? 'edit' : 'clone'}-${editingCase.id}` : 'new-case'}
+                    initialScenario={editingCase}
+                    isEditing={isEditingExisting}
+                    onCancel={() => {
+                      setEditingCase(null);
+                      setIsEditingExisting(false);
+                    }}
                     onSaveCase={async (newScenario) => {
                       setIsSavingCase(true);
+                      setUploadFeedback(null);
                       try {
                         await saveCustomCase(newScenario, currentUser);
                         soundManager.playSuccessSound();
+                        const isDraft = newScenario.status === 'draft';
                         setUploadFeedback({
                           type: 'success',
-                          message: `"${newScenario.title}" (${newScenario.totalEnvelopes || 3} Zarf) başarıyla Firestore veritabanına kaydedildi ve yayınlandı! Artık lobide oynanabilir.`,
+                          message: isDraft
+                            ? `"${newScenario.title}" taslak olarak kaydedildi (lobide gizli).`
+                            : `"${newScenario.title}" (${newScenario.totalEnvelopes || 3} Zarf) başarıyla Firestore veritabanına kaydedildi ve canlıda yayınlandı!`,
                         });
+                        setEditingCase(null);
+                        setIsEditingExisting(false);
                       } catch (err: any) {
                         soundManager.playErrorSound();
                         setUploadFeedback({
@@ -1242,22 +1258,31 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                       </div>
                     </div>
 
-                    <div className="pt-2 flex items-center justify-end gap-3">
+                    <div className="pt-2 flex flex-wrap items-center justify-end gap-2.5">
                       <button
                         type="button"
                         onClick={() => setPendingParsedCase(null)}
-                        className="text-xs text-zinc-400 hover:text-zinc-200 cursor-pointer"
+                        className="text-xs text-zinc-400 hover:text-zinc-200 cursor-pointer mr-auto"
                       >
                         İptal Et
                       </button>
                       <button
                         type="button"
-                        onClick={handlePublishCase}
+                        onClick={() => handlePublishCase('draft')}
+                        disabled={isSavingCase}
+                        className="py-2.5 px-4 bg-zinc-800 hover:bg-zinc-700 text-amber-300 border border-amber-500/40 font-bold rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                      >
+                        <EyeOff className="w-4 h-4" />
+                        <span>{isSavingCase ? 'Kaydediliyor...' : 'Taslak Olarak Kaydet'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handlePublishCase('published')}
                         disabled={isSavingCase}
                         className="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-bold rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer shadow-lg disabled:opacity-50"
                       >
                         <FolderPlus className="w-4 h-4" />
-                        <span>{isSavingCase ? 'Yükleniyor...' : 'Vakayı Firestore’a Yükle ve Yayınla'}</span>
+                        <span>{isSavingCase ? 'Yükleniyor...' : 'Yayınla'}</span>
                       </button>
                     </div>
                   </div>
@@ -1282,67 +1307,120 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                     <div className="text-[11px] font-mono uppercase tracking-wider text-amber-400 font-bold px-1">
                       ADMİN TARAFINDAN YÜKLENEN ÖZEL VAKALAR (FIRESTORE)
                     </div>
-                    {customCasesList.map((sc) => (
-                      <div
-                        key={sc.id}
-                        className="p-4 bg-zinc-900/90 border border-amber-500/40 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md hover:border-amber-500 transition-colors"
-                      >
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold">
-                              ÖZEL VAKA
-                            </span>
-                            <span className="text-[10px] font-mono text-zinc-400">
-                              id: {sc.id}
-                            </span>
-                            <span className="text-[10px] text-zinc-400">
-                              · {sc.difficulty} · ~{sc.estimatedMinutes} dk · {sc.minPlayers}-{sc.maxPlayers} Oyuncu
-                            </span>
+                    {customCasesList.map((sc) => {
+                      const isDraft = sc.status === 'draft';
+                      return (
+                        <div
+                          key={sc.id}
+                          className={`p-4 bg-zinc-900/90 border rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md transition-colors ${
+                            isDraft
+                              ? 'border-zinc-700 hover:border-amber-500/60'
+                              : 'border-amber-500/40 hover:border-amber-500'
+                          }`}
+                        >
+                          <div className="space-y-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span
+                                className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold ${
+                                  isDraft
+                                    ? 'bg-zinc-800 border border-zinc-600 text-zinc-300'
+                                    : 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300'
+                                }`}
+                              >
+                                {isDraft ? 'TASLAK' : 'YAYINDA'}
+                              </span>
+                              <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold">
+                                ÖZEL VAKA
+                              </span>
+                              <span className="text-[10px] font-mono text-zinc-400">
+                                id: {sc.id}
+                              </span>
+                              <span className="text-[10px] text-zinc-400">
+                                · {sc.difficulty} · ~{sc.estimatedMinutes} dk · {sc.minPlayers}-{sc.maxPlayers} Oyuncu
+                              </span>
+                            </div>
+                            <h5 className="font-bold text-sm text-zinc-100">
+                              {sc.title}
+                            </h5>
+                            <p className="text-xs text-zinc-400 line-clamp-1">
+                              {sc.subtitle || sc.synopsis}
+                            </p>
+                            <div className="text-[11px] text-zinc-400 pt-1 flex items-center gap-2">
+                              <span>Maktul: <strong className="text-zinc-300">{sc.victim?.name}</strong></span>
+                              <span>·</span>
+                              <span>{sc.suspects?.length || 0} Şüpheli</span>
+                              <span>·</span>
+                              <span>{sc.evidence?.length || 0} Kanıt</span>
+                              <span>·</span>
+                              <span>{getScenarioTotalEnvelopes(sc)} Zarf</span>
+                            </div>
                           </div>
-                          <h5 className="font-bold text-sm text-zinc-100">
-                            {sc.title}
-                          </h5>
-                          <p className="text-xs text-zinc-400 line-clamp-1">
-                            {sc.subtitle || sc.synopsis}
-                          </p>
-                          <div className="text-[11px] text-zinc-400 pt-1 flex items-center gap-2">
-                            <span>Maktul: <strong className="text-zinc-300">{sc.victim?.name}</strong></span>
-                            <span>·</span>
-                            <span>{sc.suspects?.length || 0} Şüpheli</span>
-                            <span>·</span>
-                            <span>{sc.evidence?.length || 0} Kanıt</span>
-                            <span>·</span>
-                            <span>{getScenarioTotalEnvelopes(sc)} Zarf</span>
+
+                          <div className="flex flex-wrap items-center gap-2 shrink-0 self-end sm:self-center">
+                            <button
+                              type="button"
+                              disabled={isSavingCase}
+                              onClick={() => handleToggleCaseStatus(sc)}
+                              className={`py-1.5 px-3 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer border transition-colors disabled:opacity-50 ${
+                                isDraft
+                                  ? 'bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border-emerald-700/60'
+                                  : 'bg-zinc-800 hover:bg-zinc-700 text-amber-300 border-zinc-700'
+                              }`}
+                            >
+                              {isDraft ? (
+                                <>
+                                  <Globe className="w-3.5 h-3.5" />
+                                  <span>Yayınla</span>
+                                </>
+                              ) : (
+                                <>
+                                  <EyeOff className="w-3.5 h-3.5" />
+                                  <span>Taslağa Al</span>
+                                </>
+                              )}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                soundManager.playKeyClick();
+                                setEditingCase(JSON.parse(JSON.stringify(sc)));
+                                setIsEditingExisting(true);
+                                setUploadMode('wizard');
+                              }}
+                              className="py-1.5 px-3 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer border border-amber-500/40 transition-colors"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                              <span>Düzenle</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                soundManager.playKeyClick();
+                                setPreviewCase(sc);
+                              }}
+                              className="py-1.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer border border-zinc-700 transition-colors"
+                            >
+                              <Eye className="w-3.5 h-3.5 text-amber-400" />
+                              <span>Önizle</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                soundManager.playKeyClick();
+                                setCaseToDelete(sc.id);
+                              }}
+                              className="py-1.5 px-3 bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer border border-rose-800/60 transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>Sil</span>
+                            </button>
                           </div>
                         </div>
-
-                        <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              soundManager.playKeyClick();
-                              setPreviewCase(sc);
-                            }}
-                            className="py-1.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer border border-zinc-700 transition-colors"
-                          >
-                            <Eye className="w-3.5 h-3.5 text-amber-400" />
-                            <span>Önizle</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              soundManager.playKeyClick();
-                              setCaseToDelete(sc.id);
-                            }}
-                            className="py-1.5 px-3 bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer border border-rose-800/60 transition-colors"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            <span>Sil</span>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
 
@@ -1377,6 +1455,25 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            soundManager.playKeyClick();
+                            const cloned: CaseScenario = {
+                              ...JSON.parse(JSON.stringify(sc)),
+                              id: `${sc.id}-ozel`,
+                              status: 'draft',
+                            };
+                            setEditingCase(cloned);
+                            setIsEditingExisting(false);
+                            setUploadMode('wizard');
+                          }}
+                          className="py-1.5 px-3 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer border border-amber-500/40 transition-colors"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                          <span>Kopyala & Düzenle</span>
+                        </button>
+
                         <button
                           type="button"
                           onClick={() => {

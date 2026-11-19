@@ -26,6 +26,7 @@ import { WaitingTurnView } from './components/WaitingTurnView';
 import { AuthModal } from './components/AuthModal';
 import { AdminDashboardModal } from './components/AdminDashboardModal';
 import { soundManager } from './utils/audioEffects';
+import { mergeScenarios } from './utils/scenarioUtils';
 import { 
   auth, 
   testFirestoreConnection,
@@ -89,8 +90,8 @@ export default function App() {
   // Accusation submissions: playerId -> submission
   const [submissions, setSubmissions] = useState<Record<string, AccusationSubmission>>({});
 
-  // Merge built-in cases with uploaded custom cases
-  const allScenarios = [...CASE_SCENARIOS, ...customCases];
+  // Merge built-in cases with uploaded custom cases (excluding drafts from lobby)
+  const allScenarios = mergeScenarios(CASE_SCENARIOS, customCases, { includeDrafts: false });
   const scenario = allScenarios.find((s) => s.id === selectedScenarioId) || allScenarios[0] || CASE_SCENARIOS[0];
   const totalEnvelopes = getScenarioTotalEnvelopes(scenario);
 

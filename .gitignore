@@ -9,3 +9,5 @@ coverage/
 .aider*
 !.aider.conf.yml
 package-lock.json
+.firebase/
+

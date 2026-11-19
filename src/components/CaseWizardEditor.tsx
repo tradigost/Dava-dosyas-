@@ -4,43 +4,51 @@
  */
 
 import React, { useState } from 'react';
-import { CaseScenario, Suspect, EvidenceItem, GateQuestion, RoleType } from '../types';
+import { CaseScenario, Suspect, EvidenceItem, GateQuestion, RoleType, getScenarioTotalEnvelopes } from '../types';
 import { ROLES } from '../data/cases';
 import { soundManager } from '../utils/audioEffects';
-import { 
-  FolderPlus, 
-  Plus, 
-  Trash2, 
-  CheckCircle2, 
-  AlertTriangle, 
-  Layers, 
-  Users, 
-  KeyRound, 
-  Lock, 
-  FileText, 
-  Headphones, 
-  Image as ImageIcon, 
-  Video, 
-  ArrowRight, 
+import {
+  FolderPlus,
+  Plus,
+  Trash2,
+  CheckCircle2,
+  AlertTriangle,
+  Layers,
+  Users,
+  KeyRound,
+  Lock,
+  FileText,
+  Headphones,
+  Image as ImageIcon,
+  Video,
+  ArrowRight,
   ArrowLeft,
   Download,
   Sparkles,
   HelpCircle,
   Eye,
   Copy,
-  Check
+  Check,
+  Edit3,
+  X,
+  EyeOff,
+  Volume2,
 } from 'lucide-react';
 import { MediaDropzoneUploader } from './MediaDropzoneUploader';
 
 interface CaseWizardEditorProps {
   onSaveCase: (scenario: CaseScenario) => Promise<void>;
   isSaving: boolean;
+  initialScenario?: CaseScenario | null;
+  isEditing?: boolean;
   onCancel?: () => void;
 }
 
 export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
   onSaveCase,
   isSaving,
+  initialScenario,
+  isEditing = false,
   onCancel,
 }) => {
   const [activeStep, setActiveStep] = useState<1 | 2 | 3 | 4 | 5>(1);
@@ -48,108 +56,133 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   // Wizard state
-  const [caseId, setCaseId] = useState(`vaka-${Date.now().toString().slice(-4)}`);
-  const [title, setTitle] = useState('');
-  const [subtitle, setSubtitle] = useState('');
-  const [synopsis, setSynopsis] = useState('');
-  const [difficulty, setDifficulty] = useState<'Kolay' | 'Orta' | 'Zor' | 'Uzman'>('Orta');
-  const [estimatedMinutes, setEstimatedMinutes] = useState(45);
-  const [minPlayers, setMinPlayers] = useState(1);
-  const [maxPlayers, setMaxPlayers] = useState(6);
-  const [totalEnvelopes, setTotalEnvelopes] = useState(4);
+  const [caseId, setCaseId] = useState(initialScenario?.id || `vaka-${Date.now().toString().slice(-4)}`);
+  const [title, setTitle] = useState(initialScenario?.title || '');
+  const [subtitle, setSubtitle] = useState(initialScenario?.subtitle || '');
+  const [synopsis, setSynopsis] = useState(initialScenario?.synopsis || '');
+  const [difficulty, setDifficulty] = useState<'Kolay' | 'Orta' | 'Zor' | 'Uzman'>(
+    (initialScenario?.difficulty as 'Kolay' | 'Orta' | 'Zor' | 'Uzman') || 'Orta'
+  );
+  const [estimatedMinutes, setEstimatedMinutes] = useState(initialScenario?.estimatedMinutes || 45);
+  const [minPlayers, setMinPlayers] = useState(initialScenario?.minPlayers || 1);
+  const [maxPlayers, setMaxPlayers] = useState(initialScenario?.maxPlayers || 6);
+  const [totalEnvelopes, setTotalEnvelopes] = useState(
+    initialScenario ? getScenarioTotalEnvelopes(initialScenario) : 4
+  );
+  const [status, setStatus] = useState<'published' | 'draft'>(initialScenario?.status || 'published');
 
   // Victim
-  const [victimName, setVictimName] = useState('');
-  const [victimAge, setVictimAge] = useState(48);
-  const [victimTitle, setVictimTitle] = useState('');
-  const [victimLocation, setVictimLocation] = useState('');
-  const [victimTimeOfDeath, setVictimTimeOfDeath] = useState('23:00 - 00:30 suları');
-  const [victimCauseInitial, setVictimCauseInitial] = useState('');
+  const [victimName, setVictimName] = useState(initialScenario?.victim?.name || '');
+  const [victimAge, setVictimAge] = useState(initialScenario?.victim?.age || 48);
+  const [victimTitle, setVictimTitle] = useState(initialScenario?.victim?.title || '');
+  const [victimLocation, setVictimLocation] = useState(initialScenario?.victim?.locationOfBody || '');
+  const [victimTimeOfDeath, setVictimTimeOfDeath] = useState(
+    initialScenario?.victim?.timeOfDeath || '23:00 - 00:30 suları'
+  );
+  const [victimCauseInitial, setVictimCauseInitial] = useState(initialScenario?.victim?.causeInitial || '');
 
   // Suspects
-  const [suspects, setSuspects] = useState<Suspect[]>([
-    {
-      id: 'supheli-1',
-      name: '',
-      title: '',
-      age: 38,
-      relation: '',
-      description: '',
-      alibi: '',
-      suspiciousQuotes: [''],
-      initialSuspicion: 50,
-      motiveHypothesis: '',
-      photoPlaceholder: {
-        initials: 'Ş1',
-        tint: 'bg-zinc-800',
-        silhouetteStyle: 'shadow',
-      },
-    },
-    {
-      id: 'supheli-2',
-      name: '',
-      title: '',
-      age: 42,
-      relation: '',
-      description: '',
-      alibi: '',
-      suspiciousQuotes: [''],
-      initialSuspicion: 50,
-      motiveHypothesis: '',
-      photoPlaceholder: {
-        initials: 'Ş2',
-        tint: 'bg-zinc-800',
-        silhouetteStyle: 'shadow',
-      },
-    },
-  ]);
+  const [suspects, setSuspects] = useState<Suspect[]>(
+    initialScenario?.suspects?.length
+      ? initialScenario.suspects.map((s) => ({
+          ...s,
+          suspiciousQuotes: s.suspiciousQuotes?.length ? s.suspiciousQuotes : [''],
+        }))
+      : [
+          {
+            id: 'supheli-1',
+            name: '',
+            title: '',
+            age: 38,
+            relation: '',
+            description: '',
+            alibi: '',
+            suspiciousQuotes: [''],
+            initialSuspicion: 50,
+            motiveHypothesis: '',
+            photoPlaceholder: {
+              initials: 'Ş1',
+              tint: 'bg-zinc-800',
+              silhouetteStyle: 'shadow',
+            },
+          },
+          {
+            id: 'supheli-2',
+            name: '',
+            title: '',
+            age: 42,
+            relation: '',
+            description: '',
+            alibi: '',
+            suspiciousQuotes: [''],
+            initialSuspicion: 50,
+            motiveHypothesis: '',
+            photoPlaceholder: {
+              initials: 'Ş2',
+              tint: 'bg-zinc-800',
+              silhouetteStyle: 'shadow',
+            },
+          },
+        ]
+  );
 
   // Evidence list
-  const [evidenceList, setEvidenceList] = useState<EvidenceItem[]>([
-    {
-      id: 'delil-1-1',
-      envelope: 1,
-      title: 'İlk Olay Yeri & Telsiz / Ses Tutanakları',
-      category: 'audio',
-      mediaType: 'audio',
-      mediaUrl: '',
-      mediaCaption: 'Olay gecesi 112 Acil çağrı ve devriye ekibi telsiz kaydı',
-      roleAccess: ['forensics', 'profiler'],
-      summary: 'Maktulün bulunduğu andaki ilk telsiz anonsu ve şüpheli sesler.',
-      fullReport: 'Resmi zabıt no #001: 23:45 sularında gelen ihbar üzerine ekipler adrese intikal etmiştir.',
-      keyDeduction: 'Ölüm saati ve ses kayıtları arasındaki zaman tutarsızlığı.',
-      metadata: {
-        date: new Date().toLocaleDateString('tr-TR'),
-        caseRef: 'DOSYA-1',
-        confidentiality: 'GİZLİ',
-      },
-    },
-  ]);
+  const [evidenceList, setEvidenceList] = useState<EvidenceItem[]>(
+    initialScenario?.evidence?.length
+      ? initialScenario.evidence
+      : [
+          {
+            id: 'delil-1-1',
+            envelope: 1,
+            title: 'İlk Olay Yeri & Telsiz / Ses Tutanakları',
+            category: 'audio',
+            mediaType: 'audio',
+            mediaUrl: '',
+            mediaCaption: 'Olay gecesi 112 Acil çağrı ve devriye ekibi telsiz kaydı',
+            narrationUrl: '',
+            roleAccess: ['forensics', 'profiler'],
+            summary: 'Maktulün bulunduğu andaki ilk telsiz anonsu ve şüpheli sesler.',
+            fullReport: 'Resmi zabıt no #001: 23:45 sularında gelen ihbar üzerine ekipler adrese intikal etmiştir.',
+            keyDeduction: 'Ölüm saati ve ses kayıtları arasındaki zaman tutarsızlığı.',
+            metadata: {
+              date: new Date().toLocaleDateString('tr-TR'),
+              caseRef: 'DOSYA-1',
+              confidentiality: 'GİZLİ',
+            },
+          },
+        ]
+  );
 
   // Gates
-  const [gates, setGates] = useState<Record<number, GateQuestion>>({
-    1: {
-      envelope: 1,
-      title: 'Zarf 1 İlerleme Kilidi',
-      instructions: 'Bir sonraki aşamaya geçmek için aşağıdaki durum tespitini ekipçe doğrulayın.',
-      question: 'Zarf 1 İlerleme Kilidi: Ekibiniz maktulün ölüm zamanı ve ilk ifadelerdeki kritik çelişkiyi tespit etti mi?',
-      options: [
-        { id: 'opt-1', text: 'Evet, alibi saatleri ile olay yeri bulguları arasındaki çelişki netleşti.', isCorrect: true },
-        { id: 'opt-2', text: 'Toksikoloji sonuçları henüz tamamlanmadı.', isCorrect: false },
-        { id: 'opt-3', text: 'Olay yeri tamamen kaza gibi görünüyor.', isCorrect: false },
-      ],
-      explanation: 'İlk zarftaki çelişki tespit edildi. Soruşturma derinleşiyor.',
-    },
-  });
+  const [gates, setGates] = useState<Record<number, GateQuestion>>(
+    initialScenario?.gates && Object.keys(initialScenario.gates).length > 0
+      ? initialScenario.gates
+      : {
+          1: {
+            envelope: 1,
+            title: 'Zarf 1 İlerleme Kilidi',
+            instructions: 'Bir sonraki aşamaya geçmek için aşağıdaki durum tespitini ekipçe doğrulayın.',
+            question: 'Zarf 1 İlerleme Kilidi: Ekibiniz maktulün ölüm zamanı ve ilk ifadelerdeki kritik çelişkiyi tespit etti mi?',
+            options: [
+              { id: 'opt-1', text: 'Evet, alibi saatleri ile olay yeri bulguları arasındaki çelişki netleşti.', isCorrect: true },
+              { id: 'opt-2', text: 'Toksikoloji sonuçları henüz tamamlanmadı.', isCorrect: false },
+              { id: 'opt-3', text: 'Olay yeri tamamen kaza gibi görünüyor.', isCorrect: false },
+            ],
+            explanation: 'İlk zarftaki çelişki tespit edildi. Soruşturma derinleşiyor.',
+          },
+        }
+  );
 
   // Solution
-  const [culpritId, setCulpritId] = useState('');
-  const [culpritName, setCulpritName] = useState('');
-  const [motiveTitle, setMotiveTitle] = useState('');
-  const [keyEvidenceTitle, setKeyEvidenceTitle] = useState('');
-  const [verdictSummary, setVerdictSummary] = useState('');
+  const [culpritId, setCulpritId] = useState(initialScenario?.solution?.culpritId || '');
+  const [culpritName, setCulpritName] = useState(initialScenario?.solution?.culpritName || '');
+  const [motiveTitle, setMotiveTitle] = useState(initialScenario?.solution?.motiveTitle || '');
+  const [keyEvidenceTitle, setKeyEvidenceTitle] = useState(initialScenario?.solution?.keyEvidenceTitle || '');
+  const [verdictSummary, setVerdictSummary] = useState(initialScenario?.solution?.verdictSummary || '');
   const [confessionLetter, setConfessionLetter] = useState(
-    'Bu mektubu okuyorsanız oyun bitti demektir... O gece salona girdiğimde Selim çoktan şüphelenmişti. Kadehe zehri damlattığım an geri dönüş yoktu. Bıraktığım sahte izlerin sizi yanıltacağını düşünmüştüm ama adaletten kaçamadım.'
+    initialScenario
+      ? initialScenario.solution?.confessionLetter || ''
+      : 'Bu mektubu okuyorsanız oyun bitti demektir... O gece salona girdiğimde Selim çoktan şüphelenmişti. Kadehe zehri damlattığım an geri dönüş yoktu. Bıraktığım sahte izlerin sizi yanıltacağını düşünmüştüm ama adaletten kaçamadım.'
   );
   const [isCopied, setIsCopied] = useState(false);
 
@@ -291,19 +324,23 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
   };
 
   // Build the complete CaseScenario
-  const assembleScenario = (): CaseScenario => {
+  const assembleScenario = (targetStatus?: 'published' | 'draft'): CaseScenario => {
     const finalCulprit = suspects.find((s) => s.id === culpritId || s.name === culpritName) || suspects[0];
+    const effectiveStatus = targetStatus || status;
 
     return {
       id: caseId.trim().toLowerCase().replace(/\s+/g, '-'),
       title: title.trim() || 'Yeni Gizemli Dosya',
       subtitle: subtitle.trim() || 'Çözülmeyi bekleyen esrarengiz bir vaka',
+      bannerTag: initialScenario?.bannerTag,
       synopsis: synopsis.trim() || 'Dedektif ekibi olay yerine intikal eder...',
       estimatedMinutes: Number(estimatedMinutes) || 45,
       difficulty: difficulty || 'Orta',
       minPlayers: Number(minPlayers) || 1,
       maxPlayers: Number(maxPlayers) || 6,
       totalEnvelopes: Math.max(1, Number(totalEnvelopes) || 1),
+      status: effectiveStatus,
+      createdAt: initialScenario?.createdAt,
       victim: {
         name: victimName.trim() || 'Maktul',
         age: Number(victimAge) || 40,
@@ -326,6 +363,7 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
         title: ev.title.trim() || 'Delil Dosyası',
         summary: ev.summary.trim() || 'İncelenmesi gereken kritik bulgu.',
         fullReport: ev.fullReport.trim() || 'Resmi tutanak metni.',
+        narrationUrl: ev.narrationUrl?.trim() ? ev.narrationUrl.trim() : undefined,
       })),
       gates,
       solution: {
@@ -335,6 +373,8 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
         keyEvidenceTitle: keyEvidenceTitle.trim() || 'Olay Yeri Ses ve Kamera Kayıtları',
         verdictSummary: verdictSummary.trim() || 'Dedektif ekibinin titiz çalışması sonucu katil suçunu itiraf etmiştir.',
         confessionLetter: confessionLetter.trim() || undefined,
+        fullChronology: initialScenario?.solution?.fullChronology,
+        confessionAudioTranscript: initialScenario?.solution?.confessionAudioTranscript,
       },
     };
   };
@@ -400,14 +440,15 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
     }
   };
 
-  // Publish to Firestore
-  const handlePublish = async () => {
+  // Publish or save draft to Firestore
+  const handleSaveWithStatus = async (targetStatus: 'published' | 'draft') => {
     if (!validateScenario()) {
       soundManager.playErrorSound();
       return;
     }
     soundManager.playKeyClick();
-    const scenario = assembleScenario();
+    setStatus(targetStatus);
+    const scenario = assembleScenario(targetStatus);
     await onSaveCase(scenario);
   };
 
@@ -416,6 +457,38 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
 
   return (
     <div className="space-y-6">
+      {initialScenario && (
+        <div className="p-3.5 bg-amber-950/30 border border-amber-500/40 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5">
+            <Edit3 className="w-4 h-4 text-amber-400 shrink-0" />
+            <div>
+              <span className="font-bold text-amber-200 block">
+                {isEditing
+                  ? `Düzenlenen Vaka: ${initialScenario.title}`
+                  : `Klonlanan Şablon: ${initialScenario.title}`}
+              </span>
+              <span className="text-[11px] text-zinc-400">
+                {isEditing
+                  ? 'Değişiklikleri taslak olarak saklayabilir veya doğrudan yayına alabilirsiniz.'
+                  : 'Yeni bir ID ile kendi özel versiyonunuzu oluşturuyorsunuz.'}
+              </span>
+            </div>
+          </div>
+          {onCancel && (
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playKeyClick();
+                onCancel();
+              }}
+              className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>Düzenlemeyi İptal Et</span>
+            </button>
+          )}
+        </div>
+      )}
       
       {/* Wizard Step Navigation */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pb-2">
@@ -493,10 +566,18 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                 <input
                   type="text"
                   value={caseId}
+                  disabled={isEditing}
                   onChange={(e) => setCaseId(e.target.value)}
                   placeholder="bogaz-yalisi-cinayeti"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 font-mono focus:outline-none focus:border-amber-400"
+                  className={`w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 font-mono focus:outline-none focus:border-amber-400 ${
+                    isEditing ? 'opacity-60 cursor-not-allowed' : ''
+                  }`}
                 />
+                {isEditing && (
+                  <p className="text-[10px] text-amber-400/90 mt-1 font-mono">
+                    Düzenleme modunda ID değiştirilemez
+                  </p>
+                )}
               </div>
 
               <div className="sm:col-span-2">
@@ -991,6 +1072,9 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                       {/* Drag & Drop Media Uploader and Live Preview Studio */}
                       {(ev.mediaType === 'audio' || ev.mediaType === 'image' || ev.mediaType === 'video') && (
                         <MediaDropzoneUploader
+                          caseId={caseId}
+                          evidenceId={ev.id}
+                          uploadKind="media"
                           mediaType={ev.mediaType}
                           mediaUrl={ev.mediaUrl || ''}
                           mediaCaption={ev.mediaCaption || ''}
@@ -998,6 +1082,18 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                           onUpdateCaption={(caption) => updateEvidenceField(ev.id, 'mediaCaption', caption)}
                         />
                       )}
+
+                      {/* Dedicated Document Voice Narration Uploader */}
+                      <MediaDropzoneUploader
+                        caseId={caseId}
+                        evidenceId={ev.id}
+                        uploadKind="narration"
+                        mediaType="audio"
+                        mediaUrl={ev.narrationUrl || ''}
+                        onUpdateUrl={(url) => updateEvidenceField(ev.id, 'narrationUrl', url)}
+                        title="Belge Sesli Anlatımı (Belgeyi Sesli Dinle · .mp3 / .wav)"
+                        hideCaption={true}
+                      />
 
                       {/* Role checkboxes */}
                       <div className="sm:col-span-3">
@@ -1333,13 +1429,17 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                   <FileText className="w-3 h-3 text-zinc-400" />
                   {evidenceList.filter((e) => e.mediaType === 'text' || !e.mediaType).length} Metin Raporu
                 </span>
+                <span className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 flex items-center gap-1">
+                  <Volume2 className="w-3 h-3 text-emerald-400" />
+                  {evidenceList.filter((e) => Boolean(e.narrationUrl?.trim())).length} Sesli Anlatım
+                </span>
               </div>
             </div>
           </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => {
@@ -1377,15 +1477,33 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
               </button>
             </div>
 
-            <button
-              type="button"
-              onClick={handlePublish}
-              disabled={isSaving}
-              className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xl disabled:opacity-50"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>{isSaving ? 'Firestore’a Kaydediliyor...' : '🔥 Vakayı Doğrula ve Canlıda Yayınla'}</span>
-            </button>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={() => handleSaveWithStatus('draft')}
+                disabled={isSaving}
+                className="px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-amber-300 border border-amber-500/40 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+              >
+                <EyeOff className="w-4 h-4" />
+                <span>{isSaving ? 'Kaydediliyor...' : 'Taslak Olarak Kaydet'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSaveWithStatus('published')}
+                disabled={isSaving}
+                className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xl disabled:opacity-50"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>
+                  {isSaving
+                    ? 'Firestore’a Kaydediliyor...'
+                    : isEditing
+                    ? 'Değişiklikleri Yayınla'
+                    : 'Canlıda Yayınla'}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       )}

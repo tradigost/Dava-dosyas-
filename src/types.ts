@@ -150,6 +150,10 @@ export interface CaseScenario {
   evidence: EvidenceItem[];
   gates: Record<number, GateQuestion>;
   solution: CaseSolution;
+  status?: 'published' | 'draft';
+  uploadedBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export function getScenarioTotalEnvelopes(scenario: CaseScenario): number {

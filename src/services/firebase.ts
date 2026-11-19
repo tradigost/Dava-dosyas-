@@ -36,12 +36,26 @@ import {
   limit,
   where
 } from 'firebase/firestore';
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL
+} from 'firebase/storage';
 import firebaseConfig from '../../firebase-applet-config.json';
 import { RoleType, SharedPin, AccusationSubmission, CaseScenario } from '../types';
+import {
+  stripUndefined,
+  estimatePayloadBytes,
+  MAX_FIRESTORE_CASE_BYTES,
+  isVerifiedAdminUser,
+} from '../utils/scenarioUtils';
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const storage = getStorage(app);
+export const ADMIN_EMAIL = 'altayyigitozan@gmail.com';
 
 // Test connection on boot per Firebase skill guidelines
 export async function testFirestoreConnection(): Promise<boolean> {
@@ -1112,8 +1126,179 @@ export async function fetchAdminDashboardData(): Promise<AdminDashboardData> {
 }
 
 // ----------------------------------------------------------------------
-// Custom Case Scenarios Management (Vaka Yükleme ve Yönetimi)
+// Custom Case Scenarios Management & Media Storage (Vaka Yükleme ve Yönetimi)
 // ----------------------------------------------------------------------
+
+const EXTENSION_MIME_MAP: Record<string, string> = {
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  webp: 'image/webp',
+  gif: 'image/gif',
+  mp3: 'audio/mpeg',
+  wav: 'audio/wav',
+  ogg: 'audio/ogg',
+  m4a: 'audio/mp4',
+  mp4: 'video/mp4',
+  webm: 'video/webm',
+};
+
+function inferMediaContentType(file: File): string {
+  if (file.type && (file.type.startsWith('image/') || file.type.startsWith('audio/') || file.type.startsWith('video/'))) {
+    return file.type;
+  }
+  const ext = file.name.split('.').pop()?.toLowerCase() || '';
+  return EXTENSION_MIME_MAP[ext] || file.type || '';
+}
+
+function canvasToBlob(canvas: HTMLCanvasElement, mimeType: string, quality: number): Promise<Blob | null> {
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve(blob), mimeType, quality);
+  });
+}
+
+async function compressImageIfNeeded(
+  file: File,
+  resolvedType: string
+): Promise<{ blob: Blob; contentType: string; extension?: string }> {
+  if (!resolvedType.startsWith('image/') || resolvedType === 'image/gif' || file.size <= 400 * 1024) {
+    return { blob: file, contentType: resolvedType };
+  }
+
+  if (typeof document === 'undefined' || typeof URL === 'undefined' || typeof Image === 'undefined') {
+    return { blob: file, contentType: resolvedType };
+  }
+
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = () => reject(new Error('Görsel çözümlenemedi.'));
+      el.src = objectUrl;
+    });
+
+    const maxEdge = 1600;
+    const scale = Math.min(1, maxEdge / Math.max(img.width || 1, img.height || 1));
+    const targetW = Math.max(1, Math.round(img.width * scale));
+    const targetH = Math.max(1, Math.round(img.height * scale));
+
+    const canvas = document.createElement('canvas');
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return { blob: file, contentType: resolvedType };
+    }
+    ctx.drawImage(img, 0, 0, targetW, targetH);
+
+    let compressed = await canvasToBlob(canvas, 'image/webp', 0.84);
+    let outType = 'image/webp';
+    let outExt = 'webp';
+
+    if (!compressed) {
+      compressed = await canvasToBlob(canvas, 'image/jpeg', 0.84);
+      outType = 'image/jpeg';
+      outExt = 'jpg';
+    }
+
+    if (compressed && compressed.size < file.size) {
+      return { blob: compressed, contentType: outType, extension: outExt };
+    }
+    return { blob: file, contentType: resolvedType };
+  } catch {
+    return { blob: file, contentType: resolvedType };
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+export async function uploadCaseMedia(params: {
+  caseId: string;
+  evidenceId: string;
+  kind: 'media' | 'narration';
+  file: File;
+  onProgress?: (percent: number) => void;
+}): Promise<{ url: string; contentType: string; sizeBytes: number }> {
+  if (!isVerifiedAdminUser(auth.currentUser, ADMIN_EMAIL)) {
+    throw new Error(
+      `Medya yüklemek için yetkili Google yönetici hesabı (${ADMIN_EMAIL}) ile giriş yapmalısınız.`
+    );
+  }
+
+  const maxBytes = 25 * 1024 * 1024;
+  if (params.file.size > maxBytes) {
+    throw new Error('Dosya boyutu 25 MB sınırını aşıyor. Lütfen daha küçük bir dosya seçin.');
+  }
+
+  const resolvedType = inferMediaContentType(params.file);
+  if (
+    !resolvedType.startsWith('image/') &&
+    !resolvedType.startsWith('audio/') &&
+    !resolvedType.startsWith('video/')
+  ) {
+    throw new Error('Desteklenmeyen dosya türü. Yalnızca görsel, ses veya video yüklenebilir.');
+  }
+
+  const { blob, contentType, extension } = await compressImageIfNeeded(params.file, resolvedType);
+
+  const cleanCaseId =
+    params.caseId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-').slice(0, 64) || 'genel';
+  const cleanEvidenceId =
+    params.evidenceId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-').slice(0, 64) || 'delil';
+
+  const rawSafeName =
+    params.file.name.toLowerCase().replace(/[^a-z0-9_.-]/g, '-').replace(/-+/g, '-') || 'dosya';
+  const safeName = extension
+    ? `${rawSafeName.replace(/\.[^.]+$/, '')}.${extension}`
+    : rawSafeName;
+
+  const storagePath = `cases/${cleanCaseId}/${cleanEvidenceId}/${params.kind}_${Date.now()}_${safeName}`;
+  const storageRef = ref(storage, storagePath);
+
+  try {
+    const url = await new Promise<string>((resolve, reject) => {
+      const uploadTask = uploadBytesResumable(storageRef, blob, { contentType });
+      uploadTask.on(
+        'state_changed',
+        (snap) => {
+          if (snap.totalBytes > 0) {
+            params.onProgress?.(Math.round((snap.bytesTransferred / snap.totalBytes) * 100));
+          }
+        },
+        (err) => reject(err),
+        async () => {
+          try {
+            const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+            resolve(downloadUrl);
+          } catch (urlErr) {
+            reject(urlErr);
+          }
+        }
+      );
+    });
+
+    return { url, contentType, sizeBytes: blob.size };
+  } catch (err: any) {
+    const code = err?.code || '';
+    if (code === 'storage/unauthorized') {
+      throw new Error(
+        `Firebase Storage yazma yetkisi reddedildi. Google (${ADMIN_EMAIL}) oturumunuzu ve Firebase Console -> Storage -> Rules altındaki storage.rules ayarlarını kontrol edin.`
+      );
+    }
+    if (code === 'storage/bucket-not-found' || code === 'storage/project-not-found') {
+      throw new Error(
+        'Firebase Storage kovası (bucket) bulunamadı. Firebase Console -> Storage bölümünden Storage servisini etkinleştirin.'
+      );
+    }
+    if (code === 'storage/unknown') {
+      throw new Error(
+        'Firebase Storage bağlantı hatası (storage/unknown). Firebase Console -> Storage kurulumunun ve CORS/storage.rules ayarlarının aktif olduğundan emin olun.'
+      );
+    }
+    throw new Error(err?.message || 'Medya Firebase Storage’a yüklenirken bir hata oluştu.');
+  }
+}
 
 export function validateCaseScenario(data: any): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
@@ -1130,12 +1315,28 @@ export function validateCaseScenario(data: any): { valid: boolean; errors: strin
   }
   if (!Array.isArray(data.evidence) || data.evidence.length === 0) {
     errors.push('En az bir delil/kanıt (evidence) bulunmalıdır.');
+  } else {
+    data.evidence.forEach((ev: any, idx: number) => {
+      if (ev?.narrationUrl !== undefined && typeof ev.narrationUrl !== 'string') {
+        errors.push(`Delil #${idx + 1} içindeki narrationUrl alanı geçerli bir metin (URL) olmalıdır.`);
+      }
+    });
   }
   if (!data.gates || !data.gates[1]) {
     errors.push('Zarf 1 için doğrulama sorusu (gates[1]) tanımlanmalıdır.');
   }
   if (!data.solution || !data.solution.culpritName) {
     errors.push('Vaka çözümü (solution.culpritName) tanımlanmalıdır.');
+  }
+  if (data.status !== undefined && data.status !== 'published' && data.status !== 'draft') {
+    errors.push('Vaka durumu (status) yalnızca "published" veya "draft" olabilir.');
+  }
+
+  const byteSize = estimatePayloadBytes(stripUndefined(data));
+  if (byteSize > MAX_FIRESTORE_CASE_BYTES) {
+    errors.push(
+      `Vaka verisi (${Math.round(byteSize / 1024)} KB) Firestore 1 MB sınırını aşıyor. Satır içi Base64 dosyalar yerine Firebase Storage yükleyicisini veya harici URL kullanın.`
+    );
   }
 
   return {
@@ -1164,28 +1365,56 @@ function notifyCustomCasesListeners(cases: CaseScenario[]) {
 }
 
 export async function saveCustomCase(scenario: CaseScenario, user?: DetectiveProfile | null): Promise<void> {
+  if (!isVerifiedAdminUser(auth.currentUser, ADMIN_EMAIL)) {
+    throw new Error(
+      `Vaka kaydetmek veya yayınlamak için doğrulanmış yönetici Google hesabı (${ADMIN_EMAIL}) ile giriş yapmalısınız.`
+    );
+  }
+
   const cleanId = scenario.id.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
-  const payload = {
+  if (!cleanId || cleanId.length > 128) {
+    throw new Error('Geçersiz Vaka ID. 1–128 karakter arasında yalnızca harf, rakam, tire ve alt çizgi kullanın.');
+  }
+
+  const payload = stripUndefined({
     ...scenario,
     id: cleanId,
-    uploadedBy: user?.email || user?.displayName || 'Admin',
+    status: scenario.status || 'published',
+    uploadedBy: auth.currentUser?.email || user?.email || 'Admin',
     updatedAt: new Date().toISOString(),
-    createdAt: (scenario as any).createdAt || new Date().toISOString(),
-  };
+    createdAt: scenario.createdAt || new Date().toISOString(),
+  });
 
-  // Immediate local cache update and listener broadcast for instant UI response
+  const byteSize = estimatePayloadBytes(payload);
+  if (byteSize > MAX_FIRESTORE_CASE_BYTES) {
+    throw new Error(
+      `Vaka verisi (${Math.round(byteSize / 1024)} KB) Firestore 1 MB limitini aşıyor. Medya dosyalarını Base64 yerine Firebase Storage üzerinden yükleyin.`
+    );
+  }
+
+  try {
+    await setDoc(doc(db, 'custom_cases', cleanId), payload);
+  } catch (err: any) {
+    const code = err?.code || '';
+    if (code === 'permission-denied') {
+      throw new Error(
+        `Firestore yazma izni reddedildi. Google (${ADMIN_EMAIL}) ile giriş yaptığınızdan ve Firebase Console'da güncel firestore.rules dosyasının yayınlandığından emin olun.`
+      );
+    }
+    if (code === 'invalid-argument') {
+      throw new Error(
+        'Vaka verisi Firestore tarafından reddedildi (geçersiz alan türü veya boyut aşımı). Medya URL\'lerini ve zorunlu alanları kontrol edin.'
+      );
+    }
+    throw new Error(`Firestore kayıt hatası: ${err?.message || 'Bilinmeyen bağlantı hatası'}`);
+  }
+
   const current = getLocalCustomCases().filter((c) => c.id !== cleanId);
   current.unshift(payload);
   try {
     localStorage.setItem('masadaki_custom_cases', JSON.stringify(current));
   } catch (e) {}
   notifyCustomCasesListeners(current);
-
-  try {
-    await setDoc(doc(db, 'custom_cases', cleanId), payload);
-  } catch (err) {
-    console.warn('Could not write custom case to Firestore:', err);
-  }
 }
 
 export async function fetchCustomCases(): Promise<CaseScenario[]> {
@@ -1207,17 +1436,29 @@ export async function fetchCustomCases(): Promise<CaseScenario[]> {
 }
 
 export async function deleteCustomCase(scenarioId: string): Promise<void> {
+  if (!isVerifiedAdminUser(auth.currentUser, ADMIN_EMAIL)) {
+    throw new Error(
+      `Vaka silmek için doğrulanmış yönetici Google hesabı (${ADMIN_EMAIL}) ile giriş yapmalısınız.`
+    );
+  }
+
+  try {
+    await deleteDoc(doc(db, 'custom_cases', scenarioId));
+  } catch (err: any) {
+    const code = err?.code || '';
+    if (code === 'permission-denied') {
+      throw new Error(
+        `Firestore silme izni reddedildi. Google (${ADMIN_EMAIL}) oturumunuzu ve firestore.rules ayarlarını kontrol edin.`
+      );
+    }
+    throw new Error(`Vaka silinemedi: ${err?.message || 'Firestore bağlantı hatası'}`);
+  }
+
   const current = getLocalCustomCases().filter((c) => c.id !== scenarioId);
   try {
     localStorage.setItem('masadaki_custom_cases', JSON.stringify(current));
   } catch (e) {}
   notifyCustomCasesListeners(current);
-
-  try {
-    await deleteDoc(doc(db, 'custom_cases', scenarioId));
-  } catch (err) {
-    console.warn('Error deleting custom case from Firestore:', err);
-  }
 }
 
 export function subscribeToCustomCases(callback: (cases: CaseScenario[]) => void): () => void {
