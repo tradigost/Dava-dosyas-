@@ -4,27 +4,26 @@
  */
 
 import React, { useState } from 'react';
-import { 
-  DetectiveProfile, 
-  loginWithEmail, 
-  registerWithEmail, 
-  loginWithGoogle, 
-  resetPassword, 
-  logoutUser 
+import {
+  DetectiveProfile,
+  loginWithEmail,
+  registerWithEmail,
+  loginWithGoogle,
+  resetPassword,
+  logoutUser,
 } from '../services/firebase';
 import { soundManager } from '../utils/audioEffects';
-import { 
-  X, 
-  Mail, 
-  Lock, 
-  User, 
-  LogIn, 
-  UserPlus, 
-  ShieldCheck, 
-  AlertCircle, 
-  CheckCircle2, 
-  KeyRound, 
-  LogOut 
+import {
+  X,
+  Mail,
+  Lock,
+  User,
+  LogIn,
+  UserPlus,
+  AlertCircle,
+  CheckCircle2,
+  KeyRound,
+  LogOut,
 } from 'lucide-react';
 
 interface AuthModalProps {
@@ -123,7 +122,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         setIsLoading(false);
       }
     } else {
-      // Login
       setIsLoading(true);
       try {
         soundManager.playKeyClick();
@@ -147,83 +145,76 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="bg-zinc-950 border border-amber-600/50 rounded-3xl w-full max-w-md p-6 sm:p-7 shadow-2xl relative overflow-hidden text-zinc-100">
-        
-        {/* Background glow accent */}
-        <div className="absolute top-0 right-0 w-48 h-48 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1f1c18]/55 backdrop-blur-[2px] animate-fade-in">
+      <div className="bg-[#faf6ed] border border-[#1f1c18] rounded-sm w-full max-w-md p-6 shadow-[0_12px_36px_rgba(31,28,24,0.2)] text-[#1f1c18]">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-cinzel font-bold text-base sm:text-lg text-zinc-100">
-                {currentUser && !currentUser.isGuest ? 'Dedektif Kimlik Kartı' : 'Dedektif Kulübü Üyeliği'}
-              </h3>
-              <p className="text-[11px] text-zinc-400">
-                {currentUser && !currentUser.isGuest
-                  ? 'Giriş yapılmış aktif dedektif hesabı'
-                  : 'Vakaları puanlamak ve odaları yönetmek için giriş yapın'}
-              </p>
-            </div>
+        <div className="flex items-center justify-between pb-3 border-b border-[#d6cdbc]">
+          <div>
+            <h3 className="font-typewriter font-bold text-sm uppercase tracking-[0.16em] text-[#1f1c18]">
+              {currentUser && !currentUser.isGuest ? 'DEDEKTİF KİMLİĞİ' : 'DEDEKTİF GİRİŞİ'}
+            </h3>
+            <p className="text-[11px] text-[#575046] mt-0.5">
+              {currentUser && !currentUser.isGuest
+                ? 'Aktif oturum bilgileri'
+                : 'Vakaları puanlamak ve oda yönetmek için giriş yapın'}
+            </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-[#575046] hover:text-[#1f1c18] hover:bg-[#efe9da] rounded-sm transition-colors cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Already Logged In View */}
         {currentUser && !currentUser.isGuest ? (
           <div className="mt-5 space-y-4">
-            <div className="p-4 bg-zinc-900/80 border border-zinc-800 rounded-2xl flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-amber-600/20 border border-amber-500/40 flex items-center justify-center text-amber-300 font-bold text-lg font-cinzel">
+            <div className="p-4 bg-[#fffdf8] border border-[#d6cdbc] rounded-sm flex items-center gap-3">
+              <div className="w-10 h-10 rounded-sm bg-[#f4efe4] border border-[#1f1c18] flex items-center justify-center text-[#1f1c18] font-typewriter font-bold text-sm shrink-0">
                 {currentUser.displayName.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-bold text-sm text-zinc-100 truncate">{currentUser.displayName}</h4>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/40 text-emerald-300">
-                    Aktif Üye
+                <div className="flex items-center justify-between gap-2">
+                  <h4 className="font-typewriter font-bold text-sm text-[#1f1c18] truncate">
+                    {currentUser.displayName}
+                  </h4>
+                  <span className="text-[10px] font-typewriter uppercase px-1.5 py-0.5 rounded-sm border border-[#276749] text-[#276749] shrink-0">
+                    AKTİF
                   </span>
                 </div>
-                <p className="text-xs text-zinc-400 truncate mt-0.5">{currentUser.email || 'Google Hesabı'}</p>
-                <p className="text-[10px] text-zinc-500 font-mono mt-0.5 truncate">UID: {currentUser.uid}</p>
+                <p className="text-xs text-[#575046] truncate mt-0.5">
+                  {currentUser.email || 'Google Hesabı'}
+                </p>
+                <p className="text-[10px] text-[#7c7265] font-typewriter mt-0.5 truncate">
+                  UID: {currentUser.uid}
+                </p>
               </div>
             </div>
 
-            <div className="p-3.5 bg-amber-950/20 border border-amber-800/30 rounded-xl text-xs text-amber-200/90 leading-relaxed">
-              ⭐ Üyeliğiniz sayesinde tamamladığınız dava dosyalarını 5 üzerinden puanlayabilir, dava arşiv istatistiklerine katkıda bulunabilirsiniz.
-            </div>
-
-            <div className="pt-2 flex gap-3">
+            <div className="flex gap-2.5 pt-1">
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex-1 py-3 px-4 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-rose-300 hover:text-rose-200 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                className="flex-1 py-2.5 px-4 bg-[#faf6ed] hover:bg-[#8b1e1e] border border-[#8b1e1e] text-[#8b1e1e] hover:text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5" />
                 <span>Oturumu Kapat</span>
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-3 px-4 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold rounded-xl text-xs transition-all cursor-pointer shadow-md"
+                className="flex-1 py-2.5 px-4 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs transition-colors cursor-pointer"
               >
-                Tamam
+                Kapat
               </button>
             </div>
           </div>
         ) : (
           <div className="mt-4 space-y-4">
             {/* Tabs */}
-            <div className="flex border-b border-zinc-800">
+            <div className="flex border-b border-[#d6cdbc]">
               <button
                 type="button"
                 onClick={() => {
@@ -231,10 +222,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   setErrorMsg(null);
                   setSuccessMsg(null);
                 }}
-                className={`flex-1 py-2.5 text-xs font-bold text-center border-b-2 transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-2 text-xs font-typewriter font-bold text-center border-b-2 transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                   tab === 'login'
-                    ? 'border-amber-500 text-amber-400'
-                    : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                    ? 'border-[#1f1c18] text-[#1f1c18]'
+                    : 'border-transparent text-[#7c7265] hover:text-[#1f1c18]'
                 }`}
               >
                 <LogIn className="w-3.5 h-3.5" />
@@ -247,10 +238,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   setErrorMsg(null);
                   setSuccessMsg(null);
                 }}
-                className={`flex-1 py-2.5 text-xs font-bold text-center border-b-2 transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-2 text-xs font-typewriter font-bold text-center border-b-2 transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                   tab === 'register'
-                    ? 'border-amber-500 text-amber-400'
-                    : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                    ? 'border-[#1f1c18] text-[#1f1c18]'
+                    : 'border-transparent text-[#7c7265] hover:text-[#1f1c18]'
                 }`}
               >
                 <UserPlus className="w-3.5 h-3.5" />
@@ -258,13 +249,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </button>
             </div>
 
-            {/* Google Fast Sign-in Button */}
+            {/* Google Sign-in */}
             <div>
               <button
                 type="button"
                 onClick={handleGoogleLogin}
                 disabled={isLoading}
-                className="w-full py-2.5 px-4 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 hover:border-zinc-600 text-zinc-200 font-bold rounded-xl text-xs flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-sm"
+                className="w-full py-2.5 px-4 bg-[#fffdf8] hover:bg-[#f0e9da] border border-[#1f1c18] text-[#1f1c18] font-typewriter font-bold rounded-sm text-xs flex items-center justify-center gap-2.5 transition-colors cursor-pointer disabled:opacity-50"
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                   <path
@@ -284,27 +275,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                   />
                 </svg>
-                <span>Google ile Tek Tıkla Giriş Yap</span>
+                <span>Google ile Giriş Yap</span>
               </button>
 
               <div className="flex items-center my-3">
-                <div className="flex-1 border-t border-zinc-800" />
-                <span className="px-3 text-[10px] font-mono text-zinc-500 uppercase">VEYA E-POSTA İLE</span>
-                <div className="flex-1 border-t border-zinc-800" />
+                <div className="flex-1 border-t border-[#d6cdbc]" />
+                <span className="px-3 text-[10px] font-typewriter text-[#7c7265] uppercase tracking-wider">
+                  VEYA E-POSTA
+                </span>
+                <div className="flex-1 border-t border-[#d6cdbc]" />
               </div>
             </div>
 
-            {/* Error & Success Alerts */}
+            {/* Alerts */}
             {errorMsg && (
-              <div className="p-3 bg-rose-950/50 border border-rose-800/60 rounded-xl text-rose-200 text-xs flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+              <div className="p-3 bg-[#fffdf8] border border-[#8b1e1e] rounded-sm text-[#8b1e1e] text-xs flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                 <span className="leading-relaxed">{errorMsg}</span>
               </div>
             )}
 
             {successMsg && (
-              <div className="p-3 bg-emerald-950/50 border border-emerald-800/60 rounded-xl text-emerald-200 text-xs flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="p-3 bg-[#fffdf8] border border-[#276749] rounded-sm text-[#276749] text-xs flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
                 <span className="leading-relaxed">{successMsg}</span>
               </div>
             )}
@@ -313,35 +306,35 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <form onSubmit={handleEmailSubmit} className="space-y-3">
               {tab === 'register' && (
                 <div>
-                  <label className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 block mb-1">
-                    Dedektif İsminiz:
+                  <label className="text-[11px] font-typewriter uppercase tracking-wider text-[#575046] block mb-1">
+                    Dedektif İsmi
                   </label>
                   <div className="relative">
-                    <User className="w-4 h-4 text-zinc-500 absolute left-3 top-3 pointer-events-none" />
+                    <User className="w-3.5 h-3.5 text-[#7c7265] absolute left-3 top-3 pointer-events-none" />
                     <input
                       type="text"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder="Örn: Başkomiser Hakan"
-                      className="w-full pl-9 pr-3 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-400"
+                      placeholder="Başkomiser Hakan"
+                      className="w-full pl-9 pr-3 py-2 bg-[#fffdf8] border border-[#c8bfae] rounded-sm text-xs font-typewriter text-[#1f1c18] placeholder-[#9c9284] focus:outline-none focus:border-[#1f1c18]"
                     />
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 block mb-1">
-                  E-Posta Adresi:
+                <label className="text-[11px] font-typewriter uppercase tracking-wider text-[#575046] block mb-1">
+                  E-Posta Adresi
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-zinc-500 absolute left-3 top-3 pointer-events-none" />
+                  <Mail className="w-3.5 h-3.5 text-[#7c7265] absolute left-3 top-3 pointer-events-none" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="dedektif@ornek.com"
                     required
-                    className="w-full pl-9 pr-3 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-400"
+                    className="w-full pl-9 pr-3 py-2 bg-[#fffdf8] border border-[#c8bfae] rounded-sm text-xs font-typewriter text-[#1f1c18] placeholder-[#9c9284] focus:outline-none focus:border-[#1f1c18]"
                   />
                 </div>
               </div>
@@ -349,8 +342,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {tab !== 'forgot' && (
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
-                      Şifre:
+                    <label className="text-[11px] font-typewriter uppercase tracking-wider text-[#575046]">
+                      Şifre
                     </label>
                     {tab === 'login' && (
                       <button
@@ -359,21 +352,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                           setTab('forgot');
                           setErrorMsg(null);
                         }}
-                        className="text-[10px] text-amber-400 hover:text-amber-300 cursor-pointer"
+                        className="text-[10px] font-typewriter text-[#575046] hover:text-[#1f1c18] underline cursor-pointer"
                       >
-                        Şifremi unuttum?
+                        Şifremi unuttum
                       </button>
                     )}
                   </div>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-zinc-500 absolute left-3 top-3 pointer-events-none" />
+                    <Lock className="w-3.5 h-3.5 text-[#7c7265] absolute left-3 top-3 pointer-events-none" />
                     <input
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder="••••••"
                       required
-                      className="w-full pl-9 pr-3 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-400"
+                      className="w-full pl-9 pr-3 py-2 bg-[#fffdf8] border border-[#c8bfae] rounded-sm text-xs font-typewriter text-[#1f1c18] placeholder-[#9c9284] focus:outline-none focus:border-[#1f1c18]"
                     />
                   </div>
                 </div>
@@ -381,18 +374,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
               {tab === 'register' && (
                 <div>
-                  <label className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 block mb-1">
-                    Şifre Tekrarı:
+                  <label className="text-[11px] font-typewriter uppercase tracking-wider text-[#575046] block mb-1">
+                    Şifre Tekrarı
                   </label>
                   <div className="relative">
-                    <KeyRound className="w-4 h-4 text-zinc-500 absolute left-3 top-3 pointer-events-none" />
+                    <KeyRound className="w-3.5 h-3.5 text-[#7c7265] absolute left-3 top-3 pointer-events-none" />
                     <input
                       type="password"
                       value={passwordConfirm}
                       onChange={(e) => setPasswordConfirm(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder="••••••"
                       required
-                      className="w-full pl-9 pr-3 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-400"
+                      className="w-full pl-9 pr-3 py-2 bg-[#fffdf8] border border-[#c8bfae] rounded-sm text-xs font-typewriter text-[#1f1c18] placeholder-[#9c9284] focus:outline-none focus:border-[#1f1c18]"
                     />
                   </div>
                 </div>
@@ -406,9 +399,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       setTab('login');
                       setErrorMsg(null);
                     }}
-                    className="text-[11px] text-amber-400 hover:text-amber-300 cursor-pointer"
+                    className="text-[11px] font-typewriter text-[#575046] hover:text-[#1f1c18] underline cursor-pointer"
                   >
-                    &larr; Giriş Ekranına Dön
+                    &larr; Giriş ekranına dön
                   </button>
                 </div>
               )}
@@ -416,31 +409,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="w-full py-2.5 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] font-typewriter font-bold uppercase tracking-wider rounded-sm text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {isLoading ? (
                   <span>İşlem yapılıyor...</span>
                 ) : tab === 'login' ? (
                   <>
-                    <LogIn className="w-4 h-4" />
+                    <LogIn className="w-3.5 h-3.5" />
                     <span>Giriş Yap</span>
                   </>
                 ) : tab === 'register' ? (
                   <>
-                    <UserPlus className="w-4 h-4" />
-                    <span>Dedektif Olarak Kaydol</span>
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span>Kaydol</span>
                   </>
                 ) : (
                   <>
-                    <Mail className="w-4 h-4" />
-                    <span>Sıfırlama Bağlantısı Gönder</span>
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>Bağlantı Gönder</span>
                   </>
                 )}
               </button>
             </form>
           </div>
         )}
-
       </div>
     </div>
   );

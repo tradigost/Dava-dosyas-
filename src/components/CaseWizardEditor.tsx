@@ -8,7 +8,6 @@ import { CaseScenario, Suspect, EvidenceItem, GateQuestion, RoleType, getScenari
 import { ROLES } from '../data/cases';
 import { soundManager } from '../utils/audioEffects';
 import {
-  FolderPlus,
   Plus,
   Trash2,
   CheckCircle2,
@@ -24,9 +23,6 @@ import {
   ArrowRight,
   ArrowLeft,
   Download,
-  Sparkles,
-  HelpCircle,
-  Eye,
   Copy,
   Check,
   Edit3,
@@ -102,7 +98,7 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
             motiveHypothesis: '',
             photoPlaceholder: {
               initials: 'Ş1',
-              tint: 'bg-zinc-800',
+              tint: 'bg-[#d6cdbc]',
               silhouetteStyle: 'shadow',
             },
           },
@@ -119,7 +115,7 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
             motiveHypothesis: '',
             photoPlaceholder: {
               initials: 'Ş2',
-              tint: 'bg-zinc-800',
+              tint: 'bg-[#d6cdbc]',
               silhouetteStyle: 'shadow',
             },
           },
@@ -134,11 +130,11 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
           {
             id: 'delil-1-1',
             envelope: 1,
-            title: 'İlk Olay Yeri & Telsiz / Ses Tutanakları',
+            title: 'İlk Olay Yeri ve Ses Tutanağı',
             category: 'audio',
             mediaType: 'audio',
             mediaUrl: '',
-            mediaCaption: 'Olay gecesi 112 Acil çağrı ve devriye ekibi telsiz kaydı',
+            mediaCaption: 'Olay gecesi 112 Acil çağrı ve devriye telsiz kaydı',
             narrationUrl: '',
             roleAccess: ['forensics', 'profiler'],
             summary: 'Maktulün bulunduğu andaki ilk telsiz anonsu ve şüpheli sesler.',
@@ -182,11 +178,10 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
   const [confessionLetter, setConfessionLetter] = useState(
     initialScenario
       ? initialScenario.solution?.confessionLetter || ''
-      : 'Bu mektubu okuyorsanız oyun bitti demektir... O gece salona girdiğimde Selim çoktan şüphelenmişti. Kadehe zehri damlattığım an geri dönüş yoktu. Bıraktığım sahte izlerin sizi yanıltacağını düşünmüştüm ama adaletten kaçamadım.'
+      : 'Bu mektubu okuyorsanız oyun bitti demektir... O gece salona girdiğimde her şey çoktan açığa çıkmıştı. Bıraktığım sahte izlerin sizi yanıltacağını düşünmüştüm ama adaletten kaçamadım.'
   );
   const [isCopied, setIsCopied] = useState(false);
 
-  // Handle adding a suspect
   const handleAddSuspect = () => {
     soundManager.playKeyClick();
     const newIdx = suspects.length + 1;
@@ -206,7 +201,7 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
         motiveHypothesis: '',
         photoPlaceholder: {
           initials: `Ş${newIdx}`,
-          tint: 'bg-zinc-800',
+          tint: 'bg-[#d6cdbc]',
           silhouetteStyle: 'shadow',
         },
       },
@@ -219,7 +214,6 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
     setSuspects(suspects.filter((_, i) => i !== index));
   };
 
-  // Handle adding evidence to selected envelope
   const handleAddEvidenceToCurrentEnvelope = () => {
     soundManager.playKeyClick();
     const newId = `delil-${selectedEnvelopeTab}-${Date.now().toString().slice(-4)}`;
@@ -249,19 +243,12 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
     setEvidenceList(evidenceList.filter((ev) => ev.id !== id));
   };
 
-  // Update specific evidence
   const updateEvidenceField = (id: string, field: keyof EvidenceItem, value: any) => {
     setEvidenceList(
-      evidenceList.map((ev) => {
-        if (ev.id === id) {
-          return { ...ev, [field]: value };
-        }
-        return ev;
-      })
+      evidenceList.map((ev) => (ev.id === id ? { ...ev, [field]: value } : ev))
     );
   };
 
-  // Toggle role in roleAccess
   const toggleRoleAccess = (evidenceId: string, role: RoleType) => {
     soundManager.playKeyClick();
     setEvidenceList(
@@ -278,7 +265,6 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
     );
   };
 
-  // Update Gate for current envelope
   const currentGate: GateQuestion = gates[selectedEnvelopeTab] || {
     envelope: selectedEnvelopeTab,
     title: `Zarf ${selectedEnvelopeTab} Doğrulama Kilidi`,
@@ -306,10 +292,7 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
     const existing = currentGate.options || [];
     const nextOptions = [0, 1, 2].map((idx) => {
       const prev = existing[idx] || { id: `opt-${idx + 1}`, text: '', isCorrect: idx === 0 };
-      if (idx === optIndex) {
-        return { ...prev, text };
-      }
-      return prev;
+      return idx === optIndex ? { ...prev, text } : prev;
     });
     updateCurrentGate('options', nextOptions);
   };
@@ -323,7 +306,6 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
     updateCurrentGate('options', nextOptions);
   };
 
-  // Build the complete CaseScenario
   const assembleScenario = (targetStatus?: 'published' | 'draft'): CaseScenario => {
     const finalCulprit = suspects.find((s) => s.id === culpritId || s.name === culpritName) || suspects[0];
     const effectiveStatus = targetStatus || status;
@@ -379,7 +361,6 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
     };
   };
 
-  // Validate before publishing
   const validateScenario = (): boolean => {
     const errs: string[] = [];
     if (!title.trim()) errs.push('Vaka Başlığı boş bırakılamaz.');
@@ -391,7 +372,6 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
     return errs.length === 0;
   };
 
-  // Download compiled JSON
   const handleDownloadJSON = () => {
     soundManager.playKeyClick();
     const scenario = assembleScenario();
@@ -404,7 +384,6 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
     downloadAnchor.remove();
   };
 
-  // Copy JSON to clipboard for GitHub / codebase commits with fallback
   const handleCopyJSON = async () => {
     soundManager.playKeyClick();
     const scenario = assembleScenario();
@@ -419,7 +398,6 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
       soundManager.playSuccessSound();
       setTimeout(() => setIsCopied(false), 3000);
     } catch {
-      // Fallback for iFrame or headless without clipboard-write permission
       try {
         const textArea = document.createElement('textarea');
         textArea.value = textToCopy;
@@ -440,7 +418,6 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
     }
   };
 
-  // Publish or save draft to Firestore
   const handleSaveWithStatus = async (targetStatus: 'published' | 'draft') => {
     if (!validateScenario()) {
       soundManager.playErrorSound();
@@ -452,25 +429,26 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
     await onSaveCase(scenario);
   };
 
-  // Current envelope's evidence list
   const currentEnvelopeEvidence = evidenceList.filter((ev) => ev.envelope === selectedEnvelopeTab);
 
+  const inputClass =
+    'w-full bg-[#faf6ed] focus:bg-[#fffdf8] border border-[#c8bfae] focus:border-[#1f1c18] rounded-sm px-3 py-2 text-xs text-[#1f1c18] placeholder-[#9c9284] focus:outline-none transition-colors';
+  const labelClass = 'block text-[11px] font-typewriter uppercase tracking-wider text-[#575046] mb-1';
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {initialScenario && (
-        <div className="p-3.5 bg-amber-950/30 border border-amber-500/40 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="px-4 py-3 bg-[#f4efe4] border border-[#1f1c18] rounded-sm flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2.5">
-            <Edit3 className="w-4 h-4 text-amber-400 shrink-0" />
+            <Edit3 className="w-4 h-4 text-[#1f1c18] shrink-0" />
             <div>
-              <span className="font-bold text-amber-200 block">
-                {isEditing
-                  ? `Düzenlenen Vaka: ${initialScenario.title}`
-                  : `Klonlanan Şablon: ${initialScenario.title}`}
+              <span className="font-typewriter font-bold text-[#1f1c18] block">
+                {isEditing ? `Düzenlenen Vaka: ${initialScenario.title}` : `Klonlanan Şablon: ${initialScenario.title}`}
               </span>
-              <span className="text-[11px] text-zinc-400">
+              <span className="text-[11px] text-[#575046]">
                 {isEditing
-                  ? 'Değişiklikleri taslak olarak saklayabilir veya doğrudan yayına alabilirsiniz.'
-                  : 'Yeni bir ID ile kendi özel versiyonunuzu oluşturuyorsunuz.'}
+                  ? 'Değişiklikleri taslak olarak saklayabilir veya doğrudan yayınlayabilirsiniz.'
+                  : 'Yeni bir ID ile özel kopya oluşturuyorsunuz.'}
               </span>
             </div>
           </div>
@@ -481,25 +459,24 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                 soundManager.playKeyClick();
                 onCancel();
               }}
-              className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-1.5 bg-[#fffdf8] hover:bg-[#ebe5d8] border border-[#c8bfae] text-[#1f1c18] rounded-sm text-xs font-typewriter inline-flex items-center gap-1.5 cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
-              <span>Düzenlemeyi İptal Et</span>
+              <span>İptal Et</span>
             </button>
           )}
         </div>
       )}
-      
-      {/* Wizard Step Navigation */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pb-2">
+
+      {/* Minimal Step Nav */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 border-b border-[#d6cdbc]">
         {[
-          { step: 1, label: '1. Vaka & Maktul', icon: FileText },
-          { step: 2, label: '2. Şüpheliler', icon: Users },
-          { step: 3, label: '3. Zarflar & Medya', icon: Layers },
-          { step: 4, label: '4. Fail & Çözüm', icon: Lock },
-          { step: 5, label: '5. Önizle & Yayınla', icon: Sparkles },
+          { step: 1, label: '1. Vaka & Maktul' },
+          { step: 2, label: '2. Şüpheliler' },
+          { step: 3, label: '3. Zarflar & Medya' },
+          { step: 4, label: '4. Fail & Çözüm' },
+          { step: 5, label: '5. Yayınla' },
         ].map((item) => {
-          const Icon = item.icon;
           const isActive = activeStep === item.step;
           const isDone = activeStep > item.step;
           return (
@@ -508,29 +485,28 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
               type="button"
               onClick={() => {
                 soundManager.playKeyClick();
-                setActiveStep(item.step as any);
+                setActiveStep(item.step as 1 | 2 | 3 | 4 | 5);
               }}
-              className={`p-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer border ${
+              className={`py-2.5 px-2 text-xs font-typewriter text-center border-b-2 transition-colors cursor-pointer truncate ${
                 isActive
-                  ? 'bg-amber-600 text-zinc-950 border-amber-400 shadow-md font-bold'
+                  ? 'border-[#1f1c18] text-[#1f1c18] font-bold'
                   : isDone
-                  ? 'bg-zinc-900 border-emerald-700/60 text-emerald-300'
-                  : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-zinc-200'
+                  ? 'border-transparent text-[#276749]'
+                  : 'border-transparent text-[#7c7265] hover:text-[#1f1c18]'
               }`}
             >
-              <Icon className="w-3.5 h-3.5 shrink-0" />
-              <span className="truncate">{item.label}</span>
+              {item.label}
             </button>
           );
         })}
       </div>
 
-      {/* Validation alert if any */}
+      {/* Validation Alert */}
       {validationErrors.length > 0 && (
-        <div className="p-3 bg-rose-950/50 border border-rose-800 rounded-xl text-xs text-rose-200 space-y-1">
-          <div className="flex items-center gap-2 font-bold text-rose-300">
-            <AlertTriangle className="w-4 h-4" />
-            <span>Lütfen aşağıdaki eksik alanları tamamlayın:</span>
+        <div className="p-3.5 bg-[#fffdf8] border border-[#8b1e1e] rounded-sm text-xs text-[#8b1e1e] space-y-1">
+          <div className="flex items-center gap-2 font-typewriter font-bold">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            <span>Eksik alanları tamamlayın:</span>
           </div>
           <ul className="list-disc list-inside space-y-0.5 text-[11px] pl-1">
             {validationErrors.map((err, i) => (
@@ -540,96 +516,91 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
         </div>
       )}
 
-      {/* STEP 1: CASE & VICTIM INFO */}
+      {/* STEP 1: CASE & VICTIM */}
       {activeStep === 1 && (
-        <div className="space-y-4 animate-fade-in">
-          <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 sm:p-5 space-y-3">
-            <h4 className="font-bold text-sm text-zinc-200 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-amber-400" />
+        <div className="space-y-4">
+          <div className="bg-[#fffdf8] border border-[#d6cdbc] rounded-sm p-4 sm:p-5 space-y-3">
+            <h4 className="font-typewriter font-bold text-xs uppercase tracking-wider text-[#1f1c18] pb-2 border-b border-[#d6cdbc] flex items-center gap-2">
+              <FileText className="w-3.5 h-3.5" />
               <span>Temel Vaka Bilgileri</span>
             </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-zinc-400 mb-1">Vaka Başlığı *</label>
+                <label className={labelClass}>Vaka Başlığı *</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="örn: Boğaz Yalısında Sır Cinayet"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                  placeholder="Boğaz Yalısında Sır Cinayet"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Benzersiz Vaka ID (Küçük harf, tireli)</label>
+                <label className={labelClass}>Vaka ID (küçük harf, tireli)</label>
                 <input
                   type="text"
                   value={caseId}
                   disabled={isEditing}
                   onChange={(e) => setCaseId(e.target.value)}
                   placeholder="bogaz-yalisi-cinayeti"
-                  className={`w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 font-mono focus:outline-none focus:border-amber-400 ${
+                  className={`${inputClass} font-typewriter ${
                     isEditing ? 'opacity-60 cursor-not-allowed' : ''
                   }`}
                 />
                 {isEditing && (
-                  <p className="text-[10px] text-amber-400/90 mt-1 font-mono">
+                  <p className="text-[10px] text-[#7c7265] mt-1 font-typewriter">
                     Düzenleme modunda ID değiştirilemez
                   </p>
                 )}
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-zinc-400 mb-1">Alt Başlık</label>
+                <label className={labelClass}>Alt Başlık</label>
                 <input
                   type="text"
                   value={subtitle}
                   onChange={(e) => setSubtitle(e.target.value)}
-                  placeholder="örn: Kandilli Yalı Partisinde Şüpheli Zehirlenme"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                  placeholder="Kandilli Yalı Partisinde Şüpheli Zehirlenme"
+                  className={inputClass}
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-zinc-400 mb-1">Sinopsis (Lobide Görünecek Vaka Özeti)</label>
+                <label className={labelClass}>Sinopsis (Lobide Görünecek Özet)</label>
                 <textarea
                   value={synopsis}
                   onChange={(e) => setSynopsis(e.target.value)}
                   rows={3}
                   placeholder="Vakanın başlangıç hikayesi, olay anı ve dedektifleri bekleyen gizem..."
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1 font-bold text-amber-300">
-                  Toplam Zarf Sayısı (Phase Sayısı: 1 - 10) *
-                </label>
-                <div className="flex items-center gap-2">
+                <label className={labelClass}>Zarf Sayısı (1 - 10) *</label>
+                <div className="flex items-center gap-3">
                   <input
                     type="range"
                     min={1}
                     max={10}
                     value={totalEnvelopes}
                     onChange={(e) => setTotalEnvelopes(Number(e.target.value))}
-                    className="flex-1 accent-amber-500 cursor-pointer"
+                    className="flex-1 accent-[#1f1c18] cursor-pointer"
                   />
-                  <span className="font-mono text-base font-bold text-amber-400 px-3 py-1 bg-zinc-950 rounded-xl border border-zinc-800">
+                  <span className="font-typewriter text-xs font-bold text-[#1f1c18] px-2.5 py-1.5 bg-[#faf6ed] rounded-sm border border-[#c8bfae]">
                     {totalEnvelopes} Zarf
                   </span>
                 </div>
-                <span className="text-[11px] text-zinc-500 mt-1 block">
-                  İstediğiniz sayıda zarf (örneğin 10 zarf) tanımlayabilirsiniz; oyun sistemi zarf kısıtlaması olmaksızın tüm aşamaları oynatır.
-                </span>
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Zorluk Seviyesi</label>
+                <label className={labelClass}>Zorluk Seviyesi</label>
                 <select
                   value={difficulty}
-                  onChange={(e) => setDifficulty(e.target.value as any)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                  onChange={(e) => setDifficulty(e.target.value as 'Kolay' | 'Orta' | 'Zor' | 'Uzman')}
+                  className={inputClass}
                 >
                   <option value="Kolay">Kolay</option>
                   <option value="Orta">Orta</option>
@@ -639,17 +610,17 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Tahmini Çözüm Süresi (Dakika)</label>
+                <label className={labelClass}>Tahmini Süre (Dakika)</label>
                 <input
                   type="number"
                   value={estimatedMinutes}
                   onChange={(e) => setEstimatedMinutes(Number(e.target.value))}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 font-mono focus:outline-none focus:border-amber-400"
+                  className={`${inputClass} font-typewriter`}
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Oyuncu Sayısı Aralığı (Min - Max)</label>
+                <label className={labelClass}>Oyuncu Aralığı (Min - Max)</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -657,108 +628,107 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                     max={6}
                     value={minPlayers}
                     onChange={(e) => setMinPlayers(Number(e.target.value))}
-                    className="w-1/2 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 font-mono text-center"
+                    className={`${inputClass} font-typewriter text-center`}
                   />
-                  <span className="text-zinc-500">-</span>
+                  <span className="text-[#7c7265]">-</span>
                   <input
                     type="number"
                     min={1}
                     max={6}
                     value={maxPlayers}
                     onChange={(e) => setMaxPlayers(Number(e.target.value))}
-                    className="w-1/2 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 font-mono text-center"
+                    className={`${inputClass} font-typewriter text-center`}
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Victim Details */}
-          <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 sm:p-5 space-y-3">
-            <h4 className="font-bold text-sm text-zinc-200 flex items-center gap-2">
-              <Users className="w-4 h-4 text-rose-400" />
+          <div className="bg-[#fffdf8] border border-[#d6cdbc] rounded-sm p-4 sm:p-5 space-y-3">
+            <h4 className="font-typewriter font-bold text-xs uppercase tracking-wider text-[#1f1c18] pb-2 border-b border-[#d6cdbc] flex items-center gap-2">
+              <Users className="w-3.5 h-3.5" />
               <span>Maktul Künyesi</span>
             </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-zinc-400 mb-1">Maktul Adı Soyadı *</label>
+                <label className={labelClass}>Adı Soyadı *</label>
                 <input
                   type="text"
                   value={victimName}
                   onChange={(e) => setVictimName(e.target.value)}
-                  placeholder="örn: Selim Karadağ"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                  placeholder="Selim Karadağ"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Yaşı</label>
+                <label className={labelClass}>Yaşı</label>
                 <input
                   type="number"
                   value={victimAge}
                   onChange={(e) => setVictimAge(Number(e.target.value))}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 font-mono focus:outline-none focus:border-amber-400"
+                  className={`${inputClass} font-typewriter`}
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Unvanı / Mesleği</label>
+                <label className={labelClass}>Unvan / Meslek</label>
                 <input
                   type="text"
                   value={victimTitle}
                   onChange={(e) => setVictimTitle(e.target.value)}
-                  placeholder="Holding Yönetim Kurulu Başkanı"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                  placeholder="Yönetim Kurulu Başkanı"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Bulunduğu Yer (Olay Yeri)</label>
+                <label className={labelClass}>Olay Yeri</label>
                 <input
                   type="text"
                   value={victimLocation}
                   onChange={(e) => setVictimLocation(e.target.value)}
-                  placeholder="Yalı Çalışma Odası, Masanın Yanı"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                  placeholder="Çalışma Odası"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Ölüm Zamanı</label>
+                <label className={labelClass}>Ölüm Zamanı</label>
                 <input
                   type="text"
                   value={victimTimeOfDeath}
                   onChange={(e) => setVictimTimeOfDeath(e.target.value)}
-                  placeholder="23:15 - 23:45 suları"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                  placeholder="23:15 - 23:45"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">İlk Ölüm Sebebi İpucu</label>
+                <label className={labelClass}>İlk Bulgu</label>
                 <input
                   type="text"
                   value={victimCauseInitial}
                   onChange={(e) => setVictimCauseInitial(e.target.value)}
-                  placeholder="Akut zehirlenme ve solunum felci"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                  placeholder="Akut zehirlenme"
+                  className={inputClass}
                 />
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end pt-2">
+          <div className="flex justify-end pt-1">
             <button
               type="button"
               onClick={() => {
                 soundManager.playKeyClick();
                 setActiveStep(2);
               }}
-              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-md"
+              className="px-4 py-2.5 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs inline-flex items-center gap-2 cursor-pointer"
             >
-              <span>2. Adım: Şüphelileri Belirle</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Şüpheliler</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -766,44 +736,44 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
 
       {/* STEP 2: SUSPECTS */}
       {activeStep === 2 && (
-        <div className="space-y-4 animate-fade-in">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="font-bold text-sm text-zinc-200 flex items-center gap-2">
-              <Users className="w-4 h-4 text-amber-400" />
-              <span>Şüpheli Listesi ({suspects.length} Kişi)</span>
+            <h4 className="font-typewriter font-bold text-xs uppercase tracking-wider text-[#1f1c18]">
+              Şüpheli Listesi ({suspects.length})
             </h4>
 
             <button
               type="button"
               onClick={handleAddSuspect}
-              className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer border border-zinc-700"
+              className="px-3 py-1.5 bg-[#fffdf8] hover:bg-[#ebe5d8] text-[#1f1c18] rounded-sm text-xs font-typewriter inline-flex items-center gap-1.5 cursor-pointer border border-[#1f1c18]"
             >
-              <Plus className="w-3.5 h-3.5 text-amber-400" />
-              <span>Yeni Şüpheli Ekle</span>
+              <Plus className="w-3.5 h-3.5" />
+              <span>Şüpheli Ekle</span>
             </button>
           </div>
 
           <div className="space-y-3">
             {suspects.map((s, idx) => (
-              <div key={s.id || idx} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-2xl space-y-3">
-                <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
-                  <span className="font-mono text-xs text-amber-400 font-bold">
-                    Şüpheli #{idx + 1}
+              <div key={s.id || idx} className="p-4 bg-[#fffdf8] border border-[#d6cdbc] rounded-sm space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-[#d6cdbc]">
+                  <span className="font-typewriter text-xs text-[#1f1c18] font-bold">
+                    ŞÜPHELİ #{idx + 1}
                   </span>
                   {suspects.length > 1 && (
                     <button
                       type="button"
                       onClick={() => handleRemoveSuspect(idx)}
-                      className="text-rose-400 hover:text-rose-300 p-1 cursor-pointer"
+                      className="text-[#8b1e1e] hover:underline text-xs font-typewriter inline-flex items-center gap-1 cursor-pointer"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Kaldır</span>
                     </button>
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-zinc-400 mb-1">Adı Soyadı *</label>
+                    <label className={labelClass}>Adı Soyadı *</label>
                     <input
                       type="text"
                       value={s.name}
@@ -812,13 +782,13 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                         copy[idx].name = e.target.value;
                         setSuspects(copy);
                       }}
-                      placeholder="örn: Dr. Hakan Vural"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                      placeholder="Dr. Hakan Vural"
+                      className={inputClass}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-zinc-400 mb-1">Unvanı / Mesleği</label>
+                    <label className={labelClass}>Unvan / Meslek</label>
                     <input
                       type="text"
                       value={s.title}
@@ -828,12 +798,12 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                         setSuspects(copy);
                       }}
                       placeholder="Aile Doktoru"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                      className={inputClass}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-zinc-400 mb-1">Maktul ile İlişkisi</label>
+                    <label className={labelClass}>Maktul ile İlişkisi</label>
                     <input
                       type="text"
                       value={s.relation}
@@ -842,13 +812,13 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                         copy[idx].relation = e.target.value;
                         setSuspects(copy);
                       }}
-                      placeholder="20 yıllık kadim dostu ve özel doktoru"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                      placeholder="Özel doktoru"
+                      className={inputClass}
                     />
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-zinc-400 mb-1">Alibisi (Olay Anında Neredeydi?)</label>
+                    <label className={labelClass}>Alibi</label>
                     <input
                       type="text"
                       value={s.alibi}
@@ -857,13 +827,13 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                         copy[idx].alibi = e.target.value;
                         setSuspects(copy);
                       }}
-                      placeholder="Yalı bahçesinde telefonla konuştuğunu söylüyor..."
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                      placeholder="Bahçede telefonla konuştuğunu söylüyor..."
+                      className={inputClass}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-zinc-400 mb-1">Başlangıç Şüphe Oranı (%)</label>
+                    <label className={labelClass}>Başlangıç Şüphesi (%)</label>
                     <input
                       type="number"
                       min={0}
@@ -874,7 +844,7 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                         copy[idx].initialSuspicion = Number(e.target.value);
                         setSuspects(copy);
                       }}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 font-mono text-center"
+                      className={`${inputClass} font-typewriter text-center`}
                     />
                   </div>
                 </div>
@@ -882,17 +852,17 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
             ))}
           </div>
 
-          <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center justify-between pt-1">
             <button
               type="button"
               onClick={() => {
                 soundManager.playKeyClick();
                 setActiveStep(1);
               }}
-              className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 bg-[#faf6ed] hover:bg-[#ebe5d8] text-[#1f1c18] border border-[#c8bfae] font-typewriter rounded-sm text-xs inline-flex items-center gap-1.5 cursor-pointer"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Geri: Vaka Bilgileri</span>
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Geri</span>
             </button>
 
             <button
@@ -901,32 +871,31 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                 soundManager.playKeyClick();
                 setActiveStep(3);
               }}
-              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-md"
+              className="px-4 py-2.5 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs inline-flex items-center gap-2 cursor-pointer"
             >
-              <span>3. Adım: Zarf Zarf Kanıt ve Medyalar</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Zarflar & Medya</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
       )}
 
-      {/* STEP 3: PHASE-BY-PHASE ENVELOPES & MEDIA */}
+      {/* STEP 3: ENVELOPES & MEDIA */}
       {activeStep === 3 && (
-        <div className="space-y-5 animate-fade-in">
-          
-          {/* Envelope Selector Tabs */}
-          <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-3">
-            <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-800 text-xs">
-              <span className="font-bold text-zinc-200 flex items-center gap-2">
-                <Layers className="w-4 h-4 text-amber-400" />
-                <span>Düzenlenen Aşama / Zarf Seçimi:</span>
+        <div className="space-y-5">
+          {/* Envelope Tabs */}
+          <div className="bg-[#fffdf8] border border-[#d6cdbc] rounded-sm p-3 space-y-2.5">
+            <div className="flex items-center justify-between text-xs border-b border-[#d6cdbc] pb-2">
+              <span className="font-typewriter font-bold text-[#1f1c18] flex items-center gap-2">
+                <Layers className="w-3.5 h-3.5" />
+                <span>Zarf Seçimi</span>
               </span>
-              <span className="text-zinc-500 font-mono text-[11px]">
-                Toplam {totalEnvelopes} Zarf Planlandı
+              <span className="text-[#7c7265] font-typewriter text-[11px]">
+                Toplam {totalEnvelopes} zarf
               </span>
             </div>
 
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
               {Array.from({ length: totalEnvelopes }).map((_, idx) => {
                 const envNum = idx + 1;
                 const isSelected = selectedEnvelopeTab === envNum;
@@ -939,18 +908,14 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                       soundManager.playKeyClick();
                       setSelectedEnvelopeTab(envNum);
                     }}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer border ${
+                    className={`px-3 py-1.5 rounded-sm text-xs font-typewriter font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer border ${
                       isSelected
-                        ? 'bg-amber-600 text-zinc-950 border-amber-400 shadow-md'
-                        : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'
+                        ? 'bg-[#1f1c18] text-[#faf6ed] border-[#1f1c18]'
+                        : 'bg-[#faf6ed] text-[#1f1c18] border-[#c8bfae] hover:border-[#1f1c18]'
                     }`}
                   >
                     <span>Zarf {envNum}</span>
-                    <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
-                      isSelected ? 'bg-zinc-950/20 text-zinc-950' : 'bg-zinc-900 text-zinc-400'
-                    }`}>
-                      {count} Kanıt
-                    </span>
+                    <span className="text-[10px] opacity-75">({count})</span>
                   </button>
                 );
               })}
@@ -963,7 +928,7 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                     setTotalEnvelopes((prev) => prev + 1);
                     setSelectedEnvelopeTab(totalEnvelopes + 1);
                   }}
-                  className="px-3 py-2 rounded-xl text-xs font-mono border border-dashed border-zinc-700 hover:border-amber-400 text-zinc-400 hover:text-amber-300 transition-colors flex items-center gap-1 shrink-0 cursor-pointer"
+                  className="px-3 py-1.5 rounded-sm text-xs font-typewriter border border-dashed border-[#b5aa96] hover:border-[#1f1c18] text-[#575046] hover:text-[#1f1c18] transition-colors inline-flex items-center gap-1 shrink-0 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Zarf Ekle</span>
@@ -972,104 +937,98 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
             </div>
           </div>
 
-          {/* Current Envelope Evidence Section */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
+          {/* Current Envelope Evidence */}
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h4 className="font-bold text-sm text-zinc-100 flex items-center gap-2">
-                  <span>Zarf {selectedEnvelopeTab} Kanıt & Medya Dosyaları</span>
-                  <span className="text-xs text-amber-400 font-mono">
-                    ({currentEnvelopeEvidence.length} Dosya)
-                  </span>
+                <h4 className="font-typewriter font-bold text-xs uppercase tracking-wider text-[#1f1c18]">
+                  Zarf {selectedEnvelopeTab} Belgeleri ({currentEnvelopeEvidence.length})
                 </h4>
-                <p className="text-xs text-zinc-400 mt-0.5">
-                  Bu zarf açıldığında dedektiflerin uzmanlık telefonlarına hangi ses kayıtları, görüntüler veya raporlar düşecek?
+                <p className="text-xs text-[#575046] mt-0.5">
+                  Bu zarfta açılacak metin, görsel, ses veya video kanıtları.
                 </p>
               </div>
 
               <button
                 type="button"
                 onClick={handleAddEvidenceToCurrentEnvelope}
-                className="px-3 py-2 bg-amber-600 hover:bg-amber-500 text-zinc-950 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-md transition-all"
+                className="px-3 py-1.5 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] rounded-sm text-xs font-typewriter font-bold inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>+ Bu Zarfa Delil / Medya Ekle</span>
+                <span>Delil Ekle</span>
               </button>
             </div>
 
             {currentEnvelopeEvidence.length === 0 ? (
-              <div className="p-8 text-center bg-zinc-900/40 border border-dashed border-zinc-800 rounded-2xl text-xs text-zinc-500">
-                Bu zarf için henüz kanıt eklenmedi. Yukarıdaki butona basarak ses kaydı, olay yeri fotoğrafı veya rapor ekleyin.
+              <div className="p-6 text-center bg-[#fffdf8] border border-dashed border-[#c8bfae] rounded-sm text-xs font-typewriter text-[#7c7265]">
+                Bu zarfta henüz delil yok. Yukarıdan Delil Ekle ile ekleyin.
               </div>
             ) : (
               <div className="space-y-4">
                 {currentEnvelopeEvidence.map((ev, i) => (
-                  <div key={ev.id} className="p-4 sm:p-5 bg-zinc-900/70 border border-zinc-800 rounded-2xl space-y-4 shadow-md">
-                    <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold">
-                          ZARF {ev.envelope} · DOSYA #{i + 1}
+                  <div key={ev.id} className="p-4 bg-[#fffdf8] border border-[#d6cdbc] rounded-sm space-y-4">
+                    <div className="flex items-center justify-between pb-2.5 border-b border-[#d6cdbc]">
+                      <div className="flex items-center gap-2 font-typewriter text-xs">
+                        <span className="px-2 py-0.5 bg-[#f4efe4] border border-[#c8bfae] rounded-sm font-bold text-[#1f1c18]">
+                          ZARF {ev.envelope} · #{i + 1}
                         </span>
-                        <span className="text-xs font-mono text-zinc-500">id: {ev.id}</span>
+                        <span className="text-[#7c7265] text-[11px]">{ev.id}</span>
                       </div>
 
                       <button
                         type="button"
                         onClick={() => handleRemoveEvidence(ev.id)}
-                        className="text-rose-400 hover:text-rose-300 p-1 text-xs flex items-center gap-1 cursor-pointer"
+                        className="text-[#8b1e1e] hover:underline text-xs font-typewriter inline-flex items-center gap-1 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                         <span>Kaldır</span>
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
-                        <label className="block text-zinc-400 mb-1">Delil Başlığı *</label>
+                        <label className={labelClass}>Delil Başlığı *</label>
                         <input
                           type="text"
                           value={ev.title}
                           onChange={(e) => updateEvidenceField(ev.id, 'title', e.target.value)}
-                          placeholder="örn: 112 Acil İhbar Ses Kaydı"
-                          className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                          placeholder="112 Acil İhbar Ses Kaydı"
+                          className={inputClass}
                         />
                       </div>
 
                       <div>
-                        <label className="block text-zinc-400 mb-1 font-bold text-amber-300 flex items-center gap-1">
-                          <span>Medya Türü *</span>
-                        </label>
+                        <label className={labelClass}>Medya Türü *</label>
                         <select
                           value={ev.mediaType || 'text'}
                           onChange={(e) => updateEvidenceField(ev.id, 'mediaType', e.target.value)}
-                          className="w-full bg-zinc-950 border border-amber-600/50 rounded-xl px-3 py-2 text-zinc-100 font-semibold focus:outline-none focus:border-amber-400"
+                          className={inputClass}
                         >
-                          <option value="text">📄 Metin / Adli Rapor</option>
-                          <option value="audio">🎧 Ses Kaydı / Telefon Dinleme (Audio)</option>
-                          <option value="image">📸 Olay Yeri Fotoğrafı / Belge (Image)</option>
-                          <option value="video">🎥 Güvenlik Kamerası / Video (CCTV)</option>
+                          <option value="text">Metin / Adli Rapor</option>
+                          <option value="audio">Ses Kaydı (Audio)</option>
+                          <option value="image">Olay Yeri Fotoğrafı (Image)</option>
+                          <option value="video">Güvenlik Kamerası / Video</option>
                         </select>
                       </div>
 
                       <div>
-                        <label className="block text-zinc-400 mb-1">Kategori</label>
+                        <label className={labelClass}>Kategori</label>
                         <select
                           value={ev.category}
                           onChange={(e) => updateEvidenceField(ev.id, 'category', e.target.value)}
-                          className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                          className={inputClass}
                         >
                           <option value="audio">Ses / Telsiz Kaydı</option>
                           <option value="autopsy">Otopsi Raporu</option>
                           <option value="toxicology">Toksikoloji Raporu</option>
                           <option value="interrogation">Sorgu / İfade Tutanağı</option>
-                          <option value="document">Yazılı Belge / Fatura / Mektup</option>
+                          <option value="document">Yazılı Belge / Mektup</option>
                           <option value="cipher">Şifreli Mesaj / Kripto</option>
                           <option value="gps">GPS & Konum Kaydı</option>
                           <option value="banking">Banka & Finansal Hareket</option>
                         </select>
                       </div>
 
-                      {/* Drag & Drop Media Uploader and Live Preview Studio */}
                       {(ev.mediaType === 'audio' || ev.mediaType === 'image' || ev.mediaType === 'video') && (
                         <MediaDropzoneUploader
                           caseId={caseId}
@@ -1083,7 +1042,6 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                         />
                       )}
 
-                      {/* Dedicated Document Voice Narration Uploader */}
                       <MediaDropzoneUploader
                         caseId={caseId}
                         evidenceId={ev.id}
@@ -1091,16 +1049,13 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                         mediaType="audio"
                         mediaUrl={ev.narrationUrl || ''}
                         onUpdateUrl={(url) => updateEvidenceField(ev.id, 'narrationUrl', url)}
-                        title="Belge Sesli Anlatımı (Belgeyi Sesli Dinle · .mp3 / .wav)"
+                        title="Belge Sesli Anlatımı (Opsiyonel · .mp3 / .wav)"
                         hideCaption={true}
                       />
 
-                      {/* Role checkboxes */}
                       <div className="sm:col-span-3">
-                        <label className="block text-zinc-400 mb-1.5 font-bold">
-                          Bu Delili Hangi Uzman(lar) Görsün? (Asimetrik Rol Dağılımı)
-                        </label>
-                        <div className="flex flex-wrap gap-2">
+                        <label className={labelClass}>Uzman Erişimi</label>
+                        <div className="flex flex-wrap gap-1.5">
                           {(['forensics', 'cryptology', 'profiler', 'field', 'ballistics', 'archive'] as RoleType[]).map((r) => {
                             const isSelected = ev.roleAccess.includes(r);
                             const roleTitle = ROLES[r]?.title || r;
@@ -1109,10 +1064,10 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                                 key={r}
                                 type="button"
                                 onClick={() => toggleRoleAccess(ev.id, r)}
-                                className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border ${
+                                className={`px-2.5 py-1 rounded-sm text-xs font-typewriter inline-flex items-center gap-1.5 transition-colors cursor-pointer border ${
                                   isSelected
-                                    ? 'bg-amber-600/20 border-amber-500 text-amber-300 font-bold'
-                                    : 'bg-zinc-950 border-zinc-800 text-zinc-500 hover:text-zinc-300'
+                                    ? 'bg-[#1f1c18] text-[#faf6ed] border-[#1f1c18] font-bold'
+                                    : 'bg-[#faf6ed] text-[#575046] border-[#c8bfae] hover:border-[#1f1c18]'
                                 }`}
                               >
                                 <span>{isSelected ? '✓' : '+'}</span>
@@ -1124,24 +1079,24 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                       </div>
 
                       <div className="sm:col-span-3">
-                        <label className="block text-zinc-400 mb-1">Özet Bulgu (Dedektifin Ekranında Üstte Vurgulanacak Kısa Cümle)</label>
+                        <label className={labelClass}>Özet Bulgu</label>
                         <input
                           type="text"
                           value={ev.summary}
                           onChange={(e) => updateEvidenceField(ev.id, 'summary', e.target.value)}
-                          placeholder="Maktulün kadehinde ölümcül dozda potasyum siyanür tespit edildi."
-                          className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                          placeholder="Kısa özet cümlesi..."
+                          className={inputClass}
                         />
                       </div>
 
                       <div className="sm:col-span-3">
-                        <label className="block text-zinc-400 mb-1">Resmi Rapor Metni / Tutanak</label>
+                        <label className={labelClass}>Resmi Rapor / Tutanak Metni</label>
                         <textarea
                           value={ev.fullReport}
                           onChange={(e) => updateEvidenceField(ev.id, 'fullReport', e.target.value)}
                           rows={4}
-                          placeholder="Resmi adli tutanak, laboratuvar raporu veya tanık ifadesinin ayrıntılı metni..."
-                          className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 font-mono text-xs focus:outline-none focus:border-amber-400"
+                          placeholder="Tutanak ve teknik detaylar..."
+                          className={`${inputClass} font-typewriter`}
                         />
                       </div>
                     </div>
@@ -1151,31 +1106,29 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
             )}
           </div>
 
-          {/* Current Envelope Gate Question */}
-          <div className="p-4 sm:p-5 bg-zinc-900/60 border border-amber-600/40 rounded-2xl space-y-3">
-            <div className="flex items-center gap-2">
-              <KeyRound className="w-5 h-5 text-amber-400" />
-              <h4 className="font-bold text-sm text-zinc-100">
-                Zarf {selectedEnvelopeTab} Kapı Sorusu (Geçiş Doğrulama Kilidi)
-              </h4>
+          {/* Gate Question */}
+          <div className="p-4 sm:p-5 bg-[#fffdf8] border border-[#1f1c18] rounded-sm space-y-3">
+            <div className="flex items-center gap-2 font-typewriter font-bold text-xs uppercase tracking-wider text-[#1f1c18]">
+              <KeyRound className="w-3.5 h-3.5" />
+              <span>Zarf {selectedEnvelopeTab} Kapı Sorusu</span>
             </div>
-            <p className="text-xs text-zinc-400">
-              Dedektifler Zarf {selectedEnvelopeTab}’deki delilleri bitirdiğinde, bir sonraki aşamaya geçmek için bu soruyu ortaklaşa çözmek zorundadır.
+            <p className="text-xs text-[#575046]">
+              Bir sonraki zarfa geçmeden önce doğrulanması gereken kontrol sorusu.
             </p>
 
-            <div className="space-y-3 text-xs pt-1">
+            <div className="space-y-3 pt-1">
               <div>
-                <label className="block text-zinc-400 mb-1 font-bold">Soru Metni *</label>
+                <label className={labelClass}>Soru Metni *</label>
                 <input
                   type="text"
                   value={currentGate.question}
                   onChange={(e) => updateCurrentGate('question', e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                  className={inputClass}
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-zinc-400 font-bold">Seçenekler ve Doğru Cevap:</label>
+                <label className={labelClass}>Seçenekler ve Doğru Cevap</label>
                 {[0, 1, 2].map((optIdx) => {
                   const opt = currentGate.options?.[optIdx] || { id: `opt-${optIdx + 1}`, text: '', isCorrect: optIdx === 0 };
                   return (
@@ -1185,7 +1138,7 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                         name={`gate-correct-${selectedEnvelopeTab}`}
                         checked={opt.isCorrect}
                         onChange={() => setGateCorrectOption(optIdx)}
-                        className="accent-amber-500 cursor-pointer"
+                        className="accent-[#1f1c18] cursor-pointer"
                         title="Doğru cevap olarak işaretle"
                       />
                       <input
@@ -1193,10 +1146,10 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                         value={opt.text}
                         onChange={(e) => updateGateOptionText(optIdx, e.target.value)}
                         placeholder={`Seçenek ${optIdx + 1}`}
-                        className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                        className={`${inputClass} flex-1`}
                       />
                       {opt.isCorrect && (
-                        <span className="text-[10px] font-mono text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-950 border border-emerald-800">
+                        <span className="text-[10px] font-typewriter text-[#276749] font-bold px-2 py-0.5 rounded-sm border border-[#276749] bg-[#faf6ed] shrink-0">
                           DOĞRU
                         </span>
                       )}
@@ -1206,28 +1159,28 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Açıklama (Doğru Çözüldüğünde Dedektiflere Gösterilecek Not)</label>
+                <label className={labelClass}>Açıklama Notu</label>
                 <input
                   type="text"
                   value={currentGate.explanation || ''}
                   onChange={(e) => updateCurrentGate('explanation', e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                  className={inputClass}
                 />
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center justify-between pt-1">
             <button
               type="button"
               onClick={() => {
                 soundManager.playKeyClick();
                 setActiveStep(2);
               }}
-              className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 bg-[#faf6ed] hover:bg-[#ebe5d8] text-[#1f1c18] border border-[#c8bfae] font-typewriter rounded-sm text-xs inline-flex items-center gap-1.5 cursor-pointer"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Geri: Şüpheliler</span>
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Geri</span>
             </button>
 
             <button
@@ -1236,10 +1189,10 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                 soundManager.playKeyClick();
                 setActiveStep(4);
               }}
-              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-md"
+              className="px-4 py-2.5 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs inline-flex items-center gap-2 cursor-pointer"
             >
-              <span>4. Adım: Katil & Çözüm Bilgileri</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Fail & Çözüm</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -1247,19 +1200,16 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
 
       {/* STEP 4: SOLUTION & CULPRIT */}
       {activeStep === 4 && (
-        <div className="space-y-4 animate-fade-in">
-          <div className="p-4 sm:p-5 bg-amber-950/20 border border-amber-600/50 rounded-2xl space-y-4">
-            <div className="flex items-center gap-2 text-amber-300">
-              <Lock className="w-5 h-5 text-amber-400" />
-              <h4 className="font-bold text-sm">Vaka Çözümü & Katil Kimliği (Gizli Bilgi)</h4>
+        <div className="space-y-4">
+          <div className="p-4 sm:p-5 bg-[#fffdf8] border border-[#d6cdbc] rounded-sm space-y-4">
+            <div className="flex items-center gap-2 text-[#1f1c18] font-typewriter font-bold text-xs uppercase tracking-wider pb-2 border-b border-[#d6cdbc]">
+              <Lock className="w-3.5 h-3.5 text-[#8b1e1e]" />
+              <span>Vaka Çözümü & Katil (Gizli Bilgi)</span>
             </div>
-            <p className="text-xs text-zinc-400">
-              Bu bilgiler oyun sırasında dedektiflerden tamamen gizlenir. Yalnızca son suçlama oylamasından sonra gerçeği açıklamak için kullanılır.
-            </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-zinc-300 mb-1 font-bold">Gerçek Katil Kim? *</label>
+                <label className={labelClass}>Gerçek Katil *</label>
                 <select
                   value={culpritName}
                   onChange={(e) => {
@@ -1267,7 +1217,7 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                     const matched = suspects.find((s) => s.name === e.target.value);
                     if (matched) setCulpritId(matched.id);
                   }}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-amber-300 font-bold focus:outline-none focus:border-amber-400"
+                  className={`${inputClass} font-bold`}
                 >
                   <option value="">-- Katili Seçin --</option>
                   {suspects.map((s, idx) => (
@@ -1279,78 +1229,67 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
               </div>
 
               <div>
-                <label className="block text-zinc-300 mb-1 font-bold">Cinayet Motifi *</label>
+                <label className={labelClass}>Cinayet Motifi *</label>
                 <input
                   type="text"
                   value={motiveTitle}
                   onChange={(e) => setMotiveTitle(e.target.value)}
-                  placeholder="örn: Miras Hırsı ve Sahte Vasiyetname"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                  placeholder="Miras Hırsı ve Sahte Vasiyetname"
+                  className={inputClass}
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-zinc-300 mb-1 font-bold">Katili Ele Veren Kilit Kanıt *</label>
+                <label className={labelClass}>Kilit Kanıt *</label>
                 <input
                   type="text"
                   value={keyEvidenceTitle}
                   onChange={(e) => setKeyEvidenceTitle(e.target.value)}
-                  placeholder="örn: Maktulün Kadehinde Tespit Edilen Zehir & Gizli Ses Kaydı"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 focus:outline-none focus:border-amber-400"
+                  placeholder="Kadehte Tespit Edilen Zehir"
+                  className={inputClass}
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-zinc-300 mb-1 font-bold">Resmi Dava Kapanış & Karar Özeti (Olayın Gerçek Perde Arkası)</label>
+                <label className={labelClass}>Resmi Dava Kapanış Özeti</label>
                 <textarea
                   value={verdictSummary}
                   onChange={(e) => setVerdictSummary(e.target.value)}
                   rows={4}
-                  placeholder="Cinayetin nasıl işlendiğini, katilin cinayeti nasıl planladığını ve dedektiflerin hangi kritik ipucunu yakalayarak olayı çözdüğünü detaylıca yazın..."
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-100 leading-relaxed font-sans focus:outline-none focus:border-amber-400"
+                  placeholder="Olayın gerçek perde arkası ve çözüm özeti..."
+                  className={inputClass}
                 />
               </div>
 
-              {/* Katilin Gizli İtiraf Mektubu (Post-Voting Dramatic Reveal) */}
-              <div className="sm:col-span-2 bg-gradient-to-b from-amber-950/30 to-zinc-950/80 border border-amber-600/40 rounded-2xl p-4 sm:p-5 space-y-2.5 shadow-lg">
-                <div className="flex items-center justify-between pb-2 border-b border-amber-600/20">
-                  <label className="text-amber-300 font-bold flex items-center gap-2 text-sm">
-                    <FileText className="w-4 h-4 text-amber-400" />
-                    <span>Katilin Gizli İtiraf Mektubu (Oylama Sonrası Açılacak Belge) *</span>
-                  </label>
-                  <span className="text-[10px] text-amber-400 font-mono px-2 py-0.5 rounded bg-amber-950/60 border border-amber-500/40">
-                    OYLAMA SONRASI DRAMATİK İFŞA
+              <div className="sm:col-span-2 pt-2 border-t border-[#d6cdbc] space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className={labelClass}>Katilin İtiraf Mektubu</label>
+                  <span className="text-[10px] font-typewriter text-[#7c7265]">
+                    {confessionLetter.length} karakter
                   </span>
                 </div>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  Dedektifler son suçlama oylamasını bitirdiğinde bu mektup ekranda mühürlü bir itiraf belgesi olarak açılır. Katilin kendi ağzından cinayeti nasıl planladığını, sorguda dedektifleri şaşırtmak için hangi yalanları söylediğini ve cinayet gecesi yaşananları anlattığı can alıcı mektuptur.
-                </p>
                 <textarea
                   value={confessionLetter}
                   onChange={(e) => setConfessionLetter(e.target.value)}
-                  rows={6}
-                  placeholder="Bu mektubu okuyorsanız artık oyun bitti demektir... O gece Selim’in kadehine zehri ben damlattım. Yıllardır şirket hisselerini üzerime geçirmemi engelliyordu..."
-                  className="w-full bg-zinc-950 border border-amber-800/50 rounded-xl p-3 text-amber-100 font-mono text-xs leading-relaxed focus:outline-none focus:border-amber-400 shadow-inner"
+                  rows={5}
+                  placeholder="Katilin oylama sonrasında açılacak itiraf mektubu..."
+                  className={`${inputClass} font-typewriter leading-relaxed`}
                 />
-                <div className="flex items-center justify-between text-[11px] text-zinc-500 font-mono">
-                  <span>Dedektiflerin tüm soru işaretlerini aydınlatacak detayları ekleyin.</span>
-                  <span>{confessionLetter.length} karakter</span>
-                </div>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center justify-between pt-1">
             <button
               type="button"
               onClick={() => {
                 soundManager.playKeyClick();
                 setActiveStep(3);
               }}
-              className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 bg-[#faf6ed] hover:bg-[#ebe5d8] text-[#1f1c18] border border-[#c8bfae] font-typewriter rounded-sm text-xs inline-flex items-center gap-1.5 cursor-pointer"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Geri: Zarflar</span>
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Geri</span>
             </button>
 
             <button
@@ -1359,10 +1298,10 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                 soundManager.playKeyClick();
                 setActiveStep(5);
               }}
-              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-md"
+              className="px-4 py-2.5 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs inline-flex items-center gap-2 cursor-pointer"
             >
-              <span>5. Adım: Önizle ve Yayınla</span>
-              <Sparkles className="w-4 h-4" />
+              <span>Önizle & Yayınla</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -1370,75 +1309,67 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
 
       {/* STEP 5: REVIEW & PUBLISH */}
       {activeStep === 5 && (
-        <div className="space-y-4 animate-fade-in">
-          <div className="p-5 bg-zinc-900/80 border border-zinc-800 rounded-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+        <div className="space-y-4">
+          <div className="p-4 sm:p-5 bg-[#fffdf8] border border-[#d6cdbc] rounded-sm space-y-4">
+            <div className="flex items-start justify-between gap-3 pb-3 border-b border-[#d6cdbc]">
               <div>
-                <h4 className="font-bold text-base text-zinc-100">
+                <h4 className="font-typewriter font-bold text-base text-[#1f1c18]">
                   {title || 'Yeni Vaka Dosyası'}
                 </h4>
-                <p className="text-xs text-zinc-400 mt-0.5">
-                  {subtitle || 'Aşamalı vaka dosyası hazır'}
+                <p className="text-xs text-[#575046] mt-0.5">
+                  {subtitle || 'Vaka dosyası yayınlamaya hazır'}
                 </p>
               </div>
 
-              <span className="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 font-mono text-xs font-bold border border-amber-500/40">
-                {totalEnvelopes} Zarf / Aşama
+              <span className="px-2 py-0.5 rounded-sm border border-[#1f1c18] bg-[#faf6ed] font-typewriter text-xs font-bold text-[#1f1c18] shrink-0">
+                {totalEnvelopes} ZARF
               </span>
             </div>
 
-            {/* Quick Metrics */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-mono">
-              <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
-                <span className="text-[10px] text-zinc-500 uppercase block">Maktul</span>
-                <strong className="text-zinc-200 block truncate mt-0.5">{victimName || 'Belirtilmedi'}</strong>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-typewriter">
+              <div className="p-3 rounded-sm bg-[#faf6ed] border border-[#d6cdbc]">
+                <span className="text-[10px] text-[#7c7265] uppercase block">Maktul</span>
+                <strong className="text-[#1f1c18] block truncate mt-0.5">{victimName || 'Belirtilmedi'}</strong>
               </div>
-              <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
-                <span className="text-[10px] text-zinc-500 uppercase block">Şüpheli Sayısı</span>
-                <strong className="text-zinc-200 block mt-0.5">{suspects.length} Kişi</strong>
+              <div className="p-3 rounded-sm bg-[#faf6ed] border border-[#d6cdbc]">
+                <span className="text-[10px] text-[#7c7265] uppercase block">Şüpheli</span>
+                <strong className="text-[#1f1c18] block mt-0.5">{suspects.length} kişi</strong>
               </div>
-              <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
-                <span className="text-[10px] text-zinc-500 uppercase block">Toplam Delil / Medya</span>
-                <strong className="text-zinc-200 block mt-0.5">{evidenceList.length} Parça</strong>
+              <div className="p-3 rounded-sm bg-[#faf6ed] border border-[#d6cdbc]">
+                <span className="text-[10px] text-[#7c7265] uppercase block">Delil</span>
+                <strong className="text-[#1f1c18] block mt-0.5">{evidenceList.length} parça</strong>
               </div>
-              <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
-                <span className="text-[10px] text-zinc-500 uppercase block">Gerçek Fail</span>
-                <strong className="text-amber-300 block truncate mt-0.5">{culpritName || suspects[0]?.name}</strong>
+              <div className="p-3 rounded-sm bg-[#faf6ed] border border-[#d6cdbc]">
+                <span className="text-[10px] text-[#7c7265] uppercase block">Fail</span>
+                <strong className="text-[#8b1e1e] block truncate mt-0.5">{culpritName || suspects[0]?.name}</strong>
               </div>
             </div>
 
-            {/* Evidence Breakdown by Media Type */}
-            <div className="p-3.5 bg-zinc-950/70 border border-zinc-800/80 rounded-xl text-xs space-y-2">
-              <span className="font-mono text-zinc-400 uppercase text-[11px] block font-bold">
-                Medya Dosyaları Dağılımı:
+            <div className="pt-2 border-t border-dashed border-[#d6cdbc] flex flex-wrap gap-3 text-[11px] font-typewriter text-[#575046]">
+              <span className="inline-flex items-center gap-1">
+                <Headphones className="w-3.5 h-3.5" />
+                {evidenceList.filter((e) => e.mediaType === 'audio').length} Ses
               </span>
-              <div className="flex flex-wrap gap-2 text-[11px]">
-                <span className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 flex items-center gap-1">
-                  <Headphones className="w-3 h-3 text-amber-400" />
-                  {evidenceList.filter((e) => e.mediaType === 'audio').length} Ses Kaydı
-                </span>
-                <span className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 flex items-center gap-1">
-                  <ImageIcon className="w-3 h-3 text-cyan-400" />
-                  {evidenceList.filter((e) => e.mediaType === 'image').length} Olay Yeri Fotoğrafı
-                </span>
-                <span className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 flex items-center gap-1">
-                  <Video className="w-3 h-3 text-rose-400" />
-                  {evidenceList.filter((e) => e.mediaType === 'video').length} Video / CCTV Kaydı
-                </span>
-                <span className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 flex items-center gap-1">
-                  <FileText className="w-3 h-3 text-zinc-400" />
-                  {evidenceList.filter((e) => e.mediaType === 'text' || !e.mediaType).length} Metin Raporu
-                </span>
-                <span className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 flex items-center gap-1">
-                  <Volume2 className="w-3 h-3 text-emerald-400" />
-                  {evidenceList.filter((e) => Boolean(e.narrationUrl?.trim())).length} Sesli Anlatım
-                </span>
-              </div>
+              <span className="inline-flex items-center gap-1">
+                <ImageIcon className="w-3.5 h-3.5" />
+                {evidenceList.filter((e) => e.mediaType === 'image').length} Görsel
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Video className="w-3.5 h-3.5" />
+                {evidenceList.filter((e) => e.mediaType === 'video').length} Video
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <FileText className="w-3.5 h-3.5" />
+                {evidenceList.filter((e) => e.mediaType === 'text' || !e.mediaType).length} Metin
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Volume2 className="w-3.5 h-3.5" />
+                {evidenceList.filter((e) => Boolean(e.narrationUrl?.trim())).length} Sesli Anlatım
+              </span>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
@@ -1446,58 +1377,52 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                   soundManager.playKeyClick();
                   setActiveStep(4);
                 }}
-                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer"
+                className="px-3.5 py-2 bg-[#faf6ed] hover:bg-[#ebe5d8] text-[#1f1c18] border border-[#c8bfae] font-typewriter rounded-sm text-xs inline-flex items-center gap-1.5 cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Geri: Çözüm Bilgileri</span>
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Geri</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleDownloadJSON}
-                className="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer border border-zinc-700 transition-colors"
-                title="Vakanın JSON dosyasını bilgisayarınıza kaydedin"
+                className="px-3 py-2 bg-[#fffdf8] hover:bg-[#ebe5d8] text-[#1f1c18] rounded-sm text-xs font-typewriter inline-flex items-center gap-1.5 cursor-pointer border border-[#c8bfae]"
               >
-                <Download className="w-3.5 h-3.5 text-amber-400" />
+                <Download className="w-3.5 h-3.5" />
                 <span>İndir (.json)</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleCopyJSON}
-                className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer border border-zinc-700 transition-colors"
-                title="Vaka JSON kodunu kopyalayıp GitHub reposundaki src/data/cases.ts içine doğrudan yapıştırabilirsiniz"
+                className="px-3 py-2 bg-[#fffdf8] hover:bg-[#ebe5d8] text-[#1f1c18] rounded-sm text-xs font-typewriter inline-flex items-center gap-1.5 cursor-pointer border border-[#c8bfae]"
               >
-                {isCopied ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5 text-amber-400" />
-                )}
-                <span>{isCopied ? 'Kopyalandı!' : 'JSON Kodunu Kopyala (GitHub)'}</span>
+                {isCopied ? <Check className="w-3.5 h-3.5 text-[#276749]" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{isCopied ? 'Kopyalandı' : 'Kopyala'}</span>
               </button>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <button
                 type="button"
                 onClick={() => handleSaveWithStatus('draft')}
                 disabled={isSaving}
-                className="px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-amber-300 border border-amber-500/40 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                className="px-4 py-2.5 bg-[#fffdf8] hover:bg-[#ebe5d8] text-[#1f1c18] border border-[#1f1c18] font-typewriter font-bold rounded-sm text-xs inline-flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
               >
-                <EyeOff className="w-4 h-4" />
-                <span>{isSaving ? 'Kaydediliyor...' : 'Taslak Olarak Kaydet'}</span>
+                <EyeOff className="w-3.5 h-3.5" />
+                <span>{isSaving ? 'Kaydediliyor...' : 'Taslak Kaydet'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleSaveWithStatus('published')}
                 disabled={isSaving}
-                className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xl disabled:opacity-50"
+                className="px-5 py-2.5 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs inline-flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
               >
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>
                   {isSaving
-                    ? 'Firestore’a Kaydediliyor...'
+                    ? 'Kaydediliyor...'
                     : isEditing
                     ? 'Değişiklikleri Yayınla'
                     : 'Canlıda Yayınla'}
@@ -1507,7 +1432,6 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
           </div>
         </div>
       )}
-
     </div>
   );
 };

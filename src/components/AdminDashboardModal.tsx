@@ -24,24 +24,12 @@ import { soundManager } from '../utils/audioEffects';
 import { isVerifiedAdminUser } from '../utils/scenarioUtils';
 import {
   X,
-  BarChart3,
-  Users,
-  Star,
-  Smartphone,
   RefreshCw,
-  ShieldAlert,
   Search,
-  ExternalLink,
   CheckCircle2,
-  Sparkles,
-  Apple,
-  Play,
-  Terminal,
   FileCode2,
-  HelpCircle,
   Lock,
   LogIn,
-  FolderPlus,
   Upload,
   Download,
   Trash2,
@@ -49,14 +37,13 @@ import {
   Check,
   AlertTriangle,
   FileJson,
-  FileText,
-  Clock,
-  UserCheck,
-  BookOpen,
   Edit3,
   Copy,
   Globe,
   EyeOff,
+  Plus,
+  ArrowLeft,
+  Star,
 } from 'lucide-react';
 
 export { ADMIN_EMAIL };
@@ -72,7 +59,10 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   onClose,
   customCases: externalCustomCases,
 }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'ratings' | 'cases' | 'stores'>('overview');
+  const [activeTab, setActiveTab] = useState<'cases' | 'overview' | 'users'>('cases');
+  const [caseView, setCaseView] = useState<'list' | 'wizard' | 'import'>('list');
+  const [importMode, setImportMode] = useState<'file' | 'json'>('file');
+
   const [data, setData] = useState<AdminDashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchUser, setSearchUser] = useState<string>('');
@@ -81,7 +71,6 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
 
   // Custom Cases State
   const [customCasesList, setCustomCasesList] = useState<CaseScenario[]>(externalCustomCases || []);
-  const [uploadMode, setUploadMode] = useState<'wizard' | 'file' | 'json'>('wizard');
   const [rawJsonText, setRawJsonText] = useState<string>('');
   const [pendingParsedCase, setPendingParsedCase] = useState<CaseScenario | null>(null);
   const [caseValidationErrors, setCaseValidationErrors] = useState<string[]>([]);
@@ -92,7 +81,6 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   const [editingCase, setEditingCase] = useState<CaseScenario | null>(null);
   const [isEditingExisting, setIsEditingExisting] = useState<boolean>(false);
 
-  // Clear any legacy local admin bypass flag on mount
   useEffect(() => {
     try {
       localStorage.removeItem('detective_admin_mode');
@@ -141,7 +129,6 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     }
   }, [isAuthorized]);
 
-  // Real-time custom cases sync
   useEffect(() => {
     const unsub = subscribeToCustomCases((cases) => {
       setCustomCasesList(cases);
@@ -149,14 +136,12 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     return () => unsub();
   }, []);
 
-  // Update from external prop if passed
   useEffect(() => {
     if (externalCustomCases) {
       setCustomCasesList(externalCustomCases);
     }
   }, [externalCustomCases]);
 
-  // Download template JSON
   const handleDownloadTemplate = () => {
     soundManager.playKeyClick();
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(SAMPLE_CASE_TEMPLATE, null, 2));
@@ -168,7 +153,6 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     downloadAnchor.remove();
   };
 
-  // Quick Demo Case Loader
   const handleLoadDemoCase = async () => {
     soundManager.playKeyClick();
     setIsSavingCase(true);
@@ -178,7 +162,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
       soundManager.playSuccessSound();
       setUploadFeedback({
         type: 'success',
-        message: `"${DEMO_CUSTOM_CASE.title}" başarıyla sisteme yüklendi ve yayınlandı! Artık lobide seçilebilir.`
+        message: `"${DEMO_CUSTOM_CASE.title}" sisteme yüklendi ve yayınlandı.`,
       });
       setPendingParsedCase(null);
       setRawJsonText('');
@@ -187,14 +171,13 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
       soundManager.playErrorSound();
       setUploadFeedback({
         type: 'error',
-        message: `Demo vaka yüklenirken hata oluştu: ${err.message || 'Bilinmeyen hata'}`
+        message: `Demo vaka yüklenirken hata oluştu: ${err.message || 'Bilinmeyen hata'}`,
       });
     } finally {
       setIsSavingCase(false);
     }
   };
 
-  // Validate JSON string
   const processAndValidateJson = (jsonString: string) => {
     setUploadFeedback(null);
     try {
@@ -216,7 +199,6 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     }
   };
 
-  // File Upload Handler
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -233,11 +215,9 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
       setCaseValidationErrors(['Dosya okunurken bir hata oluştu.']);
     };
     reader.readAsText(file);
-    // Reset file input value so re-selecting same file triggers change
     e.target.value = '';
   };
 
-  // Save Pending Case to Firestore
   const handlePublishCase = async (targetStatus: 'published' | 'draft' = 'published') => {
     if (!pendingParsedCase) return;
     setIsSavingCase(true);
@@ -251,12 +231,13 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
         type: 'success',
         message:
           targetStatus === 'draft'
-            ? `"${casePayload.title}" taslak olarak kaydedildi (lobide gizli).`
-            : `"${casePayload.title}" başarıyla yüklendi! Vaka lobide aktif hale geldi.`,
+            ? `"${casePayload.title}" taslak olarak kaydedildi.`
+            : `"${casePayload.title}" canlıda yayınlandı.`,
       });
       setPendingParsedCase(null);
       setRawJsonText('');
       setCaseValidationErrors([]);
+      setCaseView('list');
     } catch (err: any) {
       soundManager.playErrorSound();
       setUploadFeedback({
@@ -268,7 +249,6 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     }
   };
 
-  // Toggle published / draft status on an existing custom case
   const handleToggleCaseStatus = async (sc: CaseScenario) => {
     const nextStatus: 'published' | 'draft' = sc.status === 'draft' ? 'published' : 'draft';
     setIsSavingCase(true);
@@ -281,8 +261,8 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
         type: 'success',
         message:
           nextStatus === 'published'
-            ? `"${sc.title}" canlıda yayınlandı! Artık lobide oyunculara açık.`
-            : `"${sc.title}" taslağa alındı (lobiden gizlendi).`,
+            ? `"${sc.title}" canlıda yayınlandı.`
+            : `"${sc.title}" taslağa alındı.`,
       });
     } catch (err: any) {
       soundManager.playErrorSound();
@@ -295,7 +275,6 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     }
   };
 
-  // Delete Case
   const handleConfirmDeleteCase = async (caseId: string) => {
     try {
       soundManager.playKeyClick();
@@ -304,7 +283,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
       setCaseToDelete(null);
       setUploadFeedback({
         type: 'success',
-        message: 'Vaka sistemden başarıyla silindi.',
+        message: 'Vaka kalıcı olarak silindi.',
       });
     } catch (err: any) {
       soundManager.playErrorSound();
@@ -324,52 +303,51 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     );
   });
 
-  // If not authorized, show security gate
+  // Security Gate
   if (!isAuthorized) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
-        <div className="bg-zinc-950 border border-amber-600/50 rounded-3xl w-full max-w-md p-6 sm:p-7 shadow-2xl relative text-zinc-100 text-center">
-          
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1f1c18]/55 backdrop-blur-[2px] animate-fade-in">
+        <div className="bg-[#faf6ed] border border-[#1f1c18] rounded-sm w-full max-w-md p-6 shadow-[0_12px_36px_rgba(31,28,24,0.2)] relative text-[#1f1c18] text-center">
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 rounded-xl transition-colors cursor-pointer"
+            className="absolute top-4 right-4 p-1.5 text-[#575046] hover:text-[#1f1c18] hover:bg-[#efe9da] rounded-sm transition-colors cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
 
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto mb-4">
-            <Lock className="w-7 h-7" />
+          <div className="w-11 h-11 rounded-sm bg-[#fffdf8] border border-[#8b1e1e] flex items-center justify-center text-[#8b1e1e] mx-auto mb-4">
+            <Lock className="w-5 h-5" />
           </div>
 
-          <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold block mb-1">
-            GİZLİ YÖNETİM MERKEZİ
+          <span className="text-[10px] font-typewriter uppercase tracking-[0.2em] text-[#8b1e1e] font-bold block mb-1">
+            YÖNETİM MERKEZİ
           </span>
-          <h2 className="font-cinzel font-bold text-xl text-zinc-100">
+          <h2 className="font-typewriter font-bold text-lg text-[#1f1c18]">
             Yetkili Girişi Gerekli
           </h2>
-          <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
-            Bu kontrol paneli yalnızca sistem kurucusu (<strong className="text-zinc-200">{ADMIN_EMAIL}</strong>) için ayrılmıştır. Oyuncular ve misafir kullanıcılar bu alana erişemez.
+          <p className="text-xs text-[#575046] mt-2 leading-relaxed">
+            Bu alan yalnızca sistem yöneticisi (<strong className="text-[#1f1c18]">{ADMIN_EMAIL}</strong>) içindir.
           </p>
 
           {currentUser?.email && (
-            <div className="mt-3 p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-[11px] text-zinc-300">
-              Şu anki oturum: <span className="font-mono text-amber-300">{currentUser.email}</span> (Yetkisiz)
+            <div className="mt-3 p-2.5 rounded-sm bg-[#fffdf8] border border-[#d6cdbc] text-[11px] text-[#575046]">
+              Mevcut oturum: <span className="font-typewriter text-[#1f1c18]">{currentUser.email}</span> (Yetkisiz)
             </div>
           )}
 
           {authError && (
-            <div className="mt-3 p-3 bg-rose-950/50 border border-rose-800/60 rounded-xl text-rose-200 text-xs">
+            <div className="mt-3 p-3 bg-[#fffdf8] border border-[#8b1e1e] rounded-sm text-[#8b1e1e] text-xs">
               {authError}
             </div>
           )}
 
-          <div className="mt-5 space-y-3">
+          <div className="mt-5 space-y-2.5">
             <button
               type="button"
               onClick={handleAdminGoogleLogin}
               disabled={isLoggingIn}
-              className="w-full py-3 px-4 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-lg disabled:opacity-50"
+              className="w-full py-2.5 px-4 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs inline-flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
             >
               <LogIn className="w-4 h-4" />
               <span>{isLoggingIn ? 'Giriş Yapılıyor...' : `Google ile Giriş Yap (${ADMIN_EMAIL})`}</span>
@@ -378,14 +356,10 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="w-full py-2.5 text-zinc-400 hover:text-zinc-200 text-xs cursor-pointer transition-colors"
+              className="w-full py-2 text-[#575046] hover:text-[#1f1c18] text-xs font-typewriter cursor-pointer transition-colors"
             >
-              Vazgeç ve Masaya Dön
+              Masaya Dön
             </button>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-zinc-900 text-[11px] text-zinc-500 font-mono">
-            Güvenlik gereği yönetici paneli yalnızca doğrulanmış Google Auth oturumu ile açılır.
           </div>
         </div>
       </div>
@@ -393,41 +367,32 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-fade-in overflow-y-auto">
-      <div className="bg-zinc-950 border border-amber-600/50 rounded-3xl w-full max-w-5xl my-auto p-5 sm:p-7 shadow-2xl relative text-zinc-100 max-h-[92vh] flex flex-col">
-        
-        {/* Glow Accent */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
-
-        {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-zinc-800 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold">
-              <BarChart3 className="w-5 h-5" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-[#1f1c18]/55 backdrop-blur-[2px] animate-fade-in overflow-y-auto">
+      <div className="bg-[#faf6ed] border border-[#1f1c18] rounded-sm w-full max-w-4xl my-auto p-5 sm:p-6 shadow-[0_14px_42px_rgba(31,28,24,0.22)] relative text-[#1f1c18] max-h-[92vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-3.5 border-b border-[#d6cdbc] shrink-0">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="font-typewriter font-bold text-base sm:text-lg uppercase tracking-[0.12em] text-[#1f1c18]">
+                YÖNETİM PANELİ
+              </h2>
+              <span className="text-[10px] font-typewriter px-1.5 py-0.5 rounded-sm border border-[#8b1e1e] text-[#8b1e1e] font-bold">
+                ADMİN
+              </span>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="font-cinzel font-bold text-lg sm:text-xl text-zinc-100">
-                  Yönetici & Analitik Paneli
-                </h2>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-amber-300 font-bold">
-                  SÜPER ADMİN
-                </span>
-              </div>
-              <p className="text-xs text-zinc-400 mt-0.5">
-                Kullanıcı mevcudu, vaka derecelendirmeleri ve mobil mağaza yayınlama mimarisi
-              </p>
-            </div>
+            <p className="text-[11px] text-[#575046] mt-0.5 font-typewriter">
+              {currentUser?.email || ADMIN_EMAIL}
+            </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => {
                 soundManager.playKeyClick();
                 loadData();
               }}
-              className="p-2 text-zinc-400 hover:text-amber-300 hover:bg-zinc-900 rounded-xl transition-colors cursor-pointer"
+              className="p-2 text-[#575046] hover:text-[#1f1c18] hover:bg-[#efe9da] rounded-sm transition-colors cursor-pointer"
               title="Verileri Yenile"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -435,660 +400,347 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-2 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 rounded-xl transition-colors cursor-pointer"
+              className="p-2 text-[#575046] hover:text-[#1f1c18] hover:bg-[#efe9da] rounded-sm transition-colors cursor-pointer"
+              title="Kapat"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* Nav Tabs */}
-        <div className="flex border-b border-zinc-800 mt-4 gap-1 sm:gap-2 shrink-0 overflow-x-auto scrollbar-none">
+        {/* 3 Minimal Tabs */}
+        <div className="flex border-b border-[#d6cdbc] mt-3 gap-4 shrink-0">
+          <button
+            type="button"
+            onClick={() => setActiveTab('cases')}
+            className={`py-2.5 text-xs font-typewriter border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
+              activeTab === 'cases'
+                ? 'border-[#1f1c18] text-[#1f1c18] font-bold'
+                : 'border-transparent text-[#7c7265] hover:text-[#1f1c18]'
+            }`}
+          >
+            Vakalar ({CASE_SCENARIOS.length + customCasesList.length})
+          </button>
+
           <button
             type="button"
             onClick={() => setActiveTab('overview')}
-            className={`py-2.5 px-3.5 text-xs font-bold rounded-t-xl border-b-2 transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+            className={`py-2.5 text-xs font-typewriter border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
               activeTab === 'overview'
-                ? 'border-amber-500 text-amber-400 bg-zinc-900/40'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                ? 'border-[#1f1c18] text-[#1f1c18] font-bold'
+                : 'border-transparent text-[#7c7265] hover:text-[#1f1c18]'
             }`}
           >
-            <BarChart3 className="w-4 h-4" />
-            <span>Genel Bakış & Metrikler</span>
+            Özet
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('users')}
-            className={`py-2.5 px-3.5 text-xs font-bold rounded-t-xl border-b-2 transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+            className={`py-2.5 text-xs font-typewriter border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
               activeTab === 'users'
-                ? 'border-amber-500 text-amber-400 bg-zinc-900/40'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                ? 'border-[#1f1c18] text-[#1f1c18] font-bold'
+                : 'border-transparent text-[#7c7265] hover:text-[#1f1c18]'
             }`}
           >
-            <Users className="w-4 h-4" />
-            <span>Üye Yönetimi ({data?.usersCount || 0})</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('ratings')}
-            className={`py-2.5 px-3.5 text-xs font-bold rounded-t-xl border-b-2 transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-              activeTab === 'ratings'
-                ? 'border-amber-500 text-amber-400 bg-zinc-900/40'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            <Star className="w-4 h-4" />
-            <span>Vaka Puanları ({data?.ratingsCount || 0})</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('cases')}
-            className={`py-2.5 px-3.5 text-xs font-bold rounded-t-xl border-b-2 transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-              activeTab === 'cases'
-                ? 'border-amber-500 text-amber-400 bg-zinc-900/40'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            <FolderPlus className="w-4 h-4" />
-            <span>Vaka Tasarım Stüdyosu & Yönetimi ({CASE_SCENARIOS.length + customCasesList.length})</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('stores')}
-            className={`py-2.5 px-3.5 text-xs font-bold rounded-t-xl border-b-2 transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-              activeTab === 'stores'
-                ? 'border-amber-500 text-amber-400 bg-zinc-900/40'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            <Smartphone className="w-4 h-4" />
-            <span>Play Store & App Store Rehberi</span>
+            Üyeler ({data?.usersCount || 0})
           </button>
         </div>
 
-        {/* Scrollable Content Body */}
-        <div className="flex-1 overflow-y-auto mt-4 pr-1 space-y-5">
-          {/* TAB 1: OVERVIEW */}
-          {activeTab === 'overview' && (
-            <div className="space-y-5">
-              {/* Stat Cards Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div className="p-4 bg-zinc-900/70 border border-zinc-800 rounded-2xl flex flex-col justify-between">
-                  <div className="flex items-center justify-between text-zinc-400 text-xs">
-                    <span>Toplam Üye</span>
-                    <Users className="w-4 h-4 text-amber-400" />
-                  </div>
-                  <div className="mt-2">
-                    <span className="text-2xl sm:text-3xl font-black font-mono text-zinc-100">
-                      {data?.usersCount || 0}
-                    </span>
-                    <p className="text-[10px] text-zinc-500 mt-0.5">Kayıtlı dedektif</p>
-                  </div>
-                </div>
-
-                <div className="p-4 bg-zinc-900/70 border border-zinc-800 rounded-2xl flex flex-col justify-between">
-                  <div className="flex items-center justify-between text-zinc-400 text-xs">
-                    <span>Değerlendirmeler</span>
-                    <Star className="w-4 h-4 text-amber-400" />
-                  </div>
-                  <div className="mt-2">
-                    <span className="text-2xl sm:text-3xl font-black font-mono text-zinc-100">
-                      {data?.ratingsCount || 0}
-                    </span>
-                    <p className="text-[10px] text-zinc-500 mt-0.5">5 üzerinden oy</p>
-                  </div>
-                </div>
-
-                <div className="p-4 bg-zinc-900/70 border border-zinc-800 rounded-2xl flex flex-col justify-between">
-                  <div className="flex items-center justify-between text-zinc-400 text-xs">
-                    <span>Ortalama Memnuniyet</span>
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  </div>
-                  <div className="mt-2">
-                    <span className="text-2xl sm:text-3xl font-black font-mono text-amber-300">
-                      ⭐ {data?.averageRating || 4.9}
-                    </span>
-                    <p className="text-[10px] text-zinc-500 mt-0.5">5.0 üzerinden puan</p>
-                  </div>
-                </div>
-
-                <div className="p-4 bg-zinc-900/70 border border-zinc-800 rounded-2xl flex flex-col justify-between">
-                  <div className="flex items-center justify-between text-zinc-400 text-xs">
-                    <span>Açılan Odalar</span>
-                    <Smartphone className="w-4 h-4 text-emerald-400" />
-                  </div>
-                  <div className="mt-2">
-                    <span className="text-2xl sm:text-3xl font-black font-mono text-zinc-100">
-                      {data?.roomsCount || 0}
-                    </span>
-                    <p className="text-[10px] text-zinc-500 mt-0.5">Canlı oyun masası</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Scenario Breakdown */}
-              <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 sm:p-5">
-                <h3 className="font-cinzel font-bold text-sm text-zinc-200 mb-3 flex items-center gap-2">
-                  <Star className="w-4 h-4 text-amber-400" />
-                  <span>Soruşturma Dosyası Puan Durumu</span>
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {CASE_SCENARIOS.map((sc) => {
-                    const stats = data?.ratingsByScenario[sc.id] || { average: 5.0, count: 0 };
-                    return (
-                      <div
-                        key={sc.id}
-                        className="p-3.5 bg-zinc-950/80 border border-zinc-800 rounded-xl flex items-center justify-between"
-                      >
-                        <div>
-                          <h4 className="font-bold text-xs text-zinc-100">{sc.title}</h4>
-                          <p className="text-[11px] text-zinc-400">{sc.subtitle}</p>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-sm font-bold text-amber-300 font-mono">
-                            ⭐ {stats.average} / 5
-                          </span>
-                          <p className="text-[10px] text-zinc-500 font-mono">
-                            {stats.count} değerlendirme
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="p-4 bg-zinc-900/30 border border-zinc-800 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-400">
-                <div className="flex items-center gap-2">
-                  <ShieldAlert className="w-4 h-4 text-amber-400" />
-                  <span>Sistem Yönetim Yetkisi: <strong className="text-zinc-200">{currentUser?.email || 'altayyigitozan@gmail.com'}</strong></span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('stores')}
-                  className="px-4 py-2 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-600/40 rounded-xl font-bold cursor-pointer transition-all"
-                >
-                  Mobil Mağaza Yol Haritası &rarr;
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 2: USERS MANAGEMENT */}
-          {activeTab === 'users' && (
-            <div className="space-y-4">
-              {/* Member Metrics summary cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-3.5 bg-zinc-900/60 border border-zinc-800 rounded-xl flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">Toplam Üye Mevcudu</span>
-                    <span className="text-xl font-bold font-mono text-zinc-100">{data?.usersCount || filteredUsers.length} Dedektif</span>
-                  </div>
-                  <Users className="w-5 h-5 text-amber-400" />
-                </div>
-
-                <div className="p-3.5 bg-zinc-900/60 border border-zinc-800 rounded-xl flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">Sistem Yöneticisi</span>
-                    <span className="text-xs font-bold text-amber-300 font-mono">1 Kurucu Hesap</span>
-                  </div>
-                  <ShieldAlert className="w-5 h-5 text-emerald-400" />
-                </div>
-
-                <div className="p-3.5 bg-zinc-900/60 border border-zinc-800 rounded-xl flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">Veritabanı Durumu</span>
-                    <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 font-mono">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Firestore Canlı Senkron
-                    </span>
-                  </div>
-                  <RefreshCw 
-                    onClick={loadData}
-                    className={`w-4 h-4 text-zinc-400 hover:text-amber-300 cursor-pointer transition-transform ${loading ? 'animate-spin' : ''}`} 
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <div className="relative flex-1 max-w-sm">
-                  <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-3 pointer-events-none" />
-                  <input
-                    type="text"
-                    value={searchUser}
-                    onChange={(e) => setSearchUser(e.target.value)}
-                    placeholder="İsim, e-posta, rol veya UID ile ara..."
-                    className="w-full pl-9 pr-3 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-400"
-                  />
-                </div>
-                <span className="text-xs font-mono text-zinc-400">
-                  {filteredUsers.length} Dedektif / Üye Listeleniyor
-                </span>
-              </div>
-
-              <div className="border border-zinc-800 rounded-2xl overflow-hidden bg-zinc-900/40">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-zinc-950/80 border-b border-zinc-800 text-zinc-400 font-mono text-[11px] uppercase">
-                      <tr>
-                        <th className="py-3 px-4">Dedektif / Kullanıcı</th>
-                        <th className="py-3 px-4">Yetki & Unvan</th>
-                        <th className="py-3 px-4">E-Posta / Giriş Modeli</th>
-                        <th className="py-3 px-4">Kayıt Tarihi</th>
-                        <th className="py-3 px-4">Kullanıcı Kimliği (UID)</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-zinc-800/60 font-sans">
-                      {filteredUsers.length === 0 ? (
-                        <tr>
-                          <td colSpan={5} className="py-8 text-center text-zinc-500 space-y-2">
-                            <p>Kayıtlı üye bulunamadı.</p>
-                            <button
-                              type="button"
-                              onClick={loadData}
-                              className="text-xs text-amber-400 hover:underline inline-flex items-center gap-1"
-                            >
-                              <RefreshCw className="w-3 h-3" /> Verileri Yeniden Yükle
-                            </button>
-                          </td>
-                        </tr>
-                      ) : (
-                        filteredUsers.map((u, i) => {
-                          const isAdminUser = (u.email || '').toLowerCase() === ADMIN_EMAIL.toLowerCase() || u.uid === 'admin_altay_01';
-                          const displayName = u.displayName || (isAdminUser ? 'Altay Yiğit Ozan' : 'Dedektif');
-                          const roleLabel = isAdminUser 
-                            ? 'Süper Yönetici & Kurucu' 
-                            : (u.roleTitle || (u.isGuest ? 'Misafir Dedektif' : 'Adli Soruşturma Dedektifi'));
-
-                          return (
-                            <tr key={u.uid || i} className="hover:bg-zinc-900/60 transition-colors">
-                              <td className="py-3 px-4 font-bold text-zinc-200">
-                                <div className="flex items-center gap-2.5">
-                                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs uppercase border ${
-                                    isAdminUser 
-                                      ? 'bg-amber-950/80 border-amber-500/80 text-amber-300' 
-                                      : 'bg-zinc-800 border-zinc-700 text-zinc-300'
-                                  }`}>
-                                    {displayName.slice(0, 2)}
-                                  </div>
-                                  <div>
-                                    <span className="block">{displayName}</span>
-                                    {isAdminUser && (
-                                      <span className="text-[10px] text-amber-400 font-mono font-bold">
-                                        ★ SİSTEM SAHİBİ
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                              </td>
-
-                              <td className="py-3 px-4">
-                                <span className={`px-2 py-0.5 rounded text-[11px] font-medium border ${
-                                  isAdminUser
-                                    ? 'bg-amber-950/60 border-amber-600/60 text-amber-300'
-                                    : u.isGuest
-                                    ? 'bg-zinc-900 border-zinc-800 text-zinc-400'
-                                    : 'bg-emerald-950/60 border-emerald-600/60 text-emerald-300'
-                                }`}>
-                                  {roleLabel}
-                                </span>
-                              </td>
-
-                              <td className="py-3 px-4 text-zinc-300">
-                                {u.email ? (
-                                  <span className="text-emerald-400 font-mono">{u.email}</span>
-                                ) : u.isGuest ? (
-                                  <span className="text-zinc-500 font-mono">Misafir Oturumu</span>
-                                ) : (
-                                  <span className="text-amber-400 font-mono">Google Hesabı</span>
-                                )}
-                              </td>
-
-                              <td className="py-3 px-4 text-zinc-400 font-mono text-[11px]">
-                                {u.createdAt ? new Date(u.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Kayıtlı'}
-                              </td>
-
-                              <td className="py-3 px-4 text-zinc-500 font-mono text-[10px] truncate max-w-[140px]" title={u.uid}>
-                                {u.uid}
-                              </td>
-                            </tr>
-                          );
-                        })
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 3: RATINGS & FEEDBACK */}
-          {activeTab === 'ratings' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-mono text-zinc-400">
-                  Toplam {data?.ratingsList.length || 0} Değerlendirme Kaydı
-                </span>
-              </div>
-
-              {(!data?.ratingsList || data.ratingsList.length === 0) ? (
-                <div className="p-8 text-center bg-zinc-900/40 border border-zinc-800 rounded-2xl text-zinc-400 text-xs">
-                  <Star className="w-8 h-8 text-zinc-600 mx-auto mb-2" />
-                  <p>Henüz çözümlenen vaka değerlendirmesi bulunmuyor.</p>
-                  <p className="mt-1 text-zinc-500">Oyuncular dava sonundaki 5 yıldız formunu doldurdukça burada listelenecektir.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {data.ratingsList.map((rate) => {
-                    const sc = CASE_SCENARIOS.find((s) => s.id === rate.scenarioId);
-                    return (
-                      <div
-                        key={rate.id}
-                        className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-2xl flex flex-col justify-between gap-3"
-                      >
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-xs text-zinc-200">
-                              {rate.userName || 'Anonim Dedektif'}
-                            </span>
-                            <div className="flex text-amber-400 text-xs">
-                              {Array.from({ length: 5 }).map((_, idx) => (
-                                <Star
-                                  key={idx}
-                                  className={`w-3.5 h-3.5 ${
-                                    idx < rate.rating ? 'fill-current text-amber-400' : 'text-zinc-700'
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <span className="text-[10px] text-zinc-500 font-mono block mt-0.5">
-                            Vaka: {sc?.title || rate.scenarioId}
-                          </span>
-                          {rate.comment && (
-                            <p className="mt-2 text-xs text-zinc-300 italic bg-zinc-950/60 p-2.5 rounded-xl border border-zinc-800/80">
-                              &ldquo;{rate.comment}&rdquo;
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono pt-2 border-t border-zinc-800/60">
-                          <span>{rate.userEmail || 'Google / Üye'}</span>
-                          <span>{new Date(rate.createdAt).toLocaleDateString('tr-TR')}</span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB 4: PLAY STORE & APP STORE BLUEPRINT */}
-          {activeTab === 'stores' && (
-            <div className="space-y-6">
-              
-              {/* Highlight Banner */}
-              <div className="p-5 bg-gradient-to-r from-amber-950/40 via-zinc-900/80 to-zinc-950 border border-amber-600/40 rounded-2xl">
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs font-mono uppercase text-amber-300 font-bold">
-                    MOBİL MAĞAZALARDA YAYINLAMA MİMARİSİ
-                  </span>
-                </div>
-                <h3 className="font-cinzel text-base sm:text-lg font-bold text-zinc-100">
-                  Masadaki Dosya&apos;yı Google Play ve App Store&apos;a Çıkarma Stratejisi
-                </h3>
-                <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
-                  Mevcut React + Vite kodunuzu sıfırdan yeniden yazmadan doğrudan yerel mobil uygulamaya (Native App) dönüştürebilirsiniz. Tavsiye edilen en sağlam ve modern yöntem <strong>Capacitor (Ionic)</strong> hibrit köprüsüdür.
-                </p>
-              </div>
-
-              {/* Step 1: Capacitor Integration Steps */}
-              <div className="p-5 bg-zinc-900/50 border border-zinc-800 rounded-2xl space-y-3">
-                <div className="flex items-center gap-2 text-amber-400 text-xs font-bold font-mono">
-                  <Terminal className="w-4 h-4" />
-                  <span>1. ADIM: CAPACITOR İLE YEREL PROJE OLUŞTURMA</span>
-                </div>
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  Terminalinizde aşağıdaki 4 komutu çalıştırarak Android Studio ve iOS Xcode projelerinizi otomatik olarak üretebilirsiniz:
-                </p>
-                
-                <div className="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 font-mono text-[11px] text-amber-300 space-y-1.5 overflow-x-auto">
-                  <p className="text-zinc-500"># 1. Capacitor paketlerini yükleyin:</p>
-                  <p>npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/ios</p>
-                  <p className="text-zinc-500 mt-2"># 2. Capacitor konfigürasyonunu başlatın:</p>
-                  <p>npx cap init &quot;Masadaki Dosya&quot; &quot;com.masadakidosya.app&quot; --web-dir dist</p>
-                  <p className="text-zinc-500 mt-2"># 3. Web derlemesini alıp mobil platformları ekleyin:</p>
-                  <p>npm run build</p>
-                  <p>npx cap add android</p>
-                  <p>npx cap add ios</p>
-                  <p className="text-zinc-500 mt-2"># 4. Yerel IDE&apos;lerde açın (Android Studio ve Xcode):</p>
-                  <p>npx cap open android</p>
-                  <p>npx cap open ios</p>
-                </div>
-              </div>
-
-              {/* Google Play Store Checklist */}
-              <div className="p-5 bg-zinc-900/50 border border-zinc-800 rounded-2xl space-y-3">
-                <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold font-mono">
-                  <Play className="w-4 h-4 fill-current" />
-                  <span>2. ADIM: GOOGLE PLAY STORE YAYIN KONTROL LİSTESİ</span>
-                </div>
-                <div className="space-y-2 text-xs text-zinc-300">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <div>
-                      <strong>Geliştirici Hesabı:</strong> Google Play Console hesabı açın (tek seferlik $25 kayıt ücreti).
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <div>
-                      <strong>14 Gün Kapalı Test Kuralı (Closed Testing):</strong> 2024 sonrası yeni bireysel hesaplar için Google, yayından önce en az 20 gerçek test kullanıcısının 14 gün boyunca uygulamayı test etmesini şart koşar. Arkadaşlarınızı kapalı teste ekleyerek bu süreci başlatabilirsiniz.
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <div>
-                      <strong>AAB (Android App Bundle) & Keystore:</strong> Android Studio üzerinden <code>Build &gt; Generate Signed Bundle / APK</code> adımıyla imzalı .aab dosyası oluşturun.
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <div>
-                      <strong>Veri Güvenliği (Data Safety):</strong> Firebase Authentication e-posta kullanımı ve Firestore kayıtları formda dürüstçe işaretlenmelidir.
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Apple App Store Checklist */}
-              <div className="p-5 bg-zinc-900/50 border border-zinc-800 rounded-2xl space-y-3">
-                <div className="flex items-center gap-2 text-blue-400 text-xs font-bold font-mono">
-                  <Apple className="w-4 h-4 fill-current" />
-                  <span>3. ADIM: APPLE APP STORE YAYIN KONTROL LİSTESİ</span>
-                </div>
-                <div className="space-y-2 text-xs text-zinc-300">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                    <div>
-                      <strong>Apple Developer Program:</strong> Apple Geliştirici hesabı açın ($99/yıllık). Mac bilgisayar ve Xcode gereklidir.
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                    <div>
-                      <strong>Guideline 4.2 (Minimum Functionality):</strong> Apple basit web sarıcılarını reddeder; ancak Masadaki Dosya asimetrik oturumlar, ses efektleri, şifre terminalleri ve ortak pano özellikleriyle zengin bir mobil oyun deneyimi sunduğu için kolaylıkla onay alır.
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                    <div>
-                      <strong>Guideline 5.1.1(v) (Hesap Silme Zorunluluğu):</strong> Üyelik sistemi olan her iOS uygulamasında kullanıcının kendi hesabını silebilmesi gerekir.
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                    <div>
-                      <strong>TestFlight:</strong> Yayından önce TestFlight ile davet linki oluşturarak iOS kullanıcılarına önceden test ettirebilirsiniz.
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* In-App Purchase & Monetization Strategy */}
-              <div className="p-5 bg-amber-950/20 border border-amber-800/40 rounded-2xl space-y-2 text-xs text-amber-200">
-                <h4 className="font-bold flex items-center gap-2 text-amber-300">
-                  💰 Gelir Modeli ve Ek Vaka Satışı (Monetization):
-                </h4>
-                <p className="leading-relaxed">
-                  İlk 2 vaka (Son Kadeh ve Kayıp Miras) ücretsiz sunulup, ileride eklenecek yeni karmaşık dosyalar (örn. 3. Dosya, 4. Dosya) <strong>RevenueCat SDK</strong> veya Google/Apple In-App Purchase ile vaka başına tek seferlik açılabilir paket olarak satılabilir.
-                </p>
-              </div>
-
-            </div>
-          )}
-
-          {/* TAB 5: CUSTOM CASES MANAGEMENT (VAKA YÜKLEME VE YÖNETİMİ) */}
+        {/* Content Body */}
+        <div className="flex-1 overflow-y-auto mt-5 pr-1 space-y-5">
+          {/* TAB 1: VAKALAR (DEFAULT) */}
           {activeTab === 'cases' && (
-            <div className="space-y-6">
-              
-              {/* Top Banner & Quick Actions */}
-              <div className="p-4 sm:p-5 bg-zinc-900/80 border border-zinc-800 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-sm sm:text-base text-zinc-100 flex items-center gap-2">
-                      <FolderPlus className="w-5 h-5 text-amber-400" />
-                      <span>Vaka Dosyası Yükleme & Kütüphane Yönetimi</span>
-                    </h3>
-                  </div>
-                  <p className="text-xs text-zinc-400 mt-1 max-w-xl">
-                    Yeni senaryoları JSON formatında doğrudan veritabanına yükleyin. Yüklenen dosyalar anında tüm dedektiflerin lobisinde listelenir ve oynanabilir.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2 shrink-0">
-                  <button
-                    type="button"
-                    onClick={handleDownloadTemplate}
-                    className="py-2 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white rounded-xl text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer border border-zinc-700 shadow-sm"
-                    title="Yeni senaryo hazırlamak için örnek şablonu indirin"
-                  >
-                    <Download className="w-4 h-4 text-amber-400" />
-                    <span>Örnek Şablon İndir (.json)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleLoadDemoCase}
-                    disabled={isSavingCase}
-                    className="py-2 px-3 bg-amber-600 hover:bg-amber-500 text-zinc-950 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md disabled:opacity-50"
-                    title="Sisteme hemen 3. bir vaka eklemek için tıklayın"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    <span>{isSavingCase ? 'Yükleniyor...' : 'Hızlı Demo Vaka Yükle (Boğaz Ekspresi)'}</span>
-                  </button>
-                </div>
-              </div>
-
+            <>
               {/* Feedback Alert */}
               {uploadFeedback && (
                 <div
-                  className={`p-3.5 rounded-2xl border text-xs flex items-center justify-between gap-3 animate-fade-in ${
+                  className={`p-3 rounded-sm border bg-[#fffdf8] text-xs font-typewriter flex items-center justify-between gap-3 ${
                     uploadFeedback.type === 'success'
-                      ? 'bg-emerald-950/60 border-emerald-800/80 text-emerald-200'
-                      : 'bg-rose-950/60 border-rose-800/80 text-rose-200'
+                      ? 'border-[#276749] text-[#276749]'
+                      : 'border-[#8b1e1e] text-[#8b1e1e]'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2">
                     {uploadFeedback.type === 'success' ? (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 shrink-0" />
                     ) : (
-                      <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
+                      <AlertTriangle className="w-4 h-4 shrink-0" />
                     )}
                     <span>{uploadFeedback.message}</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setUploadFeedback(null)}
-                    className="text-zinc-400 hover:text-zinc-200 p-1 cursor-pointer"
+                    className="p-1 opacity-70 hover:opacity-100 cursor-pointer"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
               )}
 
-              {/* Upload Card */}
-              <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 sm:p-5 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-zinc-800 gap-2">
-                  <div>
-                    <h4 className="font-bold text-sm text-zinc-200 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-amber-400" />
-                      <span>Vaka Tasarım Stüdyosu & Yeni Vaka Oluştur</span>
-                    </h4>
-                    <p className="text-xs text-zinc-400 mt-0.5">
-                      Zarf zarf delil ekleyin, ses ve video yükleyin veya hazır JSON şablonlarını kullanın.
-                    </p>
+              {/* SUB-VIEW: LIST */}
+              {caseView === 'list' && (
+                <div className="space-y-6">
+                  {/* Minimal Toolbar */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-[#d6cdbc]">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundManager.playKeyClick();
+                          setEditingCase(null);
+                          setIsEditingExisting(false);
+                          setUploadFeedback(null);
+                          setCaseView('wizard');
+                        }}
+                        className="px-3.5 py-2 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] font-typewriter font-bold text-xs rounded-sm inline-flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Yeni Vaka</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundManager.playKeyClick();
+                          setUploadFeedback(null);
+                          setCaseView('import');
+                        }}
+                        className="px-3.5 py-2 bg-[#fffdf8] hover:bg-[#ebe5d8] text-[#1f1c18] border border-[#1f1c18] font-typewriter text-xs rounded-sm inline-flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>JSON İçe Aktar</span>
+                      </button>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleDownloadTemplate}
+                        className="px-3 py-1.5 bg-[#faf6ed] hover:bg-[#ebe5d8] text-[#575046] hover:text-[#1f1c18] border border-[#c8bfae] font-typewriter text-xs rounded-sm inline-flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>Şablon</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleLoadDemoCase}
+                        disabled={isSavingCase}
+                        className="px-3 py-1.5 bg-[#faf6ed] hover:bg-[#ebe5d8] text-[#575046] hover:text-[#1f1c18] border border-[#c8bfae] font-typewriter text-xs rounded-sm inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                      >
+                        <span>{isSavingCase ? 'Yükleniyor...' : 'Demo Vaka Ekle'}</span>
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Mode Selector */}
-                  <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-zinc-800 self-start sm:self-auto overflow-x-auto">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setUploadMode('wizard');
-                        soundManager.playKeyClick();
-                      }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
-                        uploadMode === 'wizard'
-                          ? 'bg-amber-600 text-zinc-950 shadow-sm font-bold'
-                          : 'text-zinc-400 hover:text-zinc-200'
-                      }`}
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>🎨 Tasarım Stüdyosu (Zarf Zarf)</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setUploadMode('file');
-                        soundManager.playKeyClick();
-                      }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
-                        uploadMode === 'file'
-                          ? 'bg-amber-600 text-zinc-950 shadow-sm'
-                          : 'text-zinc-400 hover:text-zinc-200'
-                      }`}
-                    >
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>Dosya Yükle</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setUploadMode('json');
-                        soundManager.playKeyClick();
-                      }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
-                        uploadMode === 'json'
-                          ? 'bg-amber-600 text-zinc-950 shadow-sm'
-                          : 'text-zinc-400 hover:text-zinc-200'
-                      }`}
-                    >
-                      <FileCode2 className="w-3.5 h-3.5" />
-                      <span>JSON Metni</span>
-                    </button>
+                  {/* Custom Cases (Firestore) */}
+                  <div className="space-y-2.5">
+                    <div className="flex items-baseline justify-between">
+                      <h3 className="text-[11px] font-typewriter uppercase tracking-[0.16em] text-[#1f1c18] font-bold">
+                        ÖZEL VAKALAR (FİRESTORE)
+                      </h3>
+                      <span className="text-[11px] font-typewriter text-[#7c7265]">
+                        {customCasesList.length} kayıt
+                      </span>
+                    </div>
+
+                    {customCasesList.length === 0 ? (
+                      <div className="p-6 bg-[#fffdf8] border border-dashed border-[#c8bfae] rounded-sm text-center text-xs font-typewriter text-[#7c7265]">
+                        Henüz Firestore üzerinde kayıtlı özel vaka yok.
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {customCasesList.map((sc) => {
+                          const isDraft = sc.status === 'draft';
+                          return (
+                            <div
+                              key={sc.id}
+                              className="p-3.5 bg-[#fffdf8] border border-[#d6cdbc] rounded-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                            >
+                              <div className="min-w-0 space-y-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span
+                                    className={`px-1.5 py-0.5 rounded-sm font-typewriter text-[10px] font-bold border ${
+                                      isDraft
+                                        ? 'border-[#c8bfae] text-[#7c7265] bg-[#faf6ed]'
+                                        : 'border-[#276749] text-[#276749] bg-[#faf6ed]'
+                                    }`}
+                                  >
+                                    {isDraft ? 'TASLAK' : 'YAYINDA'}
+                                  </span>
+                                  <h4 className="font-typewriter font-bold text-sm text-[#1f1c18] truncate">
+                                    {sc.title}
+                                  </h4>
+                                </div>
+                                <p className="text-xs text-[#575046] line-clamp-1">
+                                  {sc.subtitle || sc.synopsis}
+                                </p>
+                                <div className="text-[11px] font-typewriter text-[#7c7265]">
+                                  {sc.id} · {sc.suspects?.length || 0} şüpheli · {sc.evidence?.length || 0} delil · {getScenarioTotalEnvelopes(sc)} zarf
+                                </div>
+                              </div>
+
+                              <div className="flex flex-wrap items-center gap-1.5 shrink-0">
+                                <button
+                                  type="button"
+                                  disabled={isSavingCase}
+                                  onClick={() => handleToggleCaseStatus(sc)}
+                                  className="px-2.5 py-1.5 bg-[#faf6ed] hover:bg-[#ebe5d8] text-[#1f1c18] border border-[#c8bfae] rounded-sm text-xs font-typewriter inline-flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                                >
+                                  {isDraft ? (
+                                    <>
+                                      <Globe className="w-3.5 h-3.5" />
+                                      <span>Yayınla</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <EyeOff className="w-3.5 h-3.5" />
+                                      <span>Taslağa Al</span>
+                                    </>
+                                  )}
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    soundManager.playKeyClick();
+                                    setEditingCase(JSON.parse(JSON.stringify(sc)));
+                                    setIsEditingExisting(true);
+                                    setCaseView('wizard');
+                                  }}
+                                  className="px-2.5 py-1.5 bg-[#fffdf8] hover:bg-[#ebe5d8] text-[#1f1c18] border border-[#1f1c18] rounded-sm text-xs font-typewriter inline-flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Edit3 className="w-3.5 h-3.5" />
+                                  <span>Düzenle</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    soundManager.playKeyClick();
+                                    setPreviewCase(sc);
+                                  }}
+                                  className="px-2.5 py-1.5 bg-[#faf6ed] hover:bg-[#ebe5d8] text-[#575046] border border-[#c8bfae] rounded-sm text-xs font-typewriter inline-flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Eye className="w-3.5 h-3.5" />
+                                  <span>Önizle</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    soundManager.playKeyClick();
+                                    setCaseToDelete(sc.id);
+                                  }}
+                                  className="px-2.5 py-1.5 bg-[#faf6ed] hover:bg-[#8b1e1e] text-[#8b1e1e] hover:text-[#faf6ed] border border-[#8b1e1e] rounded-sm text-xs font-typewriter inline-flex items-center gap-1 cursor-pointer transition-colors"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  <span>Sil</span>
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Built-in Cases */}
+                  <div className="space-y-2.5 pt-2">
+                    <div className="flex items-baseline justify-between">
+                      <h3 className="text-[11px] font-typewriter uppercase tracking-[0.16em] text-[#575046] font-bold">
+                        YERLEŞİK VAKALAR
+                      </h3>
+                      <span className="text-[11px] font-typewriter text-[#7c7265]">
+                        {CASE_SCENARIOS.length} dosya
+                      </span>
+                    </div>
+
+                    <div className="space-y-2">
+                      {CASE_SCENARIOS.map((sc) => (
+                        <div
+                          key={sc.id}
+                          className="p-3.5 bg-[#f4efe4] border border-[#d6cdbc] rounded-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                        >
+                          <div className="min-w-0 space-y-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="px-1.5 py-0.5 rounded-sm border border-[#c8bfae] bg-[#faf6ed] text-[#575046] font-typewriter text-[10px]">
+                                SİSTEM
+                              </span>
+                              <h4 className="font-typewriter font-bold text-sm text-[#1f1c18] truncate">
+                                {sc.title}
+                              </h4>
+                            </div>
+                            <p className="text-xs text-[#575046] line-clamp-1">{sc.subtitle}</p>
+                            <div className="text-[11px] font-typewriter text-[#7c7265]">
+                              {sc.id} · {sc.difficulty} · ~{sc.estimatedMinutes} dk · {getScenarioTotalEnvelopes(sc)} zarf
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                soundManager.playKeyClick();
+                                const cloned: CaseScenario = {
+                                  ...JSON.parse(JSON.stringify(sc)),
+                                  id: `${sc.id}-ozel`,
+                                  status: 'draft',
+                                };
+                                setEditingCase(cloned);
+                                setIsEditingExisting(false);
+                                setCaseView('wizard');
+                              }}
+                              className="px-2.5 py-1.5 bg-[#fffdf8] hover:bg-[#ebe5d8] text-[#1f1c18] border border-[#1f1c18] rounded-sm text-xs font-typewriter inline-flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>Kopyala & Düzenle</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                soundManager.playKeyClick();
+                                setPreviewCase(sc);
+                              }}
+                              className="px-2.5 py-1.5 bg-[#faf6ed] hover:bg-[#ebe5d8] text-[#575046] border border-[#c8bfae] rounded-sm text-xs font-typewriter inline-flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>İncele</span>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
+              )}
 
-                {/* Wizard Mode (Phase by Phase Case Builder) */}
-                {uploadMode === 'wizard' && (
+              {/* SUB-VIEW: WIZARD */}
+              {caseView === 'wizard' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-[#d6cdbc]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundManager.playKeyClick();
+                        setEditingCase(null);
+                        setIsEditingExisting(false);
+                        setCaseView('list');
+                      }}
+                      className="px-3 py-1.5 bg-[#fffdf8] hover:bg-[#ebe5d8] border border-[#c8bfae] text-[#1f1c18] rounded-sm text-xs font-typewriter inline-flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>Vaka Listesi</span>
+                    </button>
+
+                    <span className="text-[11px] font-typewriter uppercase tracking-wider text-[#575046]">
+                      {isEditingExisting ? 'Vaka Düzenle' : editingCase ? 'Şablondan Yeni Vaka' : 'Yeni Vaka Oluştur'}
+                    </span>
+                  </div>
+
                   <CaseWizardEditor
                     key={editingCase ? `${isEditingExisting ? 'edit' : 'clone'}-${editingCase.id}` : 'new-case'}
                     initialScenario={editingCase}
@@ -1096,6 +748,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                     onCancel={() => {
                       setEditingCase(null);
                       setIsEditingExisting(false);
+                      setCaseView('list');
                     }}
                     onSaveCase={async (newScenario) => {
                       setIsSavingCase(true);
@@ -1107,11 +760,12 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                         setUploadFeedback({
                           type: 'success',
                           message: isDraft
-                            ? `"${newScenario.title}" taslak olarak kaydedildi (lobide gizli).`
-                            : `"${newScenario.title}" (${newScenario.totalEnvelopes || 3} Zarf) başarıyla Firestore veritabanına kaydedildi ve canlıda yayınlandı!`,
+                            ? `"${newScenario.title}" taslak olarak kaydedildi.`
+                            : `"${newScenario.title}" (${newScenario.totalEnvelopes || 3} Zarf) canlıda yayınlandı.`,
                         });
                         setEditingCase(null);
                         setIsEditingExisting(false);
+                        setCaseView('list');
                       } catch (err: any) {
                         soundManager.playErrorSound();
                         setUploadFeedback({
@@ -1124,471 +778,496 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                     }}
                     isSaving={isSavingCase}
                   />
-                )}
+                </div>
+              )}
 
-                {/* File Dropzone Mode */}
-                {uploadMode === 'file' && (
-                  <div className="space-y-3">
-                    <label className="border-2 border-dashed border-zinc-700 hover:border-amber-500/80 bg-zinc-950/60 rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all group">
+              {/* SUB-VIEW: JSON IMPORT */}
+              {caseView === 'import' && (
+                <div className="space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#d6cdbc]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundManager.playKeyClick();
+                        setCaseView('list');
+                      }}
+                      className="px-3 py-1.5 bg-[#fffdf8] hover:bg-[#ebe5d8] border border-[#c8bfae] text-[#1f1c18] rounded-sm text-xs font-typewriter inline-flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>Vaka Listesi</span>
+                    </button>
+
+                    <div className="inline-flex border border-[#c8bfae] rounded-sm overflow-hidden divide-x divide-[#c8bfae]">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImportMode('file');
+                          soundManager.playKeyClick();
+                        }}
+                        className={`px-3 py-1.5 text-xs font-typewriter inline-flex items-center gap-1.5 cursor-pointer ${
+                          importMode === 'file' ? 'bg-[#1f1c18] text-[#faf6ed] font-bold' : 'bg-[#fffdf8] text-[#1f1c18]'
+                        }`}
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Dosya (.json)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImportMode('json');
+                          soundManager.playKeyClick();
+                        }}
+                        className={`px-3 py-1.5 text-xs font-typewriter inline-flex items-center gap-1.5 cursor-pointer ${
+                          importMode === 'json' ? 'bg-[#1f1c18] text-[#faf6ed] font-bold' : 'bg-[#fffdf8] text-[#1f1c18]'
+                        }`}
+                      >
+                        <FileCode2 className="w-3.5 h-3.5" />
+                        <span>Metin</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {importMode === 'file' && (
+                    <label className="border border-dashed border-[#b5aa96] hover:border-[#1f1c18] bg-[#fffdf8] rounded-sm p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-colors">
                       <input
                         type="file"
                         accept=".json,application/json"
                         onChange={handleFileChange}
                         className="hidden"
                       />
-                      <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform mb-3">
-                        <FileJson className="w-6 h-6" />
-                      </div>
-                      <span className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-amber-300 transition-colors">
-                        Vaka JSON Dosyasını Seçmek İçin Tıklayın
+                      <FileJson className="w-7 h-7 text-[#575046] mb-2" />
+                      <span className="text-xs font-typewriter font-bold text-[#1f1c18]">
+                        Vaka JSON Dosyası Seçin
                       </span>
-                      <span className="text-[11px] text-zinc-400 mt-1 max-w-sm">
-                        Bilgisayarınızdan hazırladığınız <code className="text-amber-400/90 font-mono">.json</code> dosyasını seçin. Dosya anında taranıp doğrulanacaktır.
+                      <span className="text-[11px] text-[#575046] mt-1 max-w-sm">
+                        Seçilen .json dosyası otomatik taranır ve doğrulanır.
                       </span>
                     </label>
-                  </div>
-                )}
+                  )}
 
-                {/* Raw JSON Input Mode */}
-                {uploadMode === 'json' && (
-                  <div className="space-y-3">
-                    <textarea
-                      value={rawJsonText}
-                      onChange={(e) => setRawJsonText(e.target.value)}
-                      placeholder='{\n  "id": "bogaz-yalisinda-cinayet",\n  "title": "Boğaz Yalısında Cinayet",\n  "subtitle": "Kandilli...",\n  "victim": { "name": "..." },\n  "suspects": [...],\n  "evidence": [...],\n  "gates": {...},\n  "solution": {...}\n}'
-                      rows={8}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 font-mono text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50 resize-y"
-                    />
-                    <div className="flex items-center justify-between">
-                      <button
-                        type="button"
-                        onClick={() => processAndValidateJson(rawJsonText)}
-                        disabled={!rawJsonText.trim()}
-                        className="py-2 px-3.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer border border-zinc-700 disabled:opacity-40"
-                      >
-                        <Check className="w-4 h-4 text-emerald-400" />
-                        <span>JSON'u Doğrula ve Tara</span>
-                      </button>
-
-                      {rawJsonText && (
+                  {importMode === 'json' && (
+                    <div className="space-y-3">
+                      <textarea
+                        value={rawJsonText}
+                        onChange={(e) => setRawJsonText(e.target.value)}
+                        placeholder='{\n  "id": "bogaz-yalisinda-cinayet",\n  "title": "Boğaz Yalısında Cinayet",\n  ...\n}'
+                        rows={8}
+                        className="w-full bg-[#fffdf8] border border-[#c8bfae] rounded-sm p-3 font-typewriter text-xs text-[#1f1c18] placeholder-[#9c9284] focus:outline-none focus:border-[#1f1c18]"
+                      />
+                      <div className="flex items-center justify-between">
                         <button
                           type="button"
-                          onClick={() => {
-                            setRawJsonText('');
-                            setPendingParsedCase(null);
-                            setCaseValidationErrors([]);
-                          }}
-                          className="text-xs text-zinc-400 hover:text-zinc-200 cursor-pointer"
+                          onClick={() => processAndValidateJson(rawJsonText)}
+                          disabled={!rawJsonText.trim()}
+                          className="px-3.5 py-2 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] rounded-sm text-xs font-typewriter font-bold inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-40"
                         >
-                          Temizle
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Doğrula</span>
                         </button>
-                      )}
-                    </div>
-                  </div>
-                )}
 
-                {/* Validation Errors Box */}
-                {caseValidationErrors.length > 0 && (
-                  <div className="p-4 bg-rose-950/40 border border-rose-800/60 rounded-xl space-y-2 text-xs text-rose-200 animate-fade-in">
-                    <div className="flex items-center gap-2 font-bold text-rose-300">
-                      <AlertTriangle className="w-4 h-4" />
-                      <span>Vaka Şemasında Eksik veya Hatalı Alanlar Tespit Edildi:</span>
+                        {rawJsonText && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setRawJsonText('');
+                              setPendingParsedCase(null);
+                              setCaseValidationErrors([]);
+                            }}
+                            className="text-xs font-typewriter text-[#575046] hover:text-[#1f1c18] underline cursor-pointer"
+                          >
+                            Temizle
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <ul className="list-disc list-inside space-y-1 text-[11px] text-rose-200/90 pl-1">
-                      {caseValidationErrors.map((err, idx) => (
-                        <li key={idx}>{err}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                  )}
 
-                {/* Validated Case Preview Banner & Action */}
-                {pendingParsedCase && (
-                  <div className="p-4 bg-emerald-950/30 border border-emerald-700/50 rounded-2xl space-y-3 animate-fade-in">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                          <span className="font-bold text-xs text-emerald-300 uppercase tracking-wider font-mono">
-                            Vaka Dosyası Doğrulandı & Hazır
+                  {caseValidationErrors.length > 0 && (
+                    <div className="p-3.5 bg-[#fffdf8] border border-[#8b1e1e] rounded-sm space-y-1.5 text-xs text-[#8b1e1e]">
+                      <div className="flex items-center gap-2 font-typewriter font-bold">
+                        <AlertTriangle className="w-4 h-4 shrink-0" />
+                        <span>Şema Doğrulama Hatası</span>
+                      </div>
+                      <ul className="list-disc list-inside space-y-0.5 text-[11px] pl-1">
+                        {caseValidationErrors.map((err, idx) => (
+                          <li key={idx}>{err}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {pendingParsedCase && (
+                    <div className="p-4 bg-[#fffdf8] border border-[#1f1c18] rounded-sm space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <span className="text-[10px] font-typewriter uppercase tracking-wider text-[#276749] font-bold">
+                            DOĞRULANDI
+                          </span>
+                          <h5 className="font-typewriter font-bold text-base text-[#1f1c18] mt-0.5">
+                            {pendingParsedCase.title}
+                          </h5>
+                          <p className="text-xs text-[#575046]">{pendingParsedCase.subtitle}</p>
+                        </div>
+
+                        <div className="text-right shrink-0 font-typewriter text-[11px] text-[#575046]">
+                          <div>ID: {pendingParsedCase.id}</div>
+                          <div>{pendingParsedCase.difficulty} · ~{pendingParsedCase.estimatedMinutes} dk</div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-typewriter">
+                        <div className="p-2.5 rounded-sm bg-[#faf6ed] border border-[#d6cdbc]">
+                          <span className="text-[10px] text-[#7c7265] block">Maktul</span>
+                          <span className="font-bold text-[#1f1c18] truncate block mt-0.5">
+                            {pendingParsedCase.victim?.name}
                           </span>
                         </div>
-                        <h5 className="font-bold text-base text-zinc-100 mt-1">
-                          {pendingParsedCase.title}
-                        </h5>
-                        <p className="text-xs text-zinc-400 mt-0.5">
-                          {pendingParsedCase.subtitle}
-                        </p>
+                        <div className="p-2.5 rounded-sm bg-[#faf6ed] border border-[#d6cdbc]">
+                          <span className="text-[10px] text-[#7c7265] block">Şüpheli</span>
+                          <span className="font-bold text-[#1f1c18] block mt-0.5">
+                            {pendingParsedCase.suspects?.length || 0} kişi
+                          </span>
+                        </div>
+                        <div className="p-2.5 rounded-sm bg-[#faf6ed] border border-[#d6cdbc]">
+                          <span className="text-[10px] text-[#7c7265] block">Delil</span>
+                          <span className="font-bold text-[#1f1c18] block mt-0.5">
+                            {pendingParsedCase.evidence?.length || 0} parça
+                          </span>
+                        </div>
+                        <div className="p-2.5 rounded-sm bg-[#faf6ed] border border-[#d6cdbc]">
+                          <span className="text-[10px] text-[#7c7265] block">Zarf</span>
+                          <span className="font-bold text-[#1f1c18] block mt-0.5">
+                            {getScenarioTotalEnvelopes(pendingParsedCase)} zarf
+                          </span>
+                        </div>
                       </div>
 
-                      <div className="text-right shrink-0">
-                        <span className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-amber-300 font-bold block">
-                          ID: {pendingParsedCase.id}
-                        </span>
-                        <span className="text-[10px] text-zinc-400 mt-1 block">
-                          Zorluk: {pendingParsedCase.difficulty} · ~{pendingParsedCase.estimatedMinutes} dk
-                        </span>
+                      <div className="pt-2 flex flex-wrap items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setPendingParsedCase(null)}
+                          className="text-xs font-typewriter text-[#575046] hover:text-[#1f1c18] underline cursor-pointer mr-auto"
+                        >
+                          Vazgeç
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handlePublishCase('draft')}
+                          disabled={isSavingCase}
+                          className="py-2 px-3.5 bg-[#faf6ed] hover:bg-[#ebe5d8] text-[#1f1c18] border border-[#1f1c18] font-typewriter font-bold rounded-sm text-xs inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                        >
+                          <EyeOff className="w-3.5 h-3.5" />
+                          <span>{isSavingCase ? 'Kaydediliyor...' : 'Taslak Kaydet'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handlePublishCase('published')}
+                          disabled={isSavingCase}
+                          className="py-2 px-4 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>{isSavingCase ? 'Yükleniyor...' : 'Yayınla'}</span>
+                        </button>
                       </div>
                     </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                      <div className="p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800">
-                        <span className="text-[10px] text-zinc-400 block">Maktul</span>
-                        <span className="font-semibold text-zinc-200 truncate block mt-0.5">
-                          {pendingParsedCase.victim?.name}
-                        </span>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800">
-                        <span className="text-[10px] text-zinc-400 block">Şüpheli Sayısı</span>
-                        <span className="font-semibold text-zinc-200 block mt-0.5">
-                          {pendingParsedCase.suspects?.length || 0} Kişi
-                        </span>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800">
-                        <span className="text-[10px] text-zinc-400 block">Delil / Kanıt</span>
-                        <span className="font-semibold text-zinc-200 block mt-0.5">
-                          {pendingParsedCase.evidence?.length || 0} Parça
-                        </span>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800">
-                        <span className="text-[10px] text-zinc-400 block">Zarf Kapıları</span>
-                        <span className="font-semibold text-zinc-200 block mt-0.5">
-                          {getScenarioTotalEnvelopes(pendingParsedCase)} Zarf / Aşama
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="pt-2 flex flex-wrap items-center justify-end gap-2.5">
-                      <button
-                        type="button"
-                        onClick={() => setPendingParsedCase(null)}
-                        className="text-xs text-zinc-400 hover:text-zinc-200 cursor-pointer mr-auto"
-                      >
-                        İptal Et
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handlePublishCase('draft')}
-                        disabled={isSavingCase}
-                        className="py-2.5 px-4 bg-zinc-800 hover:bg-zinc-700 text-amber-300 border border-amber-500/40 font-bold rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50"
-                      >
-                        <EyeOff className="w-4 h-4" />
-                        <span>{isSavingCase ? 'Kaydediliyor...' : 'Taslak Olarak Kaydet'}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handlePublishCase('published')}
-                        disabled={isSavingCase}
-                        className="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-bold rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer shadow-lg disabled:opacity-50"
-                      >
-                        <FolderPlus className="w-4 h-4" />
-                        <span>{isSavingCase ? 'Yükleniyor...' : 'Yayınla'}</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Active Cases Library */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-bold text-sm text-zinc-200 flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-amber-400" />
-                    <span>Mevcut Vaka Kütüphanesi ({CASE_SCENARIOS.length + customCasesList.length} Dosya)</span>
-                  </h4>
-                  <span className="text-xs text-zinc-400">
-                    Özel Yüklemeler: <strong className="text-amber-400">{customCasesList.length}</strong>
+          {/* TAB 2: ÖZET & DEĞERLENDİRMELER */}
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
+              {/* Compact 4-Metric Strip */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 border border-[#d6cdbc] rounded-sm divide-y sm:divide-y-0 sm:divide-x divide-[#d6cdbc] bg-[#fffdf8]">
+                <div className="p-4">
+                  <span className="text-[10px] font-typewriter uppercase tracking-wider text-[#7c7265] block">
+                    Üye
+                  </span>
+                  <span className="text-2xl font-bold font-typewriter text-[#1f1c18] mt-1 block">
+                    {data?.usersCount || 0}
                   </span>
                 </div>
+                <div className="p-4">
+                  <span className="text-[10px] font-typewriter uppercase tracking-wider text-[#7c7265] block">
+                    Değerlendirme
+                  </span>
+                  <span className="text-2xl font-bold font-typewriter text-[#1f1c18] mt-1 block">
+                    {data?.ratingsCount || 0}
+                  </span>
+                </div>
+                <div className="p-4">
+                  <span className="text-[10px] font-typewriter uppercase tracking-wider text-[#7c7265] block">
+                    Ortalama
+                  </span>
+                  <span className="text-2xl font-bold font-typewriter text-[#1f1c18] mt-1 block">
+                    ★ {data?.averageRating || 4.9}
+                  </span>
+                </div>
+                <div className="p-4">
+                  <span className="text-[10px] font-typewriter uppercase tracking-wider text-[#7c7265] block">
+                    Oda
+                  </span>
+                  <span className="text-2xl font-bold font-typewriter text-[#1f1c18] mt-1 block">
+                    {data?.roomsCount || 0}
+                  </span>
+                </div>
+              </div>
 
-                {/* Custom Cases List */}
-                {customCasesList.length > 0 && (
-                  <div className="space-y-2.5">
-                    <div className="text-[11px] font-mono uppercase tracking-wider text-amber-400 font-bold px-1">
-                      ADMİN TARAFINDAN YÜKLENEN ÖZEL VAKALAR (FIRESTORE)
-                    </div>
-                    {customCasesList.map((sc) => {
-                      const isDraft = sc.status === 'draft';
+              {/* Scenario Score List */}
+              <div className="space-y-2.5">
+                <h3 className="text-[11px] font-typewriter uppercase tracking-[0.16em] text-[#1f1c18] font-bold">
+                  VAKA PUANLARI
+                </h3>
+                <div className="divide-y divide-[#d6cdbc] border border-[#d6cdbc] rounded-sm bg-[#fffdf8]">
+                  {CASE_SCENARIOS.map((sc) => {
+                    const stats = data?.ratingsByScenario[sc.id] || { average: 5.0, count: 0 };
+                    return (
+                      <div key={sc.id} className="px-4 py-3 flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <h4 className="font-typewriter font-bold text-xs text-[#1f1c18] truncate">
+                            {sc.title}
+                          </h4>
+                          <p className="text-[11px] text-[#575046] truncate">{sc.subtitle}</p>
+                        </div>
+                        <div className="text-right shrink-0 font-typewriter">
+                          <span className="text-xs font-bold text-[#1f1c18] block">
+                            ★ {stats.average} / 5
+                          </span>
+                          <span className="text-[10px] text-[#7c7265]">{stats.count} oy</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Recent Reviews */}
+              <div className="space-y-2.5">
+                <h3 className="text-[11px] font-typewriter uppercase tracking-[0.16em] text-[#1f1c18] font-bold">
+                  SON YORUMLAR ({data?.ratingsList.length || 0})
+                </h3>
+                {!data?.ratingsList || data.ratingsList.length === 0 ? (
+                  <div className="p-6 text-center bg-[#fffdf8] border border-[#d6cdbc] rounded-sm text-xs font-typewriter text-[#7c7265]">
+                    Henüz değerlendirme kaydı bulunmuyor.
+                  </div>
+                ) : (
+                  <div className="divide-y divide-[#d6cdbc] border border-[#d6cdbc] rounded-sm bg-[#fffdf8]">
+                    {data.ratingsList.map((rate) => {
+                      const sc = CASE_SCENARIOS.find((s) => s.id === rate.scenarioId);
                       return (
-                        <div
-                          key={sc.id}
-                          className={`p-4 bg-zinc-900/90 border rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md transition-colors ${
-                            isDraft
-                              ? 'border-zinc-700 hover:border-amber-500/60'
-                              : 'border-amber-500/40 hover:border-amber-500'
-                          }`}
-                        >
-                          <div className="space-y-1">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span
-                                className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold ${
-                                  isDraft
-                                    ? 'bg-zinc-800 border border-zinc-600 text-zinc-300'
-                                    : 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300'
-                                }`}
-                              >
-                                {isDraft ? 'TASLAK' : 'YAYINDA'}
-                              </span>
-                              <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold">
-                                ÖZEL VAKA
-                              </span>
-                              <span className="text-[10px] font-mono text-zinc-400">
-                                id: {sc.id}
-                              </span>
-                              <span className="text-[10px] text-zinc-400">
-                                · {sc.difficulty} · ~{sc.estimatedMinutes} dk · {sc.minPlayers}-{sc.maxPlayers} Oyuncu
-                              </span>
-                            </div>
-                            <h5 className="font-bold text-sm text-zinc-100">
-                              {sc.title}
-                            </h5>
-                            <p className="text-xs text-zinc-400 line-clamp-1">
-                              {sc.subtitle || sc.synopsis}
-                            </p>
-                            <div className="text-[11px] text-zinc-400 pt-1 flex items-center gap-2">
-                              <span>Maktul: <strong className="text-zinc-300">{sc.victim?.name}</strong></span>
-                              <span>·</span>
-                              <span>{sc.suspects?.length || 0} Şüpheli</span>
-                              <span>·</span>
-                              <span>{sc.evidence?.length || 0} Kanıt</span>
-                              <span>·</span>
-                              <span>{getScenarioTotalEnvelopes(sc)} Zarf</span>
+                        <div key={rate.id} className="p-3.5 space-y-1.5">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-typewriter font-bold text-xs text-[#1f1c18]">
+                              {rate.userName || 'Anonim Dedektif'}
+                            </span>
+                            <div className="flex items-center gap-0.5 text-[#1f1c18]">
+                              {Array.from({ length: 5 }).map((_, idx) => (
+                                <Star
+                                  key={idx}
+                                  className={`w-3 h-3 ${
+                                    idx < rate.rating ? 'fill-current text-[#1f1c18]' : 'text-[#d6cdbc]'
+                                  }`}
+                                />
+                              ))}
                             </div>
                           </div>
-
-                          <div className="flex flex-wrap items-center gap-2 shrink-0 self-end sm:self-center">
-                            <button
-                              type="button"
-                              disabled={isSavingCase}
-                              onClick={() => handleToggleCaseStatus(sc)}
-                              className={`py-1.5 px-3 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer border transition-colors disabled:opacity-50 ${
-                                isDraft
-                                  ? 'bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border-emerald-700/60'
-                                  : 'bg-zinc-800 hover:bg-zinc-700 text-amber-300 border-zinc-700'
-                              }`}
-                            >
-                              {isDraft ? (
-                                <>
-                                  <Globe className="w-3.5 h-3.5" />
-                                  <span>Yayınla</span>
-                                </>
-                              ) : (
-                                <>
-                                  <EyeOff className="w-3.5 h-3.5" />
-                                  <span>Taslağa Al</span>
-                                </>
-                              )}
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                soundManager.playKeyClick();
-                                setEditingCase(JSON.parse(JSON.stringify(sc)));
-                                setIsEditingExisting(true);
-                                setUploadMode('wizard');
-                              }}
-                              className="py-1.5 px-3 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer border border-amber-500/40 transition-colors"
-                            >
-                              <Edit3 className="w-3.5 h-3.5" />
-                              <span>Düzenle</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                soundManager.playKeyClick();
-                                setPreviewCase(sc);
-                              }}
-                              className="py-1.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer border border-zinc-700 transition-colors"
-                            >
-                              <Eye className="w-3.5 h-3.5 text-amber-400" />
-                              <span>Önizle</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                soundManager.playKeyClick();
-                                setCaseToDelete(sc.id);
-                              }}
-                              className="py-1.5 px-3 bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer border border-rose-800/60 transition-colors"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                              <span>Sil</span>
-                            </button>
+                          <div className="text-[10px] font-typewriter text-[#7c7265]">
+                            {sc?.title || rate.scenarioId} · {new Date(rate.createdAt).toLocaleDateString('tr-TR')}
                           </div>
+                          {rate.comment && (
+                            <p className="text-xs text-[#575046] italic">&ldquo;{rate.comment}&rdquo;</p>
+                          )}
                         </div>
                       );
                     })}
                   </div>
                 )}
-
-                {/* Built-in System Cases */}
-                <div className="space-y-2.5 pt-2">
-                  <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-bold px-1">
-                    SİSTEMİN YERLEŞİK VAKALARI (KOD TABANLI)
-                  </div>
-                  {CASE_SCENARIOS.map((sc) => (
-                    <div
-                      key={sc.id}
-                      className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-zinc-300 opacity-90"
-                    >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono text-[10px] font-bold">
-                            SİSTEM VAKASI
-                          </span>
-                          <span className="text-[10px] font-mono text-zinc-400">
-                            id: {sc.id}
-                          </span>
-                          <span className="text-[10px] text-zinc-400">
-                            · {sc.difficulty} · ~{sc.estimatedMinutes} dk · {getScenarioTotalEnvelopes(sc)} Zarf
-                          </span>
-                        </div>
-                        <h5 className="font-bold text-sm text-zinc-200">
-                          {sc.title}
-                        </h5>
-                        <p className="text-xs text-zinc-400 line-clamp-1">
-                          {sc.subtitle}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            soundManager.playKeyClick();
-                            const cloned: CaseScenario = {
-                              ...JSON.parse(JSON.stringify(sc)),
-                              id: `${sc.id}-ozel`,
-                              status: 'draft',
-                            };
-                            setEditingCase(cloned);
-                            setIsEditingExisting(false);
-                            setUploadMode('wizard');
-                          }}
-                          className="py-1.5 px-3 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer border border-amber-500/40 transition-colors"
-                        >
-                          <Copy className="w-3.5 h-3.5" />
-                          <span>Kopyala & Düzenle</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            soundManager.playKeyClick();
-                            setPreviewCase(sc);
-                          }}
-                          className="py-1.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer border border-zinc-700 transition-colors"
-                        >
-                          <Eye className="w-3.5 h-3.5 text-zinc-400" />
-                          <span>İncele</span>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
               </div>
-
             </div>
           )}
 
-        </div>
+          {/* TAB 3: ÜYELER */}
+          {activeTab === 'users' && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div className="relative flex-1 max-w-sm">
+                  <Search className="w-3.5 h-3.5 text-[#7c7265] absolute left-3 top-2.5 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={searchUser}
+                    onChange={(e) => setSearchUser(e.target.value)}
+                    placeholder="İsim, e-posta veya UID ara..."
+                    className="w-full pl-9 pr-3 py-2 bg-[#fffdf8] border border-[#c8bfae] rounded-sm text-xs font-typewriter text-[#1f1c18] placeholder-[#9c9284] focus:outline-none focus:border-[#1f1c18]"
+                  />
+                </div>
+                <span className="text-xs font-typewriter text-[#575046]">
+                  {filteredUsers.length} üye
+                </span>
+              </div>
 
+              <div className="border border-[#d6cdbc] rounded-sm overflow-hidden bg-[#fffdf8]">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-[#f4efe4] border-b border-[#d6cdbc] text-[#575046] font-typewriter text-[10px] uppercase">
+                      <tr>
+                        <th className="py-2.5 px-3">Dedektif</th>
+                        <th className="py-2.5 px-3">Tür</th>
+                        <th className="py-2.5 px-3">E-Posta</th>
+                        <th className="py-2.5 px-3">Kayıt</th>
+                        <th className="py-2.5 px-3">UID</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#d6cdbc]">
+                      {filteredUsers.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="py-8 text-center text-[#7c7265] font-typewriter">
+                            Kayıtlı üye bulunamadı.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredUsers.map((u, i) => {
+                          const isAdminUser =
+                            (u.email || '').toLowerCase() === ADMIN_EMAIL.toLowerCase() || u.uid === 'admin_altay_01';
+                          const displayName = u.displayName || (isAdminUser ? 'Altay Yiğit Ozan' : 'Dedektif');
+                          const roleLabel = isAdminUser
+                            ? 'Yönetici'
+                            : u.roleTitle || (u.isGuest ? 'Misafir' : 'Üye');
+
+                          return (
+                            <tr key={u.uid || i} className="hover:bg-[#faf6ed]">
+                              <td className="py-2.5 px-3 font-typewriter font-bold text-[#1f1c18]">
+                                {displayName}
+                              </td>
+                              <td className="py-2.5 px-3">
+                                <span
+                                  className={`px-1.5 py-0.5 rounded-sm text-[10px] font-typewriter border ${
+                                    isAdminUser
+                                      ? 'border-[#8b1e1e] text-[#8b1e1e]'
+                                      : u.isGuest
+                                      ? 'border-[#d6cdbc] text-[#7c7265]'
+                                      : 'border-[#276749] text-[#276749]'
+                                  }`}
+                                >
+                                  {roleLabel}
+                                </span>
+                              </td>
+                              <td className="py-2.5 px-3 font-typewriter text-[#575046]">
+                                {u.email || (u.isGuest ? 'Misafir oturumu' : '-')}
+                              </td>
+                              <td className="py-2.5 px-3 font-typewriter text-[#7c7265] text-[11px]">
+                                {u.createdAt
+                                  ? new Date(u.createdAt).toLocaleDateString('tr-TR', {
+                                      day: 'numeric',
+                                      month: 'short',
+                                      year: 'numeric',
+                                    })
+                                  : '-'}
+                              </td>
+                              <td
+                                className="py-2.5 px-3 font-typewriter text-[#7c7265] text-[10px] truncate max-w-[140px]"
+                                title={u.uid}
+                              >
+                                {u.uid}
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Case Preview Modal */}
       {previewCase && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-5 bg-black/90 backdrop-blur-md animate-fade-in">
-          <div className="bg-zinc-950 border border-amber-600/60 rounded-3xl w-full max-w-3xl max-h-[88vh] flex flex-col p-5 sm:p-7 shadow-2xl relative text-zinc-100">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-800 shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold">
-                  VAKA DETAY ÖNİZLEMESİ
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-5 bg-[#1f1c18]/65 backdrop-blur-[2px]">
+          <div className="bg-[#faf6ed] border border-[#1f1c18] rounded-sm w-full max-w-3xl max-h-[88vh] flex flex-col p-5 sm:p-6 shadow-[0_14px_42px_rgba(31,28,24,0.25)] text-[#1f1c18]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#d6cdbc] shrink-0">
+              <div className="flex items-center gap-2 font-typewriter text-xs">
+                <span className="px-1.5 py-0.5 rounded-sm border border-[#1f1c18] font-bold">
+                  ÖNİZLEME
                 </span>
-                <span className="text-xs font-mono text-zinc-400">id: {previewCase.id}</span>
+                <span className="text-[#7c7265]">id: {previewCase.id}</span>
               </div>
               <button
                 type="button"
                 onClick={() => setPreviewCase(null)}
-                className="p-1.5 text-zinc-400 hover:text-zinc-200 rounded-xl transition-colors cursor-pointer"
+                className="p-1 text-[#575046] hover:text-[#1f1c18] rounded-sm cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="overflow-y-auto mt-4 pr-1 space-y-4 text-xs">
               <div>
-                <h3 className="font-cinzel font-bold text-lg text-amber-400">
+                <h3 className="font-typewriter font-bold text-base text-[#1f1c18]">
                   {previewCase.title}
                 </h3>
-                <p className="text-zinc-400 mt-0.5 font-medium">
-                  {previewCase.subtitle}
-                </p>
-                <p className="text-zinc-300 mt-2 leading-relaxed bg-zinc-900/60 p-3 rounded-xl border border-zinc-800">
+                <p className="text-[#575046] mt-0.5">{previewCase.subtitle}</p>
+                <p className="text-[#1f1c18] mt-2 leading-relaxed bg-[#fffdf8] p-3 rounded-sm border border-[#d6cdbc]">
                   {previewCase.synopsis}
                 </p>
               </div>
 
-              {/* Victim Card */}
-              <div className="p-3 bg-zinc-900/70 border border-zinc-800 rounded-xl space-y-1">
-                <h5 className="font-bold text-zinc-200 text-xs">Maktul Bilgisi</h5>
-                <p className="text-zinc-300">
-                  <strong>İsim:</strong> {previewCase.victim?.name} ({previewCase.victim?.age} yaş) - {previewCase.victim?.title}
+              <div className="p-3 bg-[#fffdf8] border border-[#d6cdbc] rounded-sm space-y-1">
+                <h5 className="font-typewriter font-bold text-[#1f1c18] uppercase text-[11px]">
+                  Maktul
+                </h5>
+                <p>
+                  <strong>{previewCase.victim?.name}</strong> ({previewCase.victim?.age} yaş) · {previewCase.victim?.title}
                 </p>
-                <p className="text-zinc-400">
-                  <strong>Olay Yeri:</strong> {previewCase.victim?.locationOfBody}
-                </p>
-                <p className="text-zinc-400">
-                  <strong>Ölüm Zamanı & Sebep:</strong> {previewCase.victim?.timeOfDeath} · {previewCase.victim?.causeInitial}
+                <p className="text-[#575046]">
+                  Olay Yeri: {previewCase.victim?.locationOfBody} · {previewCase.victim?.timeOfDeath}
                 </p>
               </div>
 
-              {/* Suspects */}
               <div className="space-y-2">
-                <h5 className="font-bold text-zinc-200 text-xs">Şüpheliler ({previewCase.suspects?.length})</h5>
+                <h5 className="font-typewriter font-bold text-[#1f1c18] uppercase text-[11px]">
+                  Şüpheliler ({previewCase.suspects?.length})
+                </h5>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {previewCase.suspects?.map((s) => (
-                    <div key={s.id} className="p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl space-y-1">
+                    <div key={s.id} className="p-3 bg-[#fffdf8] border border-[#d6cdbc] rounded-sm space-y-1">
                       <div className="flex items-center justify-between">
-                        <strong className="text-zinc-100">{s.name}</strong>
-                        <span className="text-[10px] text-amber-400 font-mono">Şüphe: %{s.initialSuspicion}</span>
+                        <strong>{s.name}</strong>
+                        <span className="text-[10px] font-typewriter text-[#7c7265]">%{s.initialSuspicion}</span>
                       </div>
-                      <p className="text-[11px] text-zinc-400">{s.title} · {s.relation}</p>
-                      <p className="text-[11px] text-zinc-300 italic">Alibi: "{s.alibi}"</p>
+                      <p className="text-[11px] text-[#575046]">{s.title} · {s.relation}</p>
+                      <p className="text-[11px] text-[#575046] italic">&ldquo;{s.alibi}&rdquo;</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Solution Preview (Confidential) */}
-              <div className="p-4 bg-amber-950/30 border border-amber-600/40 rounded-xl space-y-2">
-                <div className="flex items-center gap-2 text-amber-300 font-bold text-xs uppercase font-mono">
+              <div className="p-3.5 bg-[#f4efe4] border border-[#8b1e1e] rounded-sm space-y-1.5">
+                <div className="flex items-center gap-1.5 text-[#8b1e1e] font-typewriter font-bold text-[11px] uppercase">
                   <Lock className="w-3.5 h-3.5" />
-                  <span>Vaka Çözümü & Fail Bilgisi (GİZLİ)</span>
+                  <span>Çözüm (Gizli)</span>
                 </div>
-                <p className="text-zinc-200">
-                  <strong>Gerçek Katil:</strong> <span className="text-amber-300 font-bold">{previewCase.solution?.culpritName}</span>
+                <p>
+                  <strong>Katil:</strong> {previewCase.solution?.culpritName}
                 </p>
-                <p className="text-zinc-300">
+                <p>
                   <strong>Motif:</strong> {previewCase.solution?.motiveTitle}
                 </p>
-                <p className="text-zinc-300">
-                  <strong>Kilit Delil:</strong> {previewCase.solution?.keyEvidenceTitle}
+                <p>
+                  <strong>Kilit Kanıt:</strong> {previewCase.solution?.keyEvidenceTitle}
                 </p>
-                <p className="text-zinc-400 text-[11px] leading-relaxed pt-1">
-                  {previewCase.solution?.verdictSummary}
-                </p>
+                <p className="text-[#575046] pt-1 leading-relaxed">{previewCase.solution?.verdictSummary}</p>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-zinc-800 mt-4 flex justify-end shrink-0">
+            <div className="pt-3 border-t border-[#d6cdbc] mt-4 flex justify-end shrink-0">
               <button
                 type="button"
                 onClick={() => setPreviewCase(null)}
-                className="py-2 px-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold rounded-xl cursor-pointer"
+                className="py-2 px-4 bg-[#1f1c18] hover:bg-[#36312b] text-[#faf6ed] text-xs font-typewriter font-bold rounded-sm cursor-pointer"
               >
                 Kapat
               </button>
@@ -1599,40 +1278,38 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
 
       {/* Delete Confirmation Modal */}
       {caseToDelete && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
-          <div className="bg-zinc-950 border border-rose-600/50 rounded-3xl w-full max-w-md p-6 text-center text-zinc-100 shadow-2xl space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 mx-auto">
-              <Trash2 className="w-6 h-6" />
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-[#1f1c18]/65 backdrop-blur-[2px]">
+          <div className="bg-[#faf6ed] border border-[#8b1e1e] rounded-sm w-full max-w-md p-6 text-center text-[#1f1c18] shadow-[0_14px_42px_rgba(31,28,24,0.25)] space-y-4">
+            <div className="w-10 h-10 rounded-sm bg-[#fffdf8] border border-[#8b1e1e] flex items-center justify-center text-[#8b1e1e] mx-auto">
+              <Trash2 className="w-5 h-5" />
             </div>
 
-            <h3 className="font-bold text-lg text-zinc-100">
-              Vakayı Silmek İstediğinize Emin misiniz?
+            <h3 className="font-typewriter font-bold text-base text-[#1f1c18]">
+              Vakayı Silmek İstiyor musunuz?
             </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              <strong className="text-zinc-200">"{caseToDelete}"</strong> kimlikli dosya hem Firestore veritabanından hem de yerel hafızadan kalıcı olarak silinecektir. Oyuncuların lobisinde artık görünmeyecektir.
+            <p className="text-xs text-[#575046] leading-relaxed">
+              <strong className="text-[#1f1c18]">&ldquo;{caseToDelete}&rdquo;</strong> kalıcı olarak Firestore veritabanından silinecektir.
             </p>
 
-            <div className="pt-2 flex items-center justify-center gap-3">
+            <div className="pt-2 flex items-center justify-center gap-2.5">
               <button
                 type="button"
                 onClick={() => setCaseToDelete(null)}
-                className="py-2.5 px-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-xs font-semibold cursor-pointer transition-colors"
+                className="py-2 px-4 bg-[#fffdf8] hover:bg-[#ebe5d8] text-[#1f1c18] border border-[#c8bfae] rounded-sm text-xs font-typewriter cursor-pointer"
               >
                 Vazgeç
               </button>
               <button
                 type="button"
                 onClick={() => handleConfirmDeleteCase(caseToDelete)}
-                className="py-2.5 px-4 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold cursor-pointer transition-all shadow-lg"
+                className="py-2 px-4 bg-[#8b1e1e] hover:bg-[#6e1616] text-[#faf6ed] rounded-sm text-xs font-typewriter font-bold cursor-pointer"
               >
-                Evet, Kalıcı Olarak Sil
+                Evet, Sil
               </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 };
-
