@@ -21,7 +21,7 @@ import { DEMO_CUSTOM_CASE, SAMPLE_CASE_TEMPLATE } from '../data/sampleCase';
 import { CaseScenario, getScenarioTotalEnvelopes } from '../types';
 import { CaseWizardEditor } from './CaseWizardEditor';
 import { soundManager } from '../utils/audioEffects';
-import { isVerifiedAdminUser } from '../utils/scenarioUtils';
+import { isVerifiedAdminUser, downloadJsonFile } from '../utils/scenarioUtils';
 import {
   X,
   RefreshCw,
@@ -144,13 +144,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
 
   const handleDownloadTemplate = () => {
     soundManager.playKeyClick();
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(SAMPLE_CASE_TEMPLATE, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', 'masadaki-dosya-vaka-sablonu.json');
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
+    downloadJsonFile('masadaki-dosya-vaka-sablonu.json', SAMPLE_CASE_TEMPLATE);
   };
 
   const handleLoadDemoCase = async () => {

@@ -88,3 +88,19 @@ export function mergeScenarios(
 
   return merged;
 }
+
+/**
+ * Triggers a reliable client-side JSON file download via Blob URL.
+ */
+export function downloadJsonFile(filename: string, data: unknown): void {
+  const jsonText = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonText], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}

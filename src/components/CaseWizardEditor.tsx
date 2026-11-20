@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { CaseScenario, Suspect, EvidenceItem, GateQuestion, RoleType, getScenarioTotalEnvelopes } from '../types';
 import { ROLES } from '../data/cases';
 import { soundManager } from '../utils/audioEffects';
+import { downloadJsonFile } from '../utils/scenarioUtils';
 import {
   Plus,
   Trash2,
@@ -375,13 +376,7 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
   const handleDownloadJSON = () => {
     soundManager.playKeyClick();
     const scenario = assembleScenario();
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(scenario, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `${scenario.id}-vaka-dosyasi.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
+    downloadJsonFile(`${scenario.id}-vaka-dosyasi.json`, scenario);
   };
 
   const handleCopyJSON = async () => {
