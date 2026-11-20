@@ -71,7 +71,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
     totalEnvelopes: 3,
     bannerTag: 'KATMANLI NOIR POLİSİYE · SES & GÖRSEL KANITLI',
     synopsis:
-      'Türkiye’nin en köklü antikacısı Hikmet Ulusoy (62), Kandilli’deki tarihi yalısının çalışma odasında, elinde yarım kalmış fincanıyla cansız bulundu. Yalının çelik kasasındaki paha biçilmez 18. yüzyıl zümrüt hançeri kayıp! Şüphelilerin her biri kendi gizli borçları, aşk mektupları ve husumetleri yüzünden panik içinde yalan söylüyor. Ancak adli tıp, kamera kayıtları ve 112 ses bandı gerçeği fısıldıyor.',
+      'Türkiye’nin en köklü antikacısı Hikmet Ulusoy (62), Kandilli’deki tarihi yalısının çalışma odasında, elinde yarım kalmış fincanıyla cansız bulundu. Çelik kasadaki 18. yüzyıl zümrüt hançer kayıp; ancak şömine külleri, kesilen kamera şalteri ve yalıya gece giren dört farklı isim arasında her şüphelinin sakladığı ayrı bir suç var.',
     victim: {
       name: 'Hikmet Ulusoy',
       age: 62,
@@ -86,15 +86,16 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         name: 'Banu Ulusoy',
         title: 'Maktulün İkinci Eşi (Sanat Galerisi Küratörü)',
         age: 34,
-        relation: 'Eşi (5 yıllık evli, boşanma protokolü imzalamak üzere)',
-        description: 'Zarif, mesafeli ve hırslı. Hikmet Bey’in tüm mirasını ilk evliliğinden olan oğluna devredeceğini öğrenmişti. Olay gecesi 23:25’te arka sahil kapısından panikle çıkarken elinde siyah bir deri çantayla görüldü.',
-        alibi: 'Olay gecesi 22:30 ile 00:30 arası Bebek’teki galerisinde sergi kataloğu hazırladığını iddia ediyor.',
+        relation: 'Eşi (5 yıllık evli, çekişmeli boşanma aşamasında)',
+        description:
+          'Zarif, mesafeli ve hesapçı. Hikmet Bey’in evlilik sözleşmesini devreye sokup tüm koleksiyonu vakfa ve oğluna devredeceğini öğrenmişti. Olay gecesi 23:25’te arka sahil kapısından elinde siyah büyük bir deri çantayla çıkarken görüldü.',
+        alibi: 'Saat 22:30’dan 00:30’a kadar Bebek’teki sanat galerisinde müzayede kataloğu hazırladığını iddia ediyor.',
         suspiciousQuotes: [
-          '"Hikmet bana güvenmezdi ama evlilik sözleşmesini iptal etmeyi kabul etmişti."',
-          '"Çantamda ne mi vardı? Hikmet’in mücevherleri değil! Yıllar önce yaptığım ve evliliğimi bitirebilecek özel mektuplarım vardı."',
-          '"Saat 23:20’de yukarı çıktığımda Hikmet göğsünü tutuyordu ama kasadaki hançer hâlâ yerindeydi!"'
+          '"O gece yalıya hiç uğramadım, bekçi beni karanlıkta başka biriyle karıştırmış olmalı."',
+          '"Kasa şifresini bilmiyordum; Hikmet özel evraklarını benden bile saklardı."',
+          '"Hikmet’in kalp ilaçlarını düzenli alıp almadığını doktoru Selim Bey takip ederdi."'
         ],
-        motiveHypothesis: '40 Milyon TL değerindeki boşanma tazminatını garantiye almak ve kasadaki gizli belgeleri yok etmek.',
+        motiveHypothesis: '40 Milyon TL’lik boşanma hakkını kaybetmemek ve galerisindeki sahte sertifikaları kasadan almak.',
         initialSuspicion: 70,
         photoPlaceholder: {
           initials: 'BU',
@@ -107,16 +108,17 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         name: 'Tarık Ulusoy',
         title: 'Maktulün Oğlu (İflas Eşiğindeki Girişimci)',
         age: 36,
-        relation: 'Öz Oğlu (Babasıyla 2 yıldır görüşmüyordu)',
-        description: 'Borsada ve gayrimenkul yatırımlarında tefecilere 15 Milyon TL borçlanmış durumda. Babasının kasasındaki zümrüt hançeri rehin vermek için olay gecesi 22:30’da yalının ön bahçe kamerasına yakalandı.',
-        alibi: 'Yalıya sadece babasıyla konuşmaya geldiğini, saat 23:05’te evden ayrılırken babasının hayatta ve öfkeli olduğunu iddia ediyor.',
+        relation: 'Öz Oğlu (Babasıyla sert maddi anlaşmazlık içinde)',
+        description:
+          'Tefecilere 15 Milyon TL borçlanmış durumda. Olay gecesi 22:30’da ön kapıdan yalıya girdi; babasıyla tartıştıktan sonra 23:05’te evden ayrıldığını söylese de aracının PTS kaydı 23:28’e kadar Kandilli sahil yolunda bekliyor görünüyor.',
+        alibi: 'Saat 23:05’te yalıdan çıkıp doğrudan Etiler’deki evine döndüğünü iddia ediyor.',
         suspiciousQuotes: [
-          '"Babam beni hep başarısız bir çocuk olarak gördü. Tartıştık ama ben 23:05’te çıktığımda sapasağlam bağırıyordu!"',
-          '"Ceketimdeki çay lekesi mi? Babam sinirlenip masadaki ilk fincanı fırlattı, üzerime sıçradı!"',
-          '"Ben çıkarken merdivende Yadigar Usta elinde taze bir demlikle yukarı çıkıyordu!"'
+          '"Babam masadaki fincanı üzerime fırlatınca ceketim ıslandı, 23:05’te çıkıp gittim."',
+          '"Çıkarken merdivende Yadigar Usta elinde taze demlikle yukarı çıkıyordu."',
+          '"Sahil yolunda biraz hava almak için arabada oturdum, eve tekrar girmedim."'
         ],
-        motiveHypothesis: 'Tefeci borçlarını ödemek için zümrüt hançeri çalmak ve babasından kalacak tek varis olmak.',
-        initialSuspicion: 80,
+        motiveHypothesis: 'Tefeci borçlarını kapatmak için hançeri ele geçirmek ve tek varis olarak mirasa konmak.',
+        initialSuspicion: 75,
         photoPlaceholder: {
           initials: 'TU',
           tint: 'from-blue-950 to-slate-900',
@@ -124,20 +126,43 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         }
       },
       {
+        id: 'dr-selim-koray',
+        name: 'Dr. Selim Koray',
+        title: 'Özel Kardiyolog & Vakıf Sağlık Danışmanı',
+        age: 49,
+        relation: 'Maktulün 8 Yıllık Özel Doktoru',
+        description:
+          'Hikmet’in kalp ritim ilaçlarını (digoksin/digitalis türevleri) bizzat düzenleyen hekim. Hikmet Bey’in kurduğu tıp vakfının klinik deney fonlarında usulsüzlük yaptığına dair denetim başlatılacağını öğrenmişti.',
+        alibi: 'Olay gecesi 22:00’den sonra Anadolu Hisarı’ndaki evinden hiç çıkmadığını beyan ediyor.',
+        suspiciousQuotes: [
+          '"Hikmet’in kalp değerleri zaten sınırdaydı; yüksek doz digitalis her zaman cinayet olmayabilir."',
+          '"Vakıf fonlarıyla ilgili denetim sadece rutin bir prosedürdü, aramızda husumet yoktu."',
+          '"O gece yalıya gitmedim; telefon baz sinyalim boğaz hattından yansımış olabilir."'
+        ],
+        motiveHypothesis: 'Klinik deney usulsüzlüğünü gizlemek ve yüksek doz kalp ilacıyla doğal ölüm süsü vermek.',
+        initialSuspicion: 65,
+        photoPlaceholder: {
+          initials: 'SK',
+          tint: 'from-purple-950 to-slate-900',
+          silhouetteStyle: 'bg-purple-900/30 border-purple-600/40 text-purple-300'
+        }
+      },
+      {
         id: 'yadigar-celik',
         name: 'Yadigar Çelik',
         title: '30 Yıllık Restoratör & Yalı Kâhyası',
         age: 57,
-        relation: 'Sadık Çalışan & Antika Restorasyon Uzmanı',
-        description: 'Yalıda Hikmet Bey ile birlikte büyümüş, antika restorasyonu konusunda usta bir isim. Dışarıdan kusursuz bir sadakat sergilese de, son yıllarda müzayedeye çıkacak eserlerin sahte kopyalarını yaptığı şüphesi doğdu.',
-        alibi: 'Olay gecesi 23:10’da Hikmet Bey’in tansiyon çayını masasına bıraktıktan sonra müştemilata çekilip uyuduğunu, 23:52’de kontrol için döndüğünde cesedi bulduğunu belirtti.',
+        relation: 'Baş Restoratör & Yalı Sorumlusu',
+        description:
+          'Yalıda Hikmet Bey ile birlikte yaşlanmış, antika restorasyonu konusunda usta bir isim. Dışarıdan sarsılmaz bir sadakat sergilese de atölyesinde son dönemde nadir eserlerin birebir replikalarını ürettiği şüphesi doğdu.',
+        alibi: 'Saat 23:10’da tansiyon çayını yukarı bıraktıktan sonra müştemilata çekilip 23:52’ye kadar uyuduğunu belirtiyor.',
         suspiciousQuotes: [
-          '"Hikmet Bey bana babamdan daha yakındı. 30 yılımı bu yalıya verdim."',
-          '"Kasadaki hançer mi? O hançer son müzayedenin gözbebeğiydi ama 23:52’de odaya girdiğimde kasa açık ve hançer gitmişti."',
-          '"Ben kimseye zarar veremem, ellerim sadece sanatı onarmayı bilir."'
+          '"30 yılımı bu yalıya verdim; Hikmet Bey benim velinimetimdi."',
+          '"Saat 23:52’de kontrol için odaya girdiğimde kasa açıktı, hançer yoktu."',
+          '"O gece yalıya benden habersiz giren çıkan çok kişi vardı; ben sadece çayını bıraktım."'
         ],
-        motiveHypothesis: 'Sahte eser yolsuzluğunun anlaşılmasını ve hapse girmeyi önlemek.',
-        initialSuspicion: 45,
+        motiveHypothesis: 'Sahte antika replika vurgununun savcılığa bildirilmesini önlemek.',
+        initialSuspicion: 55,
         photoPlaceholder: {
           initials: 'YÇ',
           tint: 'from-emerald-950 to-teal-900',
@@ -153,9 +178,9 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         title: 'Olay Yeri İnceleme Tutanağı & Kırık Fincan',
         category: 'autopsy',
         roleAccess: ['forensics', 'ballistics', 'profiler', 'field'],
-        summary: 'Maktul çalışma masasında yığılmış; elindeki porselen fincan kırılmış, dökülen sıvı melisa çayı kalıntısı içeriyor. Kasa açık ve hançer yok.',
-        fullReport: 'TC Emniyet Kriminal Şube Olay Yeri Zabtı:\nMaktul Hikmet Ulusoy, Kandilli Yalısı çalışma odasında 23:40 sularında ölü bulunmuştur. Masanın sağında antika porselen fincan kırılmış vaziyettedir. Maktulün dudaklarında morarma ve tırnak diplerinde siyanoz gözlemlenmiştir. Zorlama veya fiziki boğuşma izi yoktur. Çalışma odasındaki gizli gömme kasanın kapağı açık ve içerisindeki zümrüt işlemeli Osmanlı hançeri kutusu boştur. Şömine külleri içinde henüz yanıp kül olmamış küçük bir kâğıt parçası fark edilip incelemeye alınmıştır.',
-        keyDeduction: 'Olay yerinde fiziki darp veya zorla giriş yoktur; zehir içeceğe katılmıştır. Kasa şifresi bilinerek açılmıştır.',
+        summary: 'Maktul çalışma masasında yığılmış; kırık fincanda melisa çayı kalıntısı, açık kasada boş hançer kutusu ve şöminede yanmış kağıt artığı bulundu.',
+        fullReport: 'TC Emniyet Kriminal Şube Olay Yeri Zabtı:\nMaktul Hikmet Ulusoy, Kandilli Yalısı 2. kat çalışma odasında 23:40 sularında ölü bulunmuştur. Masanın sağında antika porselen fincan kırılmış vaziyettedir; zemine yayılan sıvı melisa çayıdır. Dudaklarda morarma ve tırnak diplerinde siyanoz mevcuttur. Zorlama veya boğuşma izi yoktur. Gömme kasa şifreyle açılmış, 18. yüzyıl zümrüt hançer kutusu boştur. Şömine külleri içinde henüz tamamen kül olmamış, üzerinde mühür ve envanter kodu bulunan küçük bir kâğıt parçası muhafaza altına alınmıştır.',
+        keyDeduction: 'Zehirli madde fincandaki çayla alınmış, kasa ise şifreyi bilen veya doğrudan erişimi olan biri tarafından açılmıştır.',
         mediaType: 'image',
         mediaUrl: '/cases/vaka1/olay-yeri.png',
         mediaCaption: 'Olay Yeri Fotoğrafı #1: Çalışma masası, kırık porselen fincan ve açık kasa',
@@ -172,9 +197,9 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         title: '112 İhbarı ve Telsiz Ses Kaydı',
         category: 'audio',
         roleAccess: ['cryptology', 'profiler', 'forensics', 'archive'],
-        summary: 'Yalı kâhyası Yadigar Çelik tarafından 23:52’de yapılan acil çağrı. Kasa daha incelenmeden kayıp eserin adını söylemesi dikkat çekicidir.',
+        summary: 'Yalı kâhyası Yadigar Çelik tarafından 23:52’de yapılan acil çağrı. Kasa yakından incelenmeden kayıp hançerin adını söylemesi dikkat çekiyor.',
         fullReport: '112 Acil Çağrı Kaydı Çözüm Tutanağı (Ses Dosyası #A-01):\nSaat 23:52:14\nOperatör: 112 Acil, buyrun?\nYadigar: (Nefes nefese) Ambulans gönderin hemen! Kandilli, Ulusoy Yalısı... Hikmet Bey nefes almıyor, masasında yığıldı kaldı!\nOperatör: Sakin olun efendim, nabız kontrolü yapabiliyor musunuz?\nYadigar: Nabız yok, elleri buz gibi... Aman Allahım kasayı açmışlar, zümrüt hançeri çalmışlar!\nOperatör: Ekipler yönlendirildi, lütfen olay yerine ve kasaya dokunmayın.',
-        keyDeduction: 'Yadigar henüz kasanın içini kontrol etmeden kayıp eserin zümrüt hançer olduğunu bilmektedir.',
+        keyDeduction: 'Yadigar olay yerine henüz ilk giren kişi olarak kasanın içindeki kayıp eseri hemen fark etmiştir.',
         mediaType: 'audio',
         mediaUrl: '/cases/vaka1/112-ihbar.wav',
         mediaCaption: '112 Acil Çağrı Bandı: Yadigar Çelik’in ihbar kaydı',
@@ -190,9 +215,9 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         title: 'Polis Sorgu Tutanağı: Yalı Güvenlik Amiri Bekçi Niyazi',
         category: 'interrogation',
         roleAccess: ['field', 'profiler', 'archive', 'forensics'],
-        summary: 'Güvenlik amirinin ifadesi: Tarık 22:30’da ön kapı kamerasında görüldü; sahil kamerası 23:00’te kapatıldı; Banu 23:25’te sokak kapısından taksiye binerken bizzat görüldü.',
-        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ ASAYİŞ ŞUBE CİNAYET BÜRO\nTANIK İFADE VE SORGU TUTANAĞI\n\nİfade Veren: Niyazi Kalkan (54, Kandilli Yalısı Güvenlik Amiri)\nSorgulayan: Komiser Murat Kaya / Sicil: 41829\nTarih: 19 Ekim 2026 - Saat 01:15\n\nSORU: Olay gecesi yalıya kimler giriş çıkış yaptı? Sahil kamerasında neden kesinti var?\nCEVAP: "Efendim, saat 22:30 civarı maktulün oğlu Tarık Bey ön bahçe kapısından girdi, ön kapı kamerası bunu net kaydetti. Saat 22:50 gibi yukarıdan tartışma sesleri geldi. Saat 23:00’te ise monitörden baktığımda sahil ve müştemilat kameralarının şalterden kesildiğini fark ettim. O şalter kutusunun anahtarı yalnızca Yadigar Usta’da vardır. Saat 23:25’te kulübenin yan camından caddeye bakarken Banu Hanım’ın arka sahil kapısından elinde siyah büyük bir deri çantayla koşarak çıkıp sarı bir taksiye bindiğini kendi gözümle gördüm."',
-        keyDeduction: 'Tarık ön kapıdan 22:30’da girdi. Sahil ve müştemilat kamerası 23:00’te Yadigar’ın anahtarıyla açılabilen şalterden kapatıldı. Banu 23:25’te siyah çantayla kaçtı.',
+        summary: 'Bekçi Niyazi’nin ifadesi: Tarık 22:30’da girdi, sahil kamerası 23:00’te kesildi, Banu ise 23:25’te siyah çantayla arka kapıdan taksiye bindi.',
+        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ ASAYİŞ ŞUBE CİNAYET BÜRO\nTANIK İFADE VE SORGU TUTANAĞI\n\nİfade Veren: Niyazi Kalkan (54, Kandilli Yalısı Güvenlik Amiri)\nTarih: 19 Ekim 2026 - Saat 01:15\n\nCEVAP: "Saat 22:30’da Tarık Bey ön bahçe kapısından girdi, tartışma sesleri 22:50’ye kadar sürdü. Saat 23:00’te sahil ve müştemilat kameraları birden kesildi; o şalter kutusu müştemilat koridorunda ve anahtarı yalnızca Yadigar Usta ile Hikmet Bey’in çalışma odasındaki yedek anahtarlıkta durur. Saat 23:25’te kulübenin yan penceresinden baktığımda Banu Hanım’ın arka sahil kapısından elinde siyah büyük bir deri çantayla çıkıp bekleyen taksiye bindiğini gördüm. Ayrıca 23:02 sularında sahil iskelesi tarafındaki çalılıklardan koyu renk paltolu, elinde doktor çantasına benzer bir çanta taşıyan bir adamın geçtiğini de hayal meyal seçtim."',
+        keyDeduction: 'Kamera kesintisi saat 23:00’te yapılmıştır. Aynı gece 23:00-23:25 aralığında Tarık, Banu, Yadigar ve doktor çantalı bir şahıs yalı çevresinde bulunmuştur.',
         mediaType: 'text',
         narrationUrl: '/cases/vaka1/ev-1-3.wav',
         metadata: {
@@ -205,12 +230,12 @@ export const CASE_SCENARIOS: CaseScenario[] = [
       {
         id: 'ev-2-1',
         envelope: 2,
-        title: 'Adli Tıp Toksikoloji Raporu: Digitalis Zehirlenmesi',
+        title: 'Adli Tıp Toksikoloji Raporu: Digitalis & Kapsül Kalıntısı',
         category: 'toxicology',
         roleAccess: ['forensics', 'cryptology', 'profiler', 'field'],
-        summary: 'Maktulün kanında ve kırık fincan kalıntısında ölümcül dozda saf yüksükotu (Digitalis purpurea) glikozidi tespit edildi.',
-        fullReport: 'Adli Tıp Kurumu Toksikoloji İhtisas Dairesi Raporu:\nMaktulün mide içeriğinde ve masadaki kırık fincanda 4.8 mg/L oranında Digoksin/Digitalis tespit edilmiştir. Bu oran normal kalp hastası dozunun 10 katı olup 20-30 dakika içinde ventriküler fibrilasyon ve kalp durmasına neden olur. Zehrin acı tadı aromatik melisa çayıyla gizlenmiştir. Yüksükotu glikozitleri yalnızca profesyonel biyokimya laboratuvarlarında veya ileri düzey botanik ekstraksiyonu yapabilen atölyelerde saflaştırılabilir.',
-        keyDeduction: 'Zehir ani tesir etmemiş, ölümden yaklaşık 25-30 dakika önce (23:10 sularında) içilen çaya katılmıştır.',
+        summary: 'Maktulün kanında ve kırık fincanda 4.8 mg/L saflaştırılmış Digitalis tespit edildi. Etki süresi 20-30 dakika olup acı tat melisa çayıyla gizlenmiş.',
+        fullReport: 'Adli Tıp Kurumu Toksikoloji İhtisas Dairesi Raporu:\nMaktulün mide içeriğinde ve masadaki kırık fincanda 4.8 mg/L oranında Digoksin/Digitalis glikozidi tespit edilmiştir. Bu doz normal tedavi dozunun 10 katı olup oral alımdan 20-30 dakika sonra ventriküler fibrilasyona yol açar. Zehrin keskin acı tadı yoğun aromatik melisa çayı ile maskelenmiştir. Laboratuvar analizine göre kullanılan bileşen, piyasada satılan standart kalp haplarının ezilmiş hali değildir; doğrudan bitki tohumundan veya saf laboratuvar stokundan ekstrakte edilmiş yüksek saflıkta sıvı/kristal formdur.',
+        keyDeduction: 'Zehir standart ezilmiş kalp hapı değil, saflaştırılmış ekstrakt formundadır ve ölümden 20-30 dakika önce (23:10-23:20 aralığında) içilmiştir.',
         mediaType: 'image',
         mediaUrl: '/cases/vaka1/toksikoloji-cay.png',
         mediaCaption: 'Adli Toksikoloji Kanıtı: Kırık fincan örneği ve melisa çayı kalıntısı',
@@ -224,29 +249,29 @@ export const CASE_SCENARIOS: CaseScenario[] = [
       {
         id: 'ev-2-2',
         envelope: 2,
-        title: 'Cinayet Büro Sorgu Tutanağı: Şüpheli Banu Ulusoy',
+        title: 'HTS, PTS ve Sorgu Tutanağı: Banu Ulusoy & Dr. Selim Koray',
         category: 'interrogation',
         roleAccess: ['profiler', 'field', 'archive', 'forensics'],
-        summary: 'Banu Ulusoy’un çantasından hançer değil aşk mektupları çıktı. Banu, 23:20’de kasada hançerin yerinde durduğunu belirtiyor.',
-        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO AMİRLİĞİ\nŞÜPHELİ SORGULAMA VE İFADE TUTANAĞI\n\nŞüpheli: Banu Ulusoy (34, Sanat Galerisi Küratörü)\nSorgulayan: Başkomiser Hakan Erdem / Avukat huzurunda\nTarih: 19 Ekim 2026 - Saat 04:30\n\nSORU: Olay gecesi yalıdan neden panik halinde kaçtınız? Çantanızda hançer mi vardı?\nCEVAP: "Yemin ederim hançere dokunmadım! Hikmet ile boşanma aşamasındaydık. Yıllar önce eski bir arkadaşımla yazıştığım özel mektupları kasada kilitli tutuyor ve beni tazminatsız boşamakla tehdit ediyordu. Saat 23:20 sularında yukarı çıktım. Hikmet koltuğunda tuhaf nefes alıyordu, göğsünü tutuyordu. Bana \'Çay... çayda bir şey var\' diye mırıldandı. Kasanın şifresini (doğum yılını) girip sadece kendi mektuplarımı aldım ve korkudan kaçtım! Kasada zümrüt hançer kutusunun içinde duruyordu, ben almadım! O çayı Hikmet’e her gece Yadigar getirirdi!"\n\nAdli Kontrol Notu: Çantada hançer bulunamadı, yalnızca özel mektuplar mevcuttur.',
-        keyDeduction: 'Banu saat 23:20’de kasadan yalnızca mektuplarını almıştır; o anda kasada hâlâ bir hançer durmaktadır (Banu bunun sahte replika olduğunu bilmemektedir).',
+        summary: 'HTS kayıtları Banu’nun 23:20’de yalıda, Dr. Selim’in ise 22:58’de Kandilli baz istasyonunda olduğunu kanıtladı. İki şüpheli de alibilerini değiştirmek zorunda kaldı.',
+        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO AMİRLİĞİ\nÇAPRAZ SORGU TUTANAĞI\n\n1. Şüpheli Banu Ulusoy:\nBebek’te olduğunu iddia etmesine rağmen HTS ve taksi plaka kayıtları 23:15-23:25 arası Kandilli Yalısı’nda olduğunu ortaya koyunca ifadesini değiştirdi: "Tamam, 23:20’de yukarı çıktım! Hikmet koltukta nefes almakta zorlanıyordu. Kasa açıktı değil, şifreyi girip bana ait sahte ekspertiz dosyalarını ve evlilik öncesi mektuplarımı siyah çantama koydum. Hançer o an kutusunda duruyordu!"\n\n2. Şüpheli Dr. Selim Koray:\nBaz istasyonu kaydı 22:55-23:15 arası Kandilli sahil hattında çıkınca kabul etti: "23:00’te arka bahçe kapısından gizlice girdim çünkü Hikmet beni vakıf denetimi için çağırmıştı. Tansiyonunu ölçüp tartışmadan sonra 23:08’de ayrıldım. Çayına dokunmadım, ben çıktığımda yaşıyordu."',
+        keyDeduction: 'Hem Banu hem Dr. Selim olay saatinde yalıda bulunduklarını gizlemişlerdir; ikisinin de odaya ve ilaç/kasa bilgilerine erişimi vardır.',
         mediaType: 'text',
         narrationUrl: '/cases/vaka1/ev-2-2.wav',
         metadata: {
           date: '19 Ekim 2026',
-          caseRef: 'SORGU-BANU-02',
+          caseRef: 'SORGU-HTS-02',
           confidentiality: 'GİZLİ',
         }
       },
       {
         id: 'ev-2-3',
         envelope: 2,
-        title: 'Cinayet Büro Çapraz Sorgu Tutanağı: Şüpheli Tarık Ulusoy',
+        title: 'Cinayet Büro Çapraz Sorgu & PTS Kaydı: Tarık Ulusoy',
         category: 'interrogation',
         roleAccess: ['profiler', 'archive', 'field', 'forensics', 'cryptology'],
-        summary: 'Tarık’ın ceketindeki çay lekesinde zehir çıkmadı; zehirli taze çay Tarık 23:05’te çıkarken Yadigar tarafından yukarı çıkarılıyordu.',
-        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ ASAYİŞ ŞUBE CİNAYET BÜRO\nÇAPRAZ SORGU VE İFADE TUTANAĞI\n\nŞüpheli: Tarık Ulusoy (36, Girişimci / Maktulün Oğlu)\nSorgulayan: Komiser Selim Arıkan\nTarih: 19 Ekim 2026 - Saat 06:15\n\nSORU: Üzerinizdeki gri ceketin kolundaki kahverengi leke kriminalde melisa çayı çıktı. Tefecilere 15 Milyon TL borcunuz var. Kasadaki hançeri siz mi çaldınız?\nCEVAP: "Evet, batmış durumdayım! Babamdan hançeri tefecilere rehin vermek için istedim. Babam öfkelenip masadaki ilk fincanı bana fırlattı, çay koluma döküldü. Saat 23:05’te ben odadan çıktım. O sırada merdivende Yadigar elinde taze bir demlikle yukarı çıkıyordu! \'Beyefendiye taze tansiyon çayı yaptım Tarık Bey\' dedi. Babam ben çıktığımda dipdiriydi, arkamdan bağırmaya devam ediyordu. Ben katil değilim!"\n\nKriminal Laboratuvar Notu: Tarık’ın ceketindeki ilk çay lekesinde Digitalis ZEHİR KONSANTRASYONU YOKTUR.',
-        keyDeduction: 'Tarık’ın ceketindeki ilk çay temizdir; zehir, Tarık 23:05’te ayrıldıktan sonra Yadigar’ın götürdüğü ikinci taze çayda verilmiştir.',
+        summary: 'Tarık’ın ceketindeki çay lekesi ilk tartışmadan kalma temiz çay çıktı; ancak aracının PTS kaydı 23:28’e kadar yalı sokağında beklediğini gösteriyor.',
+        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO\nÇAPRAZ SORGU TUTANAĞI\n\nŞüpheli: Tarık Ulusoy (36)\nSORU: 23:05’te evden ayrıldığınızı söylediniz ama Kandilli Sahil PTS kamerası aracınızı saat 23:28’de çıkış yaparken kaydetmiş. Ayrıca ceketinizdeki çay lekesi ne zaman oluştu?\nCEVAP: "22:50’de tartışırken babam ilk fincanı üzerime fırlattı, ben 23:05’te kapıdan çıktım; merdivende Yadigar elinde taze demlikle yukarı çıkıyordu! Sonra sahildeki tefeci kuryesiyle buluşmak için sokakta arabada 20 dakika bekledim. İçeri bir daha girmedim!"\n\nKriminal Not: Tarık’ın ceketindeki leke melisa çayı olup zehir konsantrasyonu saptanmamıştır. Ancak kasa şifresinin Tarık tarafından da bilindiği ve 23:05-23:28 arası yalıya tekrar girme ihtimali soruşturma dosyasında açık tutulmuştur.',
+        keyDeduction: 'İlk fincan temizdir; ölümcül zehir 23:05’ten sonra verilen ikinci çayla ya da 23:10-23:25 arasında odada bulunan şüphelilerden biri tarafından verilmiştir.',
         mediaType: 'text',
         narrationUrl: '/cases/vaka1/ev-2-3.wav',
         metadata: {
@@ -259,12 +284,12 @@ export const CASE_SCENARIOS: CaseScenario[] = [
       {
         id: 'ev-3-1',
         envelope: 3,
-        title: 'Restorasyon Atölyesi & Şömine Külleri Kriminal Raporu',
+        title: 'Restorasyon Atölyesi, Şömine Külleri & Vakıf Arşivi Raporu',
         category: 'document',
         roleAccess: ['cryptology', 'archive', 'forensics', 'profiler', 'field'],
-        summary: 'Atölyedeki tansiyon çayı kavanozunda digitalis kalıntısı, digitalis tohumu faturası, hançer replikası ve çalışma odası şöminesinde yarı yanmış ihbar notu bulundu!',
-        fullReport: 'Kriminalistik Arama ve El Koyma Tutanağı:\n1. Yadigar Çelik’in atölyesindeki kilitli dolapta, maktulün her akşam içtiği "Tansiyon Bitki Çayı" kavanozu içinde yüksek oranda saflaştırılmış Digitalis tozu kalıntısı ve Alman kimya firmasına ait Digitalis tohumu faturası bulundu.\n2. Atölyenin çalışma tezgâhının altında zümrüt hançerin reçine-zirkon replikası (Banu’nun 23:20’de kasada gördüğü sahte kopya) saklanmış halde ele geçirildi. Orijinal hançerin 2 hafta önce İsviçre’ye gönderildiğine dair gümrük/kargo kayıtları tespit edildi.\n3. Yadigar Çelik’in Zürih UBS bankasındaki gizli hesabına son 3 yılda 2.4 Milyon Euro aktarıldığı belirlendi.\n4. Çalışma odası şöminesindeki küllerin altında yarı yanmış halde Hikmet Ulusoy’un el yazısı notu kurtarıldı: "...müzayedeye koyduğun hançerin sahte olduğunu anladım Yadigar. Yarın sabah savcılık..."',
-        keyDeduction: 'Yadigar, gerçek hançeri haftalar önce İsviçre’ye satıp kasaya sahte replikayı koymuştu. Hikmet gerçeği anlayınca Yadigar onu tansiyon çayı kavanozundaki digitalisle zehirleyip, 23:40’ta replikayı atölyeye sakladı ve ihbar notunu şöminede yakmaya çalıştı.',
+        summary: 'Atölyede reçine hançer replikası, bitkisel çay kavanozunda digitalis izi, Alman botanik faturası ve şöminede "HNC-18-REPLİKA" kodlu yanmış ekspertiz kağıdı bulundu.',
+        fullReport: 'Kriminalistik Arama ve Mali İstihbarat Özeti:\n1. Yadigar Çelik’in kilitli atölye dolabında maktulün içtiği "Tansiyon Bitki Çayı" kavanozunun dibinde yüksek saflıkta Digitalis kristali ve 4 ay önce bir Alman botanik firmasından "tahta kurdu verniği katkısı" adıyla alınmış Digitalis purpurea tohumu faturası bulundu.\n2. Atölye tezgâhının altında zümrüt hançerin reçine-zirkon replikası ele geçirildi; orijinal hançerin 2 hafta önce Zürih’e kargolandığı ve Yadigar’ın Zürih hesabına 2.4 Milyon Euro yattığı saptandı.\n3. Şömine küllerinden kurtarılan yanmış ekspertiz notunda yalnızca şu satır okunabildi: "...Kasa kodu 1964... HNC-18-REPLİKA tespiti kesinleşti, pazartesi savcılık..."\n4. Öte yandan, Dr. Selim’in vakıf laboratuvarında da saf digoksin stokunun kayıp olduğu ve Banu’nun çantasında 3 adet sahte tablo ekspertiz belgesi çıktığı not edildi.',
+        keyDeduction: 'Atölyedeki çay kavanozu, saflaştırılmış tohum faturası, reçine hançer replikası ve şöminedeki ekspertiz kodu birbirini tamamlamaktadır; diğer şüphelilerin de kendi gizli suçları nedeniyle paniklediği görülmektedir.',
         mediaType: 'image',
         mediaUrl: '/cases/vaka1/atolye-hancer.png',
         mediaCaption: 'Delil Fotoğrafı #3: Atölyedeki reçine hançer replikası ve tansiyon çayı kavanozu',
@@ -278,12 +303,12 @@ export const CASE_SCENARIOS: CaseScenario[] = [
       {
         id: 'ev-3-2',
         envelope: 3,
-        title: 'Cinayet Büro Çapraz Sorgu Tutanağı: Şüpheli Yadigar Çelik',
+        title: 'Cinayet Büro Son Çapraz Sorgu: Yadigar Çelik',
         category: 'interrogation',
         roleAccess: ['profiler', 'forensics', 'archive'],
-        summary: 'Yadigar Çelik’in atölyesindeki kimyasal maddeler, şalter kesintisi ve kasadaki replika hançer hakkındaki son savunması.',
-        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO AMİRLİĞİ\nÇAPRAZ SORGU VE SAVUNMA TUTANAĞI\n\nŞüpheli: Yadigar Çelik (57, Restorasyon Uzmanı & Yalı Kâhyası)\nSorgulayan: Başkomiser Hakan Erdem & Kriminal Heyet\nTarih: 20 Ekim 2026 - Saat 11:45\n\nSORU: Tansiyon çayı kavanozunuzdaki Digitalis kalıntısı, atölyenizdeki sahte hançer replikası ve şöminede yakmaya çalıştığınız "savcılık" notu hakkında ne diyeceksiniz?\nCEVAP: "Bana iftira atıyorsunuz! Ben 30 yılımı bu aileye adadım! İsviçre hesabındaki para, Hikmet Bey’in müzayedelerde bana ödediği restorasyon primleridir. Reçine hançer ise Hikmet Bey’in vitrin güvenliği için bizzat yaptırdığı maketti! Digitalis tohumu faturasını ceviz kütüphanedeki tahta kurtları için cila karışımı diye aldım; çay kavanozuna nasıl bulaştı bilmiyorum!\nSaat 23:10’da taze çayı yukarı bıraktığımda Hikmet Bey yalnızdı, sonra 23:20’de Banu Hanım’ın koşarak yukarı çıktığını gördüm. Neden beni suçluyorsunuz? 15 milyon borcu olan Tarık ve 40 milyonluk mirasa konacak Banu varken neden 30 yıllık emektara yükleniyorsunuz?"',
-        keyDeduction: 'Yadigar tüm kanıtlara rağmen tahta kurdu cilası bahanesine sığınmaktadır; ancak şalter anahtarı, zehirli kavanoz, 23:10 servis saati ve şöminedeki yarı yanmış not tüm okları Yadigar’a çevirmektedir.',
+        summary: 'Yadigar Çelik; botanik faturasını cila malzemesi, İsviçre hesabını ise restorasyon primi diyerek savundu ve diğer üç şüphelinin saat 23:00-23:25 arası yalıda oluşunu öne sürdü.',
+        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO AMİRLİĞİ\nSON ÇAPRAZ SORGU TUTANAĞI\n\nŞüpheli: Yadigar Çelik (57)\nCEVAP: "O reçine hançer Hikmet Bey’in müze sergisi için bizzat yaptırdığı bir kopyaydı! Digitalis tohumunu ceviz kütüphanedeki tahta kurtları için cila karışımı diye aldım; çay kavanozuna nasıl karıştı bilmiyorum! Ben saat 23:10’da çayı bırakıp müştemilata indim. Benden önce saat 23:00’te Dr. Selim gizlice odaya girmiş; digoksinin uzmanı bir kalp doktoru dururken neden bana bakıyorsunuz? Üstelik 23:20’de Banu Hanım kasayı açıp kaçtı, Tarık Bey de 23:28’e kadar sokağın başında bekledi. Herkesin yalıda olduğu bir gecede suçu 30 yıllık emektara yıkamazsınız!"',
+        keyDeduction: 'Dört şüphelinin de saat 23:00-23:28 penceresinde yalıya erişimi ve güçlü motifi vardır; ancak saflaştırılmış tohum ekstraksiyonu faturası + çay kavanozundaki kalıntı + 23:10 çay servisi + şalter anahtarı + sahte replika hançer kesişimi incelenmelidir.',
         mediaType: 'text',
         narrationUrl: '/cases/vaka1/ev-3-2.wav',
         metadata: {
@@ -296,68 +321,63 @@ export const CASE_SCENARIOS: CaseScenario[] = [
     gates: {
       1: {
         envelope: 1,
-        title: 'Zarf 1 Soruşturma Sorusu: Olay Yeri Dinamiği',
-        instructions: 'Zarf 1’deki bulgulara dayanarak aşağıdaki soruyu yanıtlayın.',
-        question: 'Olay yerinde kurbanın çalışma masasında bulunan kırık fincan ve 112 ses kaydı neyi kanıtlamaktadır?',
+        title: 'Zarf 1 Doğrulama Sorusu: Olay Yeri ve Kamera Zamanlaması',
+        instructions: 'Zarf 1 belgelerini birleştirerek olay gecesi zaman çizelgesindeki kritik tespiti seçin.',
+        question: 'Olay yeri tutanağı ve Bekçi Niyazi’nin ifadesi birlikte değerlendirildiğinde saat 23:00 itibarıyla ne gerçekleşmiştir?',
         options: [
-          { id: 'q1-1', text: 'Zehir maktulün fincanındaki çaya katılmış, boğuşma yaşanmamış ve arayan kişi kasa incelenmeden kayıp hançerin adını bilmiştir.', isCorrect: true },
-          { id: 'q1-2', text: 'Maktul dışarıdan gelen bir kurşunla vurulmuştur.', isCorrect: false },
-          { id: 'q1-3', text: 'Olay yerine kapı kırılarak zorla girilmiştir.', isCorrect: false }
+          { id: 'q1-1', text: 'Zorla giriş olmadan şifreli kasa açılmış, sahil kameraları şalterden kesilmiş ve fincandaki çayla zehirlenme yaşanmıştır.', isCorrect: true },
+          { id: 'q1-2', text: 'Dışarıdan giren silahlı soyguncular güvenlik kulübesinin elektrik hattını kesip maktulü darp etmiştir.', isCorrect: false },
+          { id: 'q1-3', text: 'Kasa şifresi kırılmış ve zehirli madde saat 22:30’dan önce kapı koluna sürülerek etki göstermiştir.', isCorrect: false }
         ],
-        explanation: 'Fincandaki zehir ve boğuşma izi olmaması içeriden birini, 112 aramasında henüz kasa incelenmeden hançerin adının söylenmesi ise ön bilgi sahibi olunduğunu gösterir.'
+        explanation: 'Zorlama izi yoktur; kasa şifreyle açılmış, sahil kamerası şalterden kesilmiş ve zehir fincandaki çayla alınmıştır.'
       },
       2: {
         envelope: 2,
-        title: 'Zarf 2 Soruşturma Sorusu: Zehrin Niteliği ve Zamanı',
-        instructions: 'Toksikoloji raporuna ve Tarık’ın ceketindeki lekeye göre zehirli çay ne zaman verilmiştir?',
-        question: 'Toksikoloji raporunda tespit edilen Digitalis glikozidi kurbana ne şekilde ve hangi aşamada verilmiştir?',
+        title: 'Zarf 2 Doğrulama Sorusu: Zehir Formu ve Alibi Çelişkileri',
+        instructions: 'Toksikoloji raporu ile HTS/PTS sorgularını birlikte analiz edin.',
+        question: 'Adli tıp raporuna ve sorgu tutanaklarına göre zehrin niteliği ve veriliş aralığı hakkında hangisi doğrudur?',
         options: [
-          { id: 'q2-1', text: 'Tarık 23:05’te ayrıldıktan sonra, 23:10’da getirilen ikinci taze melisa çayına karıştırılarak.', isCorrect: true },
-          { id: 'q2-2', text: 'Hançerin keskin ucuna sürülerek yaralama yoluyla.', isCorrect: false },
-          { id: 'q2-3', text: 'Tarık’ın ceketine dökülen ilk fincandaki çayla.', isCorrect: false }
+          { id: 'q2-1', text: 'Zehir standart hap değil saflaştırılmış ekstraktır; Tarık’ın ceketindeki ilk çay temizdir ve ölümcül çay 23:05 sonrasında içilmiştir.', isCorrect: true },
+          { id: 'q2-2', text: 'Dr. Selim’in yazdığı standart kalp hapları maktul tarafından yanlışlıkla yüksek dozda yutulmuştur.', isCorrect: false },
+          { id: 'q2-3', text: 'Zehir 22:50’deki tartışma sırasında dökülen ilk fincandaki çayın içinde tespit edilmiştir.', isCorrect: false }
         ],
-        explanation: 'Tarık’ın ceketindeki ilk çayda zehir bulunmamıştır; zehir 23:10’da servis edilen ikinci taze çaya katılmıştır.'
+        explanation: 'İlk fincan temizdir ve zehir ezilmiş hap değil, 23:05 sonrasında servis edilen içecekte kullanılan saflaştırılmış ekstrakttır.'
       },
       3: {
         envelope: 3,
-        title: 'Zarf 3 Soruşturma Sorusu: Delil İnceleme Tespiti',
-        instructions: 'Restorasyon atölyesinde ele geçirilen fatura ve kimyasal bulguları değerlendirin.',
-        question: 'Restorasyon atölyesinde bulunan faturaya göre Digitalis tohumları nasıl temin edilmiş ve nerede gizlenmiştir?',
+        title: 'Zarf 3 Doğrulama Sorusu: Şömine Notu ve Atölye Bulguları',
+        instructions: 'Atölye araması ve şömine külleri raporundaki teknik bağlantıyı doğrulayın.',
+        question: 'Atölyede ele geçirilen bulgular ile şömine küllerinden kurtarılan yanmış ekspertiz notu arasındaki bağ nedir?',
         options: [
-          { id: 'q3-1', text: 'Alman kimya firmasından sipariş edilip atölyedeki tansiyon bitki çayı kavanozuna saflaştırılarak gizlenmiştir.', isCorrect: true },
-          { id: 'q3-2', text: 'Müzayededen satın alınan tarihi hançerin kılıfını cilalamak amacıyla kullanılmıştır.', isCorrect: false },
-          { id: 'q3-3', text: 'Bahçedeki yabani otları kurutmak için sipariş edilmiştir.', isCorrect: false }
+          { id: 'q3-1', text: 'Maktul kasadaki hançerin sahte replika olduğunu tespit edip savcılık notu hazırlamış, atölyedeki çay kavanozunda ise zehir kalıntısı çıkmıştır.', isCorrect: true },
+          { id: 'q3-2', text: 'Şöminede yakılan belge Dr. Selim’in vakıf bütçesine ait imzalı rüşvet sözleşmesidir.', isCorrect: false },
+          { id: 'q3-3', text: 'Atölyede bulunan reçine hançer, Tarık’ın tefecilere rehin bırakmak için yaptırdığı kopyadır.', isCorrect: false }
         ],
-        explanation: 'Digitalis tohumları atölyede saflaştırılmış ve maktulün her akşam içtiği tansiyon çayı kavanozunda saklanmıştır.'
+        explanation: 'Şöminedeki yanmış ekspertiz notu sahte hançer replikasına işaret etmekte, çay kavanozu ise saflaştırılmış digitalisi doğrulamaktadır.'
       }
     },
     solution: {
       culpritId: 'yadigar-celik',
       culpritName: 'Yadigar Çelik',
       motiveTitle: 'Milyonluk Sahte Antika Vurgununun İfşa Olmasını Önlemek',
-      keyEvidenceTitle: 'Tansiyon Çayı Kavanozundaki Digitalis, İsviçre Kargo Kaydı & Şöminedeki Yarı Yanmış Not',
+      keyEvidenceTitle: 'Restorasyon Atölyesi, Şömine Külleri & Vakıf Arşivi Raporu',
       fullChronology: [
-        { time: '21:00', action: 'Hikmet Ulusoy, kasadaki hançerin sahte replika olduğunu test kitiyle anlar ve Yadigar’a yarın savcılığa gideceğini söyleyip ihbar notunu kasaya koyar.', proof: 'Şömineden kurtarılan yarı yanmış not' },
-        { time: '22:30', action: 'Tarık Ulusoy ön kapıdan yalıya girer, babasıyla para tartışması yaşar. Ceketine zehirsiz ilk çay sıçrar; 23:05’te ayrılır.', proof: 'Ön kapı kamerası & Tarık’ın ceket analizi' },
-        { time: '23:00', action: 'Yadigar, atölyesindeki şalterden sahil ve müştemilat kameralarını kapatır.', proof: 'Bekçi Niyazi ifadesi & şalter anahtarı' },
-        { time: '23:10', action: 'Yadigar, tansiyon çayı kavanozundaki saflaştırılmış Digitalis ile hazırladığı ikinci çayı Hikmet’e servis eder.', proof: 'Toksikoloji Raporu & çay kavanozu kalıntısı' },
-        { time: '23:20', action: 'Banu gizlice yukarı çıkar; yarı baygın Hikmet’in kasasından kendi aşk mektuplarını alır (kasada sahte replika hançeri görüp dokunmaz) ve 23:25’te arka kapıdan kaçar.', proof: 'Banu ifadesi & Bekçi Niyazi göz tanıklığı' },
-        { time: '23:40', action: 'Hikmet ölür, fincan kırılır. Yadigar sahte replika hançeri alıp atölyeye saklar, ihbar notunu ise şöminede yakmaya çalışır.', proof: 'Atölye araması & şömine külleri' },
-        { time: '23:52', action: 'Yadigar 112’yi arayarak suçu hırsızlara ve aile üyelerine yıkmaya çalışır.', proof: '112 Ses Kaydı Tutanağı' }
+        { time: '21:00', action: 'Hikmet Ulusoy, kasadaki hançerin reçine replika olduğunu mikroskopla tespit eder ve pazartesi savcılığa başvuracağını belirten ekspertiz notunu hazırlar.', proof: 'Şömineden kurtarılan yanmış ekspertiz kodu' },
+        { time: '22:30 - 23:05', action: 'Tarık Ulusoy babasıyla tartışır; ceketine zehirsiz ilk çay sıçrar. 23:05’te evden çıkar ama tefeci kuryesi için 23:28’e kadar sokakta bekler.', proof: 'PTS kaydı & Tarık’ın ceket analizi' },
+        { time: '23:00 - 23:08', action: 'Yadigar müştemilattaki şalterden sahil kamerasını keser. Aynı dakikalarda Dr. Selim arka kapıdan gizlice girip vakıf denetimi için Hikmet’le görüşür ve 23:08’de ayrılır.', proof: 'HTS kaydı & Bekçi Niyazi ifadesi' },
+        { time: '23:10', action: 'Yadigar, tansiyon çayı kavanozundaki saflaştırılmış digitalis ile hazırladığı ikinci taze çayı Hikmet’e sunar.', proof: 'Toksikoloji Raporu & Alman tohum faturası' },
+        { time: '23:20 - 23:25', action: 'Banu Ulusoy gizlice yukarı çıkıp kasadaki sahte sertifikalarını ve mektuplarını siyah çantasına alır; yarı baygın Hikmet’i görüp taksiyle kaçar.', proof: 'HTS kaydı & Banu çapraz sorgusu' },
+        { time: '23:40 - 23:52', action: 'Hikmet ölür. Yadigar replika hançeri atölyeye saklar, ekspertiz notunu şöminede yakar ve 23:52’de 112’yi arar.', proof: 'Atölye araması & 112 Ses Kaydı' }
       ],
-      verdictSummary: 'Dedektiflerin ortak çalışması sonucu katilin 30 yıllık emektar Yadigar Çelik olduğu kanıtlandı. Yadigar gerçek zümrüt hançeri haftalar önce İsviçre’ye satıp yerine sahte replika koymuş, Hikmet Bey durumu fark edince onu zehirlemişti.',
-      confessionAudioTranscript: 'İtiraf Ses Kaydı: "30 yılımı verdim o yalıya... Hikmet her eseri milyonlara satarken bana maaşlı köle gibi davrandı. Gerçek hançeri haftalar önce İsviçreli alıcıya göndermiştim, kasadaki sahte kopyaydı. Anlayınca beni hapse atmakla tehdit etti. Başka çarem yoktu!"',
-      confessionLetter: `[ADLİ EMANET KASASI - YADİGAR ÇELİK'İN RESMİ CİNAYET VE İTİRAF METNİ]
+      verdictSummary: 'Katil Yadigar Çelik’tir. Banu sahte sertifikalarını almak için kasayı açmış, Tarık borçları yüzünden sokakta beklemiş, Dr. Selim vakıf usulsüzlüğü nedeniyle yalıya gizlice uğramıştı; ancak saflaştırılmış digitalisi çay kavanozuna koyup 23:10’da servis eden ve hançerin orijinalini Zürih’e satan kişi Yadigar’dır.',
+      confessionAudioTranscript: 'İtiraf Ses Kaydı: "30 yılımı verdim o yalıya... Herkes kendi günahı yüzünden panik halindeydi, ben de bunu kullandım. Gerçek hançeri Zürih’e göndermiştim; Hikmet replikayı anlayınca başka çarem kalmadı."',
+      confessionLetter: `[ADLİ EMANET KASASI - YADİGAR ÇELİK'İN İTİRAF METNİ]
 
-"Evet... Hikmet'i ben öldürdüm. Ve eğer bugün yakalanmasaydım, zerre pişmanlık duymayacaktım.
+"Evet, Hikmet'i ben zehirledim. 30 yıl boyunca onun kırdığı, sattığı her eseri ben onardım ama kazancın kırıntısını bile bana layık görmedi.
 
-30 koca yılımı o Kandilli Yalısı'nın bodrumundaki rutubetli restorasyon atölyesinde çürüttüm. Hikmet Ulusoy benim ellerimle tamir ettiğim her eserden milyonlarca dolar kazandı; bana ise yıllarca düşük bir maaşı reva gördü.
+İki hafta önce orijinal zümrüt hançeri Zürih'teki alıcıya gönderip kasaya kendi ürettiğim kusursuz reçine replikayı koydum. Ama Hikmet cuma akşamı büyüteçle replikayı fark etti ve pazartesi savcılığa gideceğini söyleyerek ekspertiz notunu masasına koydu.
 
-Ben de 5 yıl önce kendi hakkımı almaya karar verdim. Zürih'teki koleksiyonerlerle gizli bir hat kurdum ve orijinal eserlerin kusursuz reçine-zirkon replikalarını atölyemde ürettim. Gerçek 18. yüzyıl zümrüt hançerini iki hafta önce İsviçre'ye gönderdim, kasaya ise birebir sahte kopyasını koydum.
-
-Ama Hikmet o büyüteç mikroskobunu getirmiş. Cuma gecesi 21:00'de beni odasına çağırdı. 'Yadigar, 30 yıldır beslediğim yılan meğer senmişsin! Reçineyi fark ettim. Yarın sabah savcılıkta olacaksın' dedi ve notunu kasaya kilitledi.
-
-O an beynim karardı. Saat 23:00'te sahil kamerasının şalterini indirdim. Atölyemdeki Alman digitalis tohumlarını saflaştırıp onun her akşam içtiği tansiyon çayı kavanozuna karıştırdım. Tarık odadan çıkınca 23:10'da taze çayı yukarı bıraktım. Çayı içtikten 20-30 dakika sonra kalbi durdu. O fenalaşırken Banu Hanım'ın kendi mektuplarını almak için kasayı açtığını gördüm; ardından ben içeri girip sahte replika hançeri atölyeye sakladım ki kimse sahteciliği anlamasın, ihbar notunu da şömineye attım. Notun bir köşesinin yanmadan kaldığını fark etmemiştim. Beni yakaladınız ama hayatımı çalan o kibirli adamdan hesabımı sormuş oldum."`
+O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka kapıdan gizlice gelmişti, Banu Hanım da kendi sahte sertifikalarının peşindeydi. Saat 23:00'te şalteri indirdim, 23:10'da Alman tohumlarından saflaştırdığım digitalisi tansiyon çayına katıp yukarı bıraktım. Banu Hanım kendi evraklarını alıp kaçtıktan sonra replika hançeri atölyeye sakladım ve ekspertiz notunu şömineye attım. Herkesin yalıda olduğu o gecede kimse benden şüphelenmez sanmıştım."`
     }
   },
 
@@ -367,39 +387,40 @@ O an beynim karardı. Saat 23:00'te sahil kamerasının şalterini indirdim. At�
   {
     id: 'kulisin-gizemli-perdesi',
     title: 'Kulisin Gizemli Perdesi',
-    subtitle: 'Prömiyer Gecesinde Başrol Oyuncusuna Şantaj ve Gizemli Sabotaj',
+    subtitle: 'Prömiyer Gecesinde Başrol Oyuncusuna Suikast ve Sahne Arkası İhaneti',
     difficulty: 'Orta',
     estimatedMinutes: 30,
     minPlayers: 1,
     maxPlayers: 6,
     totalEnvelopes: 3,
     bannerTag: 'TİYATRO NOIR · SES KAYITLI & SAHNE ARKASI',
-    synopsis: 
-      'Kadıköy Şehir Tiyatrosu’nda sezonun en büyük oyunu kapalı gişe oynanırken, ayakta alkışlanan ünlü başrol Altan Saygın (44), ikinci perdenin hemen başında kulisteki soyunma odasında baygın ve nefessiz bulundu. Tarihi kadife kostümünün yakasındaki antika broşta felç edici nörotoksin izi tespit edildi. Sahne arkasındaki herkesin birbirine husumeti, bastırılmış kıskançlıkları ve şantaj sırları var!',
+    synopsis:
+      'Kadıköy Şehir Tiyatrosu’nda sezonun büyük prömiyeri oynanırken, başrol oyuncusu ve yönetmen Altan Saygın (44), ikinci perde başlamadan hemen önce kulisteki soyunma odasında ölü bulundu. Kral Lear kostümünün yakasındaki antika broşta ölümcül nörotoksin saptandı. Aynadaki ruj yazısı, kayıp sahne anahtarı ve Londra’ya kaçırılan milyonluk fonun gölgesinde kulisteki dört isim birbirini suçluyor.',
     victim: {
       name: 'Altan Saygın',
       age: 44,
-      title: 'Devlet Tiyatrosu Başrol Oyuncusu & Yönetmen',
-      timeOfDeath: '24 Ekim Cuma, 21:15 civarı',
+      title: 'Devlet Tiyatrosu Başrol Oyuncusu & Sanat Yönetmeni',
+      timeOfDeath: '24 Ekim Cuma, 21:12 suları',
       locationOfBody: 'Kadıköy Sahnesi, Başrol Soyunma Odası',
-      causeInitial: 'Solunum kaslarında geçici felç ve nörotoksik şok',
+      causeInitial: 'Nörotoksin kaynaklı akut solunum felci ve kardiyak arrest',
     },
     suspects: [
       {
         id: 'melis-haznedar',
         name: 'Melis Haznedar',
-        title: 'Genç Kadın Başrol (Eski Sevgilisi)',
+        title: 'Genç Kadın Başrol (Eski Sevgili)',
         age: 29,
         relation: 'Eski Sevgili & Sahne Partneri',
-        description: 'Yeteneğiyle parlayan genç oyuncu. Altan ile 1 yıl süren gizli bir ilişki yaşamış, ancak Altan’ın onu yeni sezonda kadro dışı bırakmakla tehdit ettiğini öğrenmişti. Olaydan 10 dakika önce elinde sahne makasıyla ağlayarak odadan çıkarken görüldü.',
-        alibi: 'Perde arasında fuayede yönetmen yardımcısıyla sonraki sahneyi çalıştığını iddia ediyor.',
+        description:
+          'Altan ile 1 yıl süren gizli bir ilişki yaşamış, ancak Altan’ın onu yeni sezonda kadro dışı bırakıp özel yazışmalarını ifşa etmekle tehdit ettiğini öğrenmişti. Perde arasında elinde terzi makasıyla Altan’ın odasından çıkarken görüldü.',
+        alibi: 'Saat 20:50’de odadan çıkıp doğrudan fuayeye indiğini, odaya bir daha dönmediğini iddia ediyor.',
         suspiciousQuotes: [
-          '"Altan hayatımdaki en kibirli adamdı. Beni kariyerimle tehdit etti."',
-          '"Odasına girdim evet! Bana aldığı sahte pırlanta kolyeyi yüzüne fırlattım, makasla kostümümü değil onun hediye ettiği atkıyı kestim!"',
-          '"Altan’ın kostümünü Gülfem Hanım’dan başkası elleyemezdi, dolabın anahtarı yalnızca ondaydı."'
+          '"Odasına girdim ve bana aldığı ipek atkıyı gözünün önünde makasla kestim ama zehirle alakam yok!"',
+          '"Bordo mat rujum üç gün önce makyaj masasında kaybolmuştu, aynaya o yazıyı ben yazmadım."',
+          '"Saat 21:05 civarı tuvalet koridorundaydım, kimseyi görmedim."'
         ],
-        motiveHypothesis: 'Kariyerini kurtarmak ve kendisini tehdit eden narsist partnerinden intikam almak.',
-        initialSuspicion: 65,
+        motiveHypothesis: 'Kariyerini ve itibarını kurtarmak için şantajcı eski partnerini susturmak.',
+        initialSuspicion: 70,
         photoPlaceholder: {
           initials: 'MH',
           tint: 'from-rose-950 to-pink-900',
@@ -411,15 +432,16 @@ O an beynim karardı. Saat 23:00'te sahil kamerasının şalterini indirdim. At�
         name: 'Caner Ertekin',
         title: 'Müzmin Yedek Oyuncu (Understudy)',
         age: 47,
-        relation: '20 Yıllık Konservatuvar Arkadaşı & Yedek Oyuncu',
-        description: 'Tüm metinleri ezbere bilen ancak 20 yıldır Altan’ın gölgesinde kalan kıskanç bir oyuncu. Olay gecesi Altan’ın soyunma odasının önünde şüpheli hareketler yaparken güvenlik görevlisi tarafından uyarıldı.',
-        alibi: 'Kendi odasında ses egzersizi yaptığını iddia ediyor.',
+        relation: '20 Yıllık Konservatuvar Arkadaşı & Yedek Başrol',
+        description:
+          '20 yıldır Altan’ın gölgesinde kalan kıskanç bir oyuncu. Prömiyer gecesi Altan’ın odasının önünde tartışırken görüldü; dolabında parçalanmış yedek pelerin ve sahne arkası ortak anahtar seti bulundu.',
+        alibi: 'Kapı içeriden kilitli olduğu için odaya hiç giremediğini, kendi odasında ses açtığını iddia ediyor.',
         suspiciousQuotes: [
-          '"Ben Altan’dan daha iyi bir Kral Lear oynardım! Bunu bütün konservatuvar biliyordu."',
-          '"Odasına kostümün fermuarını bozmak için girmek istedim, yalan söylemeyeceğim! Sahneye çıkamasın da sıra bana gelsin istedim ama kapı kilitliydi!"',
-          '"Ben zehirden anlamam. Ben tiyatrocuyum, katil değilim."'
+          '"Yedek pelerini sinirden parçaladım, evet! Sahneye çıkamasın istedim ama kapı kilitliydi!"',
+          '"Eski bir aktör olarak sahne malzemeleri dolabının anahtarı bende de vardı ama zehir kullanmadım."',
+          '"Altan ölünce ikinci perdede rolü benim devralacağım doğru, ama bunu ben planlamadım."'
         ],
-        motiveHypothesis: 'Başrolü kapıp hayatının fırsatını yakalamak için Altan’ı saf dışı bırakmak.',
+        motiveHypothesis: '20 yıllık gölgeden çıkıp prömiyer başrolünü devralmak ve Altan’dan intikam almak.',
         initialSuspicion: 75,
         photoPlaceholder: {
           initials: 'CE',
@@ -428,20 +450,43 @@ O an beynim karardı. Saat 23:00'te sahil kamerasının şalterini indirdim. At�
         }
       },
       {
+        id: 'orhan-karahan',
+        name: 'Orhan Karahan',
+        title: 'Tiyatro Yapımcısı & Mali Ortak',
+        age: 53,
+        relation: 'Tiyatro Ortaklarından & Prodüksiyon Finansörü',
+        description:
+          'Altan’ın tiyatro kasasından 8 Milyon TL’lik devlet desteğini Londra’ya kaçıracağını öğrenince iflasın eşiğine geldi. İki hafta önce Altan adına 12 Milyon TL’lik "Başrol Hayati Risk Sigortası" poliçesi yaptırdığı ortaya çıktı.',
+        alibi: 'Perde arasında VIP locada kültür bakanlığı temsilcilerini ağırladığını söylüyor.',
+        suspiciousQuotes: [
+          '"O sigorta poliçesi turne sözleşmesi için zorunluydu, cinayetle ilgisi yok!"',
+          '"Saat 21:02’de kulis koridorundan sadece muhasebe evrakı almak için geçtim."',
+          '"Altan Londra’ya kaçsaydı tiyatro da ben de hacizle biterdik, ama ben iş insanıyım, katil değil."'
+        ],
+        motiveHypothesis: '8 Milyon TL’lik kaçışı durdurmak ve 12 Milyon TL’lik sigorta tazminatıyla tiyatroyu kurtarmak.',
+        initialSuspicion: 65,
+        photoPlaceholder: {
+          initials: 'OK',
+          tint: 'from-blue-950 to-slate-900',
+          silhouetteStyle: 'bg-blue-900/30 border-blue-600/40 text-blue-300'
+        }
+      },
+      {
         id: 'gulfem-saygin',
         name: 'Gülfem Saygın',
-        title: 'Tiyatro Kostüm Tasarımcısı & Altan’ın Resmi Eşi',
+        title: 'Baş Kostüm Tasarımcısı & Altan’ın Resmi Eşi',
         age: 46,
         relation: 'Eşi (15 Yıllık Evli & Tiyatronun Baş Kostümcüsü)',
-        description: 'Asil, mesafeli ve tiyatronun tüm görsel dünyasını yöneten kadın. Altan’ın genç oyuncularla sayısız ilişkisini bilmesine rağmen tiyatronun marka değeri için susuyordu. Ancak Altan’ın tiyatronun telif haklarını ve kasadaki 8 Milyon TL’yi Londra’ya kaçıracağını öğrendi.',
-        alibi: 'Olay anında dikiş atölyesinde figüranların yırtılan şapkalarını diktiğini söyledi.',
+        description:
+          'Tiyatronun tüm kostüm ve aksesuarlarını yöneten deneyimli tasarımcı. Altan’ın hem evliliğini hem de tiyatronun bütün birikimini Londra’ya kaçıracağını öğrenmişti.',
+        alibi: 'Saat 20:55’te broşu takıp çıktıktan sonra dikiş atölyesinde figüran şapkalarını onardığını belirtiyor.',
         suspiciousQuotes: [
-          '"Altan’ın kostümlerini 15 yıldır ben dikerim. Her iğnesi, her astarı benim elimden geçer."',
-          '"Boşanmak mı istiyordu? Boşanabilirdi ama tiyatronun adını lekelemesine izin veremezdim."',
-          '"Broş mu? O broş antika bir sahne aksesuarıydı. Her oyundan önce ben parlatırdım."'
+          '"Altan’ın kostümlerini 15 yıldır ben dikerim; broşunu yakasına her zamanki gibi 20:55’te ben taktım."',
+          '"Atölyemdeki arı balmumu, tarihi kadife yakaları sertleştirmek için kullandığım mesleki malzemedir."',
+          '"O gece odasına benden sonra kimin girdiğini bilmiyorum; koridor anahtarı kuliste herkeste var."'
         ],
-        motiveHypothesis: 'Tiyatronun sermayesini ve teliflerini korumak, Altan’ın kaçış planını engellemek.',
-        initialSuspicion: 50,
+        motiveHypothesis: 'Tiyatronun sermayesini ve 15 yıllık emeğini Londra’ya kaçıran eşini sahnede durdurmak.',
+        initialSuspicion: 55,
         photoPlaceholder: {
           initials: 'GS',
           tint: 'from-amber-950 to-orange-900',
@@ -453,12 +498,12 @@ O an beynim karardı. Saat 23:00'te sahil kamerasının şalterini indirdim. At�
       {
         id: 'ev-2-1-1',
         envelope: 1,
-        title: 'Soyunma Odası Olay Yeri Raporu & Broş İğnesi',
+        title: 'Soyunma Odası Olay Yeri Raporu & Aynadaki Ruj Yazısı',
         category: 'document',
         roleAccess: ['forensics', 'profiler', 'ballistics', 'field'],
-        summary: 'Altan Saygın makyaj koltuğunda baygın bulundu; yakasındaki kral broşunun arka iğnesinde reçinemsi bir kimyasal kalıntı var.',
-        fullReport: 'Kadıköy İlçe Emniyet Olay Yeri İnceleme Raporu:\n24 Ekim 21:15’te sahne amirinin ihbarı üzerine odaya girilmiştir. Altan Saygın makyaj koltuğunda bilinci kapalı vaziyettedir. Nabız zayıf, solunum baskılanmıştır. Aynada rujla yazılmış "GURURUN SONUN OLACAK" yazısı mevcuttur. Odada Altan’ın Kral Lear kostümünün yakasındaki metal broş incelenmiş, iğne ucunda deriye temas eden kurar-türevi mikroskobik jel tortusu tespit edilmiştir.',
-        keyDeduction: 'Zehir broş iğnesi aracılığıyla boyun damarına zerk edilmiştir; kostümü tasarlayan veya giydiren kişi şüphelidir.',
+        summary: 'Altan Saygın makyaj koltuğunda ölü bulundu. Kral broşunun iğnesinde jel tortusu var; aynada ise "GURURUN SONUN OLACAK" yazılı.',
+        fullReport: 'Kadıköy İlçe Emniyet Olay Yeri İnceleme Raporu:\n24 Ekim saat 21:15’te sahne amirinin ihbarıyla odaya girilmiştir. Altan Saygın Kral Lear kostümü içinde koltuğa yığılmış ve solunum durması sonucu hayatını kaybetmiştir. Yaka broşunun boyna bakan iğne ucunda mikroskobik reçine/jel kalıntısı görülmüştür. Makyaj aynasında bordo mat rujla yazılmış "GURURUN SONUN OLACAK" ibaresi mevcuttur. Kritik bulgu: Aynadaki su buharı ve ruj yağının dağılımı, yazının sıcak su ısıtıcısı açıkken yani Altan yere yığıldıktan hemen sonra (21:05-21:12 arası) yazıldığını göstermektedir.',
+        keyDeduction: 'Ölüm broş iğnesindeki toksinle gerçekleşmiştir; aynadaki ruj yazısı ise Altan kostümü giydikten sonra, hedef şaşırtmak için sonradan yazılmış olabilir.',
         mediaType: 'image',
         mediaUrl: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=800&q=80',
         mediaCaption: 'Olay Yeri Fotoğrafı: Makyaj aynasındaki ruj yazısı ve kral kostümü',
@@ -471,15 +516,15 @@ O an beynim karardı. Saat 23:00'te sahil kamerasının şalterini indirdim. At�
       {
         id: 'ev-2-1-2',
         envelope: 1,
-        title: 'Sahne Arkası Gizli Ses Kaydı',
+        title: 'Sahne Arkası İnterkom Ses Kaydı',
         category: 'audio',
         roleAccess: ['cryptology', 'profiler', 'archive'],
-        summary: 'Oyundan 20 dakika önce kulis koridorundaki interkom telsizine takılan tartışma ve hemen ardından odadaki fısıltılı konuşma.',
-        fullReport: 'Ses Kaydı Analizi #T-02:\n[20:52 - Koridor]: Erkek Sesi (Caner, kapalı kapı dışından): "Bunu yapamazsın Altan, bu rol benim hakkımdı!"\nAltan (içeriden): "Haddini bil Caner. Sen anca benim repliklerimi ezberleyen bir gölgesin. Londra biletlerim hazır, yarın bu tiyatroda ne sen kalacaksın ne Gülfem!"\n[20:56 - Oda İçi]: Kadın Sesi (Fısıltı): "Demek her şeyi bırakıp gidiyorsun Altan... Bu kostüm sana çok yakışacak, son sahnende unutulmaz olacaksın..."',
-        keyDeduction: 'Fısıltıyla konuşan kadın sesi soğukkanlıdır ve Altan’ın kostümüne atıfta bulunmaktadır.',
+        summary: 'Perde arasında interkom telsizine takılan sesler: 20:52’de Caner ile tartışma ve 20:56’da odada sakin bir konuşma.',
+        fullReport: 'Ses Kaydı Analizi #T-02:\n[20:52 - Koridor]: Caner (kapı dışından): "Bunu yapamazsın Altan, bu rol benim hakkımdı!"\nAltan (içeriden kapıyı kilitleyerek): "Haddini bil Caner. Londra biletlerim hazır, yarın bu tiyatroda ne sen kalacaksın ne diğerleri!"\n[20:56 - Oda İçi]: Altan kilidi açtıktan sonra Kadın Sesi (soğukkanlı): "Bu kostüm sana çok yakışacak Altan... Son sahnende herkes seni konuşacak."\n[21:02 - Koridor]: Ayak sesleri ve yapımcı Orhan’ın sesi: "Altan, imza evrakını masana bıraktım, Londra işini unut!"',
+        keyDeduction: 'Odaya 20:50-21:05 arasında birden fazla şüpheli erişmiştir; kapı 20:55 sonrası açık kalmıştır.',
         mediaType: 'audio',
         mediaUrl: '',
-        mediaCaption: 'İnterkom Telsiz Bandı: 20:55 kulis tartışması',
+        mediaCaption: 'İnterkom Telsiz Bandı: 20:52 - 21:02 kulis kayıtları',
         metadata: {
           date: '24 Ekim 2026',
           caseRef: 'SES-TYT-02',
@@ -492,9 +537,9 @@ O an beynim karardı. Saat 23:00'te sahil kamerasının şalterini indirdim. At�
         title: 'Polis Sorgu Tutanağı: Sahne Amiri Rıza Kurtuluş',
         category: 'interrogation',
         roleAccess: ['field', 'profiler', 'archive', 'forensics'],
-        summary: 'Sahne Amiri Rıza’nın resmi ifadesi: 20:45 ile 21:15 arası odaya girenler, Melis’in makasla çıkışı ve Gülfem’in broşu takışı.',
-        fullReport: 'T.C. KADIKÖY İLÇE EMNİYET MÜDÜRLÜĞÜ ASAYİŞ BÜRO\nTANIK İFADE VE SORGU TUTANAĞI\n\nTanık: Rıza Kurtuluş (51, Kadıköy Şehir Tiyatrosu Baş Sahne Amiri)\nSorgulayan: Komiser Selim Çetin / Sicil: 33819\nTarih: 24 Ekim 2026 - Saat 22:30\n\nSORU: Perde arasında Altan Saygın’ın odasına kimler girdi çıktı? Kronolojik sırayla anlatın.\nCEVAP: "Efendim, birinci perde 20:40’ta bitti. 20:45’te Melis Hanım ağlayarak elinde terzi makasıyla Altan’ın odasına daldı. İçeride bağrıştılar. 20:50’de Melis Hanım gözyaşları içinde kapıyı çarpıp fuayeye koştu. Hemen peşinden Caner koridorda belirdi; kapıyı yumrukladı, \'Altan konuşacağız\' dedi ama Altan kapıyı açmadı. Saat 20:55’te ise Altan’ın resmi eşi ve kostümcümüz Gülfem Hanım geldi. Elinde ahşap dikiş sepeti ve Kral Lear’ın kadife pelerini vardı. Odaya girdi. Yaklaşık 8 dakika kaldılar. Çıkarken Gülfem Hanım’a \'Kostüm hazır mı?\' diye sordum. Bana gayet sakin bir sesle, \'Broşunu yakasına bizzat taktım Rıza, bu gece son kez parlayacak\' dedi. 21:10’da anons için odaya girdiğimde Altan koltukta mosmor kesilmiş, nefes alamıyordu!"',
-        keyDeduction: 'Gülfem Saygın, olaydan hemen önce 20:55’te Altan’ın odasına girmiş ve broşu yakasına bizzat kendisi takmıştır.',
+        summary: 'Sahne Amiri Rıza’nın zaman çizelgesi: 20:45 Melis, 20:52 Caner, 20:55 Gülfem, 21:02 Orhan kulis koridorunda görüldü.',
+        fullReport: 'T.C. KADIKÖY İLÇE EMNİYET MÜDÜRLÜĞÜ\nTANIK İFADE TUTANAĞI\n\nTanık: Rıza Kurtuluş (51, Baş Sahne Amiri)\nCEVAP: "20:45’te Melis Hanım elinde makasla ağlayarak odaya daldı, 20:50’de çıktı. 20:52’de Caner kapıyı yumrukladı ama Altan içeriden sürgülemişti. 20:55’te Gülfem Hanım dikiş sepetiyle geldi, Altan kapıyı ona açtı; Gülfem Hanım broşu yakasına takıp 21:00’de çıktı. 21:02’de yapımcı Orhan Bey elinde bir dosya ile koridordan Altan’ın kapısına yürüdü. Saat 21:06 civarı ise tuvalet kapısı tarafından Melis Hanım’ın tekrar bu koridora doğru baktığını gördüm. 21:15’te anons için girdiğimde Altan cansız yatıyordu."',
+        keyDeduction: 'Dört şüphelinin de 20:45-21:08 arasında soyunma odasına ve koridora fiili erişimi vardır.',
         mediaType: 'text',
         metadata: {
           date: '24 Ekim 2026',
@@ -505,12 +550,12 @@ O an beynim karardı. Saat 23:00'te sahil kamerasının şalterini indirdim. At�
       {
         id: 'ev-2-2-1',
         envelope: 2,
-        title: 'Kimyasal Toksin Analizi & Dikiş İğnesi İzleri',
+        title: 'Mikroskobik Toksin Analizi: 37.2°C Balmumu Kapsülü',
         category: 'toxicology',
         roleAccess: ['forensics', 'ballistics', 'profiler', 'field'],
-        summary: 'Broş iğnesine mikroskobik balmumu kapsülü yerleştirilmiş; vücut ısısıyla eriyen kapsül zehri kana zerk etmiş.',
-        fullReport: 'Kriminal Kimya ve Lif İhtisas Raporu:\nBroş iğnesi üzerindeki kimyasal incelemede güney Amerika kökenli kobra-toksin/kurar analoğu tespit edilmiştir. İğnenin gövdesine mikro-kanallar açılmış ve balmumu ile mühürlenmiştir. Oyuncu kostümü giyip boyun sıcaklığı 36.5 dereceye ulaştığında balmumu 10 dakika içinde eriyip zehri serbest bırakmıştır. Bu düzenek yalnızca usta bir terzi veya kostüm tasarımcısı tarafından mikroskop altında hazırlanabilir.',
-        keyDeduction: 'Cinayet teşebbüsü tesadüf değildir; kostüm tasarımcısının doğrudan uzmanlığıdır.',
+        summary: 'Broş iğnesine mikro kanallar açılıp 37.2°C vücut ısısında 10-12 dakikada eriyen özel arı balmumu kapsülü yerleştirilmiş.',
+        fullReport: 'Kriminal Kimya ve Lif İhtisas Raporu:\nBroş iğnesindeki kurar-türevi nörotoksin, iğne gövdesine mikroskop altında açılan 0.3 mm’lik kanallara doldurulmuş ve doğal arı balmumu-reçine karışımıyla mühürlenmiştir. Deneysel simülasyona göre boyun derisi 37.2 derece sıcaklığa ulaştığında balmumu tam 10-12 dakika içinde eriyerek toksini serbest bırakmaktadır. Altan’ın ölüm saati 21:12 olduğuna göre broş boyna yaklaşık 20:58-21:02 aralığında temas etmiştir. Ayrıca broş klipsinin arka yüzeyinde sol el başparmak kavrama izi saptanmıştır.',
+        keyDeduction: 'Broşun hazırlanması mikro-terzilik ve arı balmumu bilgisi gerektirir; temas ise 20:58-21:02 aralığında başlamıştır.',
         mediaType: 'image',
         mediaUrl: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
         mediaCaption: 'Mikroskop Fotoğrafı: Broş iğnesindeki mikro-kanallı balmumu kapsülü',
@@ -523,28 +568,28 @@ O an beynim karardı. Saat 23:00'te sahil kamerasının şalterini indirdim. At�
       {
         id: 'ev-2-2-2',
         envelope: 2,
-        title: 'Asayiş Şube Sorgu Tutanağı: Şüpheli Caner Ertekin',
+        title: 'Sorgu Tutanağı: Caner Ertekin & Yapımcı Orhan Karahan',
         category: 'interrogation',
         roleAccess: ['profiler', 'field', 'archive', 'forensics'],
-        summary: 'Caner’in kulis dolabında parçalanmış pelerin bulundu; ancak zehirli broşa dokunmadığına dair çapraz sorgusu.',
-        fullReport: 'T.C. KADIKÖY ASAYİŞ ŞUBE CİNAYET MASASI\nŞÜPHELİ ÇAPRAZ SORGU TUTANAĞI\n\nŞüpheli: Caner Ertekin (47, Yedek Oyuncu)\nSorgulayan: Başkomiser Hakan Erdem\nTarih: 25 Ekim 2026 - Saat 02:45\n\nSORU: Kulis dolabınızda Kral Lear’ın yedek pelerini makasla parçalanmış bulundu. Altan’ın odasını neden yumrukladınız?\nCEVAP: "Altan’dan nefret ettiğimi inkâr etmeyeceğim. 20 yıldır onun gölgesinde figüran gibi yaşadım. Dün akşam Londra biletlerini gördüm, tiyatroyu batırıp kaçacağını duydum. Yedek kostümünü makasla kestim; tek amacım ikinci perdeye çıkamasın, oyun iptal olsun veya bana yalvarsınlar idi. Ama Altan’ın odasına giremedim bile, kapı içeriden kilitliydi! Yemin ederim zehirden zerre anlamam. O antika broşu Altan’ın yakasına takan kişi Gülfem Hanım’dı! Hatta dikiş kutusundan cımbızla çıkardı, elleri buz gibiydi!"\n\nAdli Tıp Notu: Caner’in parmaklarında ve eşyalarında toksin kalıntısına rastlanmamıştır. Yalnızca kumaş lifleri mevcuttur.',
-        keyDeduction: 'Caner yedek pelerini öfkeyle yırtmış ancak broşa zehir yerleştiren kişi değildir (Yanıltıcı Şüpheli).',
+        summary: 'Caner’in dolabında parçalanmış pelerin ve yedek kulis anahtarı; Orhan’ın odasında ise Altan adına yapılmış 12 Milyon TL’lik sigorta poliçesi bulundu.',
+        fullReport: 'T.C. KADIKÖY ASAYİŞ ŞUBE CİNAYET MASASI\nÇAPRAZ SORGU TUTANAĞI\n\n1. Caner Ertekin (47):\nDolabında parçalanmış yedek pelerin ve tüm kulis odalarını açan yedek anahtar bulundu. Caner: "Anahtarı kostümün yedeklerini kesmek için aldım, broşa dokunmadım!" dedi. İfadesinde makyaj masası suyuna uyku ilacı karıştırmayı düşündüğünü ancak vazgeçtiğini söyledi.\n\n2. Orhan Karahan (53):\nTiyatronun kasasından 8 Milyon TL kaçırıldığını doğrulayan banka ekstreleri ve Altan’ın ölümü halinde yapımcıya 12 Milyon TL ödeyen sigorta poliçesi ele geçirildi. Orhan: "21:02’de sadece fesih protokolü imzalatmak için kapıdan baktım, Altan broşunu yeni takmıştı, yalnızdı" dedi.',
+        keyDeduction: 'Caner’de tüm odaları açan anahtar ve sahne sabotajı motifi, Orhan’da ise 12 Milyon TL’lik sigorta tazminatı ve 21:02 oda erişimi vardır.',
         mediaType: 'text',
         metadata: {
           date: '25 Ekim 2026',
-          caseRef: 'SORGU-CANER-02',
+          caseRef: 'SORGU-CANER-ORHAN',
           confidentiality: 'GİZLİ',
         }
       },
       {
         id: 'ev-2-2-3',
         envelope: 2,
-        title: 'Cinayet Büro Çapraz Sorgu Tutanağı: Şüpheli Melis Haznedar',
+        title: 'Sorgu Tutanağı & Ruj Ekspertizi: Melis Haznedar',
         category: 'interrogation',
         roleAccess: ['profiler', 'field', 'archive', 'forensics', 'cryptology'],
-        summary: 'Melis Haznedar’ın elindeki terzi makası, aynadaki ruj yazısı ve Altan’ın şantajına dair ifadesi.',
-        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO AMİRLİĞİ\nŞÜPHELİ SORGU VE İFADE ZAPTI\n\nŞüpheli: Melis Haznedar (29, Tiyatro Oyuncusu / Sahne Partneri)\nSorgulayan: Komiser Selim Çetin\nTarih: 25 Ekim 2026 - Saat 04:15\n\nSORU: Olaydan 20 dakika önce elinizde terzi makasıyla Altan’ın odasından ağlayarak çıktınız. Aynadaki kırmızı ruj da sizin çantanızdaki tonla birebir aynı. Ne yaptınız o odada?\nCEVAP: "Altan bana hayatı zehir etti! Bir yıldır süren gizli ilişkimizi bitirmek istedim. Bana \'Benden ayrılırsan seni bu sezon kadro dışı bırakırım, hiçbir sahnede rol bulamazsın\' diye şantaj yaptı. Çıldırdım! Kulis masasından terzi makasını kaptım, odasına daldım. Bana aldığı sahte pırlantalı ipek atkıyı gözünün önünde lime lime kestim! Altan’a tek bir fiziki temasım olmadı. Aynadaki ruj yazısına gelince... O ruj benim mat bordo rujum, evet. Ama ben o ruju 3 gün önce kulis makyaj masasında unuttum, herkesin erişebileceği yerdeydi! Ben odaya girdiğimde aynada o yazı yoktu. Biri benim rujumu alıp beni suçlu göstermek için aynaya o yazıyı yazmış!"\n\nKriminal Ekspertiz: Aynadaki ruj yazısının bastırılma açısı ve el yazısı solak bir şahsa aittir. Melis Haznedar sağ elini kullanmaktadır; Gülfem Saygın ise solaktır!',
-        keyDeduction: 'Melis atkıyı kesmiş ancak zehirlememiştir. Aynadaki ruj yazısı Melis’in rujunu kullanan solak biri (Gülfem) tarafından hedef saptırmak için yazılmıştır.',
+        summary: 'Aynadaki ruj Melis’e ait çıktı; Melis 21:06’da tekrar koridorda görüldüğünü kabul etmek zorunda kaldı ancak yazıyı kendisinin yazmadığını savundu.',
+        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO\nŞÜPHELİ SORGU ZAPTI\n\nŞüpheli: Melis Haznedar (29)\nSORU: 20:50’de ayrıldığınızı söylediniz ama sahne amiri sizi 21:06’da tekrar koridorda görmüş. Aynadaki bordo mat ruj da sizin markanızla eşleşti!\nCEVAP: "21:06’da unuttuğum telefonumu almak için koridora döndüm ama odaya girmedim! Atkıyı makasla kestiğimi inkâr etmiyorum. O ruju üç gün önce kuliste kaybetmiştim! Aynadaki yazıya dikkatli bakın, harflerin eğimi benim el yazım değil!"\n\nKriminal Not: Aynadaki ruj yazısı sol eğimli baskı izi taşımaktadır; rujun dış kılıfında ise silinmiş parmak izi mevcuttur.',
+        keyDeduction: 'Melis saat 21:06’da koridorda bulunmuştur ve ruj kendisine aittir; ancak ruj yazısının el eğimi solak bir kullanıma işaret etmektedir.',
         mediaType: 'text',
         metadata: {
           date: '25 Ekim 2026',
@@ -555,12 +600,12 @@ O an beynim karardı. Saat 23:00'te sahil kamerasının şalterini indirdim. At�
       {
         id: 'ev-2-3-1',
         envelope: 3,
-        title: 'Londra Kaçış Planı ve Mali Şube Arama Raporu',
+        title: 'Mali Şube, Dikiş Atölyesi & El Yazısı Kriminal Raporu',
         category: 'document',
         roleAccess: ['archive', 'profiler', 'cryptology', 'forensics', 'field'],
-        summary: 'Altan’ın çantasında tiyatronun kasasını boşaltma planı; Gülfem’in çekmecesinde ise balmumu ve zehir tüpü bulundu.',
-        fullReport: 'Emniyet Mali Şube ve Arama Tutanağı:\n1. Altan Saygın’ın bavulunda tiyatronun resmi banka hesaplarından Londra’ya transfer edilmiş 8 Milyon TL’lik dekont bulunmuştur.\n2. Gülfem Saygın’ın dikiş atölyesindeki gizli iplik kutusunda toksin tüpü ve balmumu eriticisi ele geçirilmiştir.\n3. Aynadaki ruj yazısı: Gülfem, şüpheleri Melis’e yıkmak için Melis’in kuliste bıraktığı ruju kullanarak aynaya tehdit yazmıştır.',
-        keyDeduction: 'Gülfem’in atölyesindeki balmumu eriticisi ve Altan’ın Londra kaçış dekontları kuvvetli bir motife işaret ediyor. Ancak Melis’in makasla tehdidi ve Caner’in yedek pelerini parçalayarak sahneye çıkma çabası şüpheleri üç aktör arasında diri tutuyor.',
+        summary: 'Gülfem’in kilitli iplik kutusunda 37.2°C özel balmumu eriticisi ve broş mikro-delme aparatı; şüpheliler arasında el baskınlık analizi tamamlandı.',
+        fullReport: 'Emniyet Mali Şube ve Kriminal Ekspertiz Raporu:\n1. Altan’ın valizinde 8 Milyon TL’lik Londra transfer dekontu ve ertesi sabah 06:30 uçuş bileti bulundu.\n2. Gülfem Saygın’ın kilitli iplik kutusunda iğne mikro-delme ucu ile aynı erime derecesine (37.2°C) ayarlı balmumu karışımı ve eser miktarda nörotoksin kalıntısı tespit edildi.\n3. Kriminal El Analizi: Aynadaki "GURURUN SONUN OLACAK" yazısı solak bir el tarafından hızlıca yazılmıştır. Şüphelilerden Melis sağlak, Orhan sağlak, Caner ise her iki elini kullanan (ambidextrous) bir oyuncudur; Gülfem ise doğuştan solaktır.',
+        keyDeduction: 'Atölyedeki mikro-delme aparatı ve 37.2°C özel balmumu karışımı broş düzeneğiyle eşleşmektedir; aynadaki yazı ise solak bir el tarafından Altan’ın çöküşü sırasında yazılmıştır.',
         mediaType: 'text',
         metadata: {
           date: '25 Ekim 2026',
@@ -571,12 +616,12 @@ O an beynim karardı. Saat 23:00'te sahil kamerasının şalterini indirdim. At�
       {
         id: 'ev-2-3-2',
         envelope: 3,
-        title: 'Cinayet Büro Çapraz Sorgu Tutanağı: Gülfem Saygın',
+        title: 'Son Çapraz Sorgu: Gülfem Saygın',
         category: 'interrogation',
         roleAccess: ['forensics', 'profiler', 'archive'],
-        summary: 'Gülfem Saygın’ın dikiş atölyesindeki balmumu eriticisi, antika broş montajı ve sol el yazısı kriminal analizine dair çapraz sorgusu.',
-        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO AMİRLİĞİ\nÇAPRAZ SORGU VE SAVUNMA ZAPTI\n\nŞüpheli: Gülfem Saygın (46, Tiyatro Baş Kostüm Tasarımcısı & Maktul Eşi)\nSorgulayan: Başkomiser Hakan Erdem / Baro Avukatı Eşliğinde\nTarih: 25 Ekim 2026 - Saat 10:15\n\nSORU: Dikiş kutunuzdaki balmumu eriticisi ve broş iğnesinin kilidindeki sol başparmak iziniz tespit edildi. Aynadaki yazıyı da sol elini kullanan birinin yazdığı raporda yazıyor. Ne diyeceksiniz?\nCEVAP: "Saçmalamayı kesin! Dikiş atölyemdeki balmumu, 200 yıllık tarihi kadife yakaları sertleştirmek ve nakış ipliklerini mumlamak için kullandığım mesleki bir malzemedir. Zehirle hiçbir alakası yoktur! Broş iğnesindeki parmak izime gelince; o kostümün baş tasarımcısı benim! Broşu Altan\'ın yakasına 20:55\'te ben taktım, tabii ki parmak izim çıkacak! Altan telaşlıydı, aynada saçını düzeltiyordu.\nSolak olmam beni katil yapmaz! Aynadaki tehdit yazısını Melis\'in yazdığı gün gibi aşikar. Masada Melis\'in unuttuğu bordo ruju gördüm. Melis\'in elinde devasa terzi makasıyla Altan\'ın odasından çıktığını bütün kulis gördü! Altan onu yeni sezonda kadro dışı bırakacaktı, Melis intikam yemini etmişti!\nAyrıca Caner\'i de sorguladınız mı? Caner 20 yıldır Altan\'ın yedeği olmaktan çıldırmış durumdaydı. Kostüm odasında Altan\'ın yedek pelerinini parçalarken suçüstü yakalandı, dolabında kas gevşetici ilaçlar bulundu! Caner sahneye çıkabilmek için Altan\'ın içeceğine zehir katmış olabilir. Beni 15 yıllık kocamı sahnede öldürmeye çalışmakla suçlayamazsınız; ben tiyatronun onurunu korudum!"',
-        keyDeduction: 'Gülfem Saygın balmumu ve broş delillerini mesleki gerekçelerle açıklamış; aynadaki ruj yazısını ve zehirlemeyi Melis ile Caner’in üzerine atmıştır. Olay gecesi üç şüphelinin de kulisteki hareketleri ve sahnede yer alma motifi kafa karıştırmaktadır.',
+        summary: 'Gülfem Saygın balmumu ve mikro-uçları tarihi kostüm restorasyonuna bağladı; Melis’in 21:06 koridor dönüşünü ve Orhan’ın 12 Milyon TL’lik sigortasını öne sürdü.',
+        fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO\nSON ÇAPRAZ SORGU ZAPTI\n\nŞüpheli: Gülfem Saygın (46)\nCEVAP: "Tarihi kostümlerin yakasını sertleştirmek için balmumu ve ince iğne uçları kullanmam kadar doğal ne var? Zehir bulaşığı varsa bile Caner’de yedek anahtar vardı, atölyeme de girebilirdi! Caner iki elini de kullanabilen bir aktör değil mi? Ya da 12 Milyon TL sigorta tazminatı alacak olan Orhan Karahan’a, 21:06’da koridorda yakalanan ve aynada kendi ruju çıkan Melis’e neden aynı sertlikte bakmıyorsunuz? Ben 20:55’te broşu taktım ve çıktım!"',
+        keyDeduction: 'Gülfem suçu Orhan’ın sigorta poliçesine, Caner’in anahtarına ve Melis’in rujuna yöneltmektedir; ancak 20:55’te broşu bizzat takması, 10-12 dakikalık erime penceresi (ölüm 21:12) ve özel 37.2°C balmumu karışımı kritik zamanlamayı oluşturmaktadır.',
         mediaType: 'text',
         metadata: {
           date: '25 Ekim 2026',
@@ -588,68 +633,60 @@ O an beynim karardı. Saat 23:00'te sahil kamerasının şalterini indirdim. At�
     gates: {
       1: {
         envelope: 1,
-        title: 'Zarf 1 Soruşturma Sorusu: Suç Aletinin Tespiti',
-        instructions: 'Zarf 1 bulgularına dayanarak aşağıdaki soruyu yanıtlayın.',
-        question: 'Altan Saygın’ın bilincini kaybetmesine neden olan toksin vücuduna nasıl girmiştir?',
+        title: 'Zarf 1 Doğrulama Sorusu: Olay Yeri ve Zamanlama',
+        instructions: 'Zarf 1 belgelerindeki ölüm sebebi ve ayna yazısı zamanlamasını değerlendirin.',
+        question: 'Olay yeri raporuna göre zehrin bulaşma yolu ve aynadaki ruj yazısının zamanı hakkında hangisi doğrudur?',
         options: [
-          { id: 'q1-1', text: 'Kostümün yakasındaki antika broş iğnesi vasıtasıyla boyun bölgesinden.', isCorrect: true },
-          { id: 'q1-2', text: 'Makyaj masasında içtiği maden suyuna zehir katılarak.', isCorrect: false },
-          { id: 'q1-3', text: 'Sahne ışıklarından sızan kimyasal gaz ile.', isCorrect: false }
+          { id: 'q1-1', text: 'Toksin broş iğnesinden boyun derisine geçmiştir; aynadaki yazı ise Altan yere yığıldıktan hemen sonra (21:05-21:12) yazılmıştır.', isCorrect: true },
+          { id: 'q1-2', text: 'Toksin makyaj masası suyuna karıştırılmıştır; aynadaki yazı ise Altan odaya girmeden saat 20:45’te yazılmıştır.', isCorrect: false },
+          { id: 'q1-3', text: 'Toksin sahne perdesindeki tozdan solunmuştur; aynadaki yazıyı Altan son nefesinde kendisi yazmıştır.', isCorrect: false }
         ],
-        explanation: 'Broş iğnesindeki kimyasal jel kalıntısı deriye temas ederek zehirlemiştir.'
+        explanation: 'Su buharı analizi ruj yazısının 21:05-21:12 arasında sonradan yazıldığını, toksinin ise broş iğnesiyle verildiğini göstermektedir.'
       },
       2: {
         envelope: 2,
-        title: 'Zarf 2 Soruşturma Sorusu: Kimyasal Düzeneğin Niteliği',
-        instructions: 'Zarf 2’deki kriminal mikroskop raporunu analiz edin.',
-        question: 'Broş üzerindeki balmumu kapsülü düzeneği hangi özel uzmanlığı gerektirmektedir?',
+        title: 'Zarf 2 Doğrulama Sorusu: Termal Kapsül Penceresi',
+        instructions: 'Mikroskobik toksin raporundaki erime süresini ölüm saatiyle (21:12) eşleştirin.',
+        question: 'Broştaki 37.2°C balmumu kapsülünün 10-12 dakikalık erime süresi broşun ne zaman takıldığını gösterir?',
         options: [
-          { id: 'q2-1', text: 'Kumaş, dikiş iğneleri ve kostüm detaylarına hakim ileri düzey terzilik ve kostüm tasarımı.', isCorrect: true },
-          { id: 'q2-2', text: 'Patlayıcı ve balistik bomba uzmanlığı.', isCorrect: false },
-          { id: 'q2-3', text: 'Tiyatro ses ve ışık teknisyenliği.', isCorrect: false }
+          { id: 'q2-1', text: 'Broş saat 20:58-21:02 aralığında yakaya takılmış ve tam ikinci perde başlangıcında toksini serbest bırakmıştır.', isCorrect: true },
+          { id: 'q2-2', text: 'Broş birinci perdeden önce saat 19:30’da takılmış ve oyun boyunca etkisiz kalmıştır.', isCorrect: false },
+          { id: 'q2-3', text: 'Kapsül oda sıcaklığında kendiliğinden erimiş, broş yakaya takılmadan önce buharlaşmıştır.', isCorrect: false }
         ],
-        explanation: 'İğneye mikro-kanallar açıp balmumuyla mühürlemek kostüm ustasının el becerisidir.'
+        explanation: '37.2°C vücut ısısında 10-12 dakikada eriyen kapsül, 20:58-21:02 temas başlangıcıyla 21:12 ölüm saatini birebir açıklar.'
       },
       3: {
         envelope: 3,
-        title: 'Zarf 3 Soruşturma Sorusu: Aynadaki Sahte İpucu',
-        instructions: 'Makyaj aynasındaki rujlu tehdit yazısının kriminal ekspertizini değerlendirin.',
-        question: 'Kulis aynasındaki rujlu tehdit yazısı ve el yazısı kriminal analizi neyi ortaya çıkarmıştır?',
+        title: 'Zarf 3 Doğrulama Sorusu: Teknik Düzenek ve Şaşırtmaca',
+        instructions: 'Zarf 3’teki atölye ve el yazısı analizini birleştirin.',
+        question: 'Kriminal raporlar aynadaki ruj yazısı ve mikro-kanallı broş düzeneği hakkında hangi sonucu ortaya koymuştur?',
         options: [
-          { id: 'q3-1', text: 'Yazının solak bir şahıs tarafından ve Melis’in masada unuttuğu rujla hedef saptırmak amacıyla yazıldığını.', isCorrect: true },
-          { id: 'q3-2', text: 'Yazının Altan’ın kendi el yazısıyla intihar notu olarak yazıldığını.', isCorrect: false },
-          { id: 'q3-3', text: 'Yazının tiyatro müdürü Caner tarafından bir şaka amacıyla yazıldığını.', isCorrect: false }
+          { id: 'q3-1', text: '37.2°C özel balmumu karışımı ve mikro-delme ucu dikiş atölyesinde bulunmuş, aynadaki yazı ise hedef saptırmak için sol elle yazılmıştır.', isCorrect: true },
+          { id: 'q3-2', text: '12 Milyon TL’lik sigorta poliçesi broş iğnesinin Orhan Karahan tarafından üretildiğini kesinleştirmiştir.', isCorrect: false },
+          { id: 'q3-3', text: 'Melis Haznedar’ın sağ eliyle yazdığı tehdit notu, yedek pelerin kesimiyle aynı anda gerçekleşmiştir.', isCorrect: false }
         ],
-        explanation: 'Kriminal analiz rujun Melis’in unuttuğu ruj olduğunu ve yazının solak bir fail tarafından hedef şaşırtmak için yazıldığını kanıtlamıştır.'
+        explanation: 'Mikro-delme aparatı ve 37.2°C özel balmumu Gülfem’in kilitli kutusundan çıkmış, sol el yazısı ise Melis’in rujuyla hedef şaşırtmak için yazılmıştır.'
       }
     },
     solution: {
       culpritId: 'gulfem-saygin',
       culpritName: 'Gülfem Saygın',
       motiveTitle: 'Tiyatronun Milyonluk Fonlarını Kurtarmak & İhanet İntikamı',
-      keyEvidenceTitle: 'Dikiş Kutusundaki Balmumu Eriticisi & Mikro-Kanallı Broş',
+      keyEvidenceTitle: 'Mali Şube, Dikiş Atölyesi & El Yazısı Kriminal Raporu',
       fullChronology: [
-        { time: '19:30', action: 'Gülfem Saygın, dikiş atölyesinde Kral Lear kostümünün broşuna vücut ısısıyla eriyen balmumu kapsülünü yerleştirir.', proof: 'Kriminal Lif ve Toksin Raporu' },
-        { time: '20:45', action: 'Melis, Altan’ın odasına gidip tartışır ve hediyeleri parçalayıp çıkar.', proof: 'Tanık ifadeleri' },
-        { time: '20:55', action: 'Gülfem odaya girip Altan ile son kez konuşur, ardından Melis’in masada unuttuğu rujla aynaya yanıltıcı tehdit yazar.', proof: 'İnterkom ses kaydı & Kriminal rapor' },
-        { time: '21:05', action: 'Altan kostümü giyer, 10 dakika içinde vücut ısısı zehri serbest bırakır ve Altan yere yığılır.', proof: 'Adli Tıp Raporu' },
-        { time: '21:15', action: 'Sahne amiri Altan’ı bulur ve perde indirilir.', proof: 'Polis ihbar zabtı' }
+        { time: '19:30', action: 'Gülfem Saygın, dikiş atölyesindeki mikro-delme ucuyla broş iğnesini işler ve 37.2°C’de eriyen özel balmumu kapsülünü yerleştirir.', proof: 'Dikiş Atölyesi Arama Raporu' },
+        { time: '20:45 - 20:52', action: 'Melis atkıyı kesip çıkar; Caner kapıyı yumruklar ama Altan kapıyı kilitler.', proof: 'Sahne Amiri & İnterkom Kaydı' },
+        { time: '20:55 - 21:00', action: 'Gülfem odaya girer ve zehirli broşu bizzat Altan’ın yakasına takar.', proof: 'Sahne Amiri İfadesi & Termal Kapsül Penceresi' },
+        { time: '21:02 - 21:06', action: 'Orhan evrak bırakıp çıkar, Melis telefonunu almak için koridora döner.', proof: 'Sahne Amiri & Orhan Sorgusu' },
+        { time: '21:08 - 21:12', action: 'Balmumu erir, Altan koltuğa yığılır ve ölür. Gülfem hızlıca odaya girip Melis’in rujuyla sol eliyle aynaya tehdit yazarak suçu dağıtır.', proof: 'Buharlı Ayna Analizi & Adli Tıp Raporu' }
       ],
-      verdictSummary: 'Dedektif masasının ortak kararıyla fail Gülfem Saygın yakalandı. Altan hastanede panzehirle kurtarıldı; Gülfem Saygın mahkemede suçunu itiraf ederek tiyatronun sermayesini korumak için bunu yaptığını belirtti.',
-      confessionAudioTranscript: 'İtiraf Tutanağı: "15 yılımı bu sahneye verdim. O nankör adam genç bir kadınla Londra’ya kaçıp tiyatromuzu batıracaktı. Onu öldürmek istemedim, sadece o uçağa binmesini engellemek ve sahnesini sonlandırmak istedim."',
-      confessionLetter: `[ADLİ EMANET KASASI - GÜLFEM SAYGIN'IN GİZLİ MEKTUBU VE İTİRAFI]
+      verdictSummary: 'Katil Gülfem Saygın’dır. Caner yedek anahtarla kostüm kesmiş, Melis koridora dönmüş, Orhan 12 Milyon TL sigorta poliçesi yaptırmıştı; ancak 37.2°C özel balmumlu mikro-kanallı broşu 20:55’te takan ve sonradan sol eliyle ruj yazısı yazan fail Gülfem’dir.',
+      confessionAudioTranscript: 'İtiraf Tutanağı: "15 yılımı bu sahneye verdim. Orhan da Caner de Melis de ondan nefret ediyordu; ama tiyatroyu ve emeğimi Londra’ya kaçırmasını sadece ben durdurabilirdim."',
+      confessionLetter: `[ADLİ EMANET KASASI - GÜLFEM SAYGIN'IN İTİRAF MEKTUBU]
 
-"Altan... Eğer bu satırları okuyorsan, hastane odasındaki panzehir seni hayata döndürmüş demektir. Ama bil ki sahnendeki o parlak ışıklar artık söndü.
+"15 yıl boyunca Kadıköy Şehir Tiyatrosu'nun her perdesini, her kostümünü ellerimle kurdum. Altan ise tiyatronun 8 Milyon TL'lik fonunu gizlice Londra'ya aktarıp yarın sabah tek başına kaçacaktı.
 
-Biz bu Kadıköy Şehir Tiyatrosu'nu 15 yıl önce iki kırık bavulla kurduk. Sen sahneye çıktın, alkışları topladın; ben bodrum katında parmaklarım delinene kadar kostüm diktim, bilet kestim, tiyatronun kuruşunu hesapladım. Ama sen narsist bir canavara dönüştün. Son iki yıldır tiyatronun kasasından 8 Milyon TL'lik devlet desteğini ve telif fonlarını sahte paravan hesaplarla Londra'ya kaçırdığını dekontlarıyla buldum. Beni bir çöp gibi bir kenara atıp, tüm birikimimizi alarak tek başına Londra'ya kaçacaktın.
-
-Tiyatromuzun senin açgözlülüğün yüzünden batmasına izin veremezdim. Seni öldürmek istemedim Altan. Ölüm senin için fazla kolay bir kaçış olurdu. Seni sahnende, en büyük rolünde diz çöktürmek istedim.
-
-Dikiş atölyesinde Kral Lear kostümünün antika broş iğnesine mikroskop altında mikro-kanallar açtım. Güney Amerika yerlilerinin kullandığı felç edici kurar jelini iğnenin içine zerk ettim; ağzını da tam 37.2 derece vücut ısısında eriyen doğal arı balmumuyla mühürledim. Broşu yakana saat 20:55'te bizzat takarken gözlerinin içine baktım. 'Bu gece son kez parlayacaksın' dedim. Vücudun ısındıkça balmumu eriyecek, toksin derine sızacak ve tam ikinci perdenin başlangıcında seni felç edecekti. Uçağa asla yetişemeyecektin.
-
-Makyaj masasında Melis'in unuttuğu bordo ruju görünce sol elimle aynaya o tehdit mesajını yazdım. Herkesin bunu bir yasak aşk kavgası sanmasını, Melis'in elindeki makasla suçlu ilan edilmesini planlamıştım. Caner'in de rol hırsıyla ortalıkta dolaşması işime geldi.
-
-Ben bir katil değilim; ben hayatımı ve tiyatromu bir sahtekâra karşı koruyan bir kadınım. Perde kapandı Altan."`
+Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmumuyla toksini mühürledim. Saat 20:55'te broşu yakasına bizzat taktım; 10-12 dakika içinde vücut ısısıyla eriyeceğini biliyordum. Altan yere yığılınca Melis'in makyaj masasında unuttuğu ruju alıp sol elimle aynaya tehdit yazdım. Orhan'ın sigorta poliçesi, Caner'in yedek anahtarı ve Melis'in koridordaki kavgası arasında gerçeği kimse göremez sanmıştım."`
     }
   },
 
@@ -666,15 +703,15 @@ Ben bir katil değilim; ben hayatımı ve tiyatromu bir sahtekâra karşı koruy
     maxPlayers: 6,
     totalEnvelopes: 3,
     bannerTag: 'SANAYİ CASUSLUĞU · TELSİZ ALARMI & ASİT SABOTAJI',
-    synopsis: 
-      'Zonguldak kırsalındaki Karaca Madencilik ve Jeokimya Araştırma Tesisi’nde, bağımsız güvenlik denetçisi ve başmühendis Erdem Soydan (39), eksi 200 metre kotundaki araştırma şaftında asansör kabininin düşmesi sonucu şüpheli şekilde hayatını kaybetti. İlk başta kaza dense de çelik halatların asitle eritildiği ortaya çıktı. Tesiste milyon dolarlık lityum batarya patenti üzerinde gizli bir casusluk savaşı yaşanmaktadır.',
+    synopsis:
+      'Zonguldak kırsalındaki Karaca Madencilik ve Jeokimya Tesisi’nde bağımsız güvenlik denetçisi Erdem Soydan (39), -200 metre kotundaki araştırma şaftında asansör kabininin çakılması sonucu hayatını kaybetti. Çelik halatın özel asitle eritildiği, fren dişlisine ise kurşun takoz çakıldığı ortaya çıktı. 50 Milyon Dolarlık lityum patenti ve maden kapatma raporu gölgesinde tesisteki dört kritik isim şüpheli konumunda.',
     victim: {
       name: 'Erdem Soydan',
       age: 39,
       title: 'Bağımsız Maden Denetçisi & Metalurji Başmühendisi',
       timeOfDeath: '26 Ekim Pazar, 22:10 suları',
       locationOfBody: 'Karaca Maden Ocağı, -200 Metre Şaft Tabanı',
-      causeInitial: 'Yüksekten düşmeye bağlı çoklu travma ve şaft kabini ezilmesi',
+      causeInitial: 'Yüksekten düşmeye bağlı çoklu travma ve kabin ezilmesi',
     },
     suspects: [
       {
@@ -683,14 +720,15 @@ Ben bir katil değilim; ben hayatımı ve tiyatromu bir sahtekâra karşı koruy
         title: 'Maden ve Tesis Sahibi (İş İnsanı)',
         age: 52,
         relation: 'İşletme Sahibi & Denetlenen Taraf',
-        description: 'Sert, otoriter ve madenin kapatılmasını önlemek için her yolu deneyen biri. Erdem Soydan’a denetim raporunu olumlu yazması için 3 Milyon TL rüşvet teklif etmiş, reddedilince tehdit etmişti. Arabasında Erdem’in evrak çantası bulundu.',
-        alibi: 'Olay anında idari binada muhasebecisiyle bilanço incelediğini söyledi.',
+        description:
+          'Madenin kapatılmasını önlemek için Erdem’e 3 Milyon TL rüşvet teklif edip reddedilmişti. Makam arabasının bagajında Erdem’in evrak çantası, muhasebesinde ise bakım mühendisi Kemal’e yapılmış kayıt dışı ödemeler bulundu.',
+        alibi: 'Olay saatinde idari binadaki odasında bilanço incelediğini iddia ediyor.',
         suspiciousQuotes: [
-          '"Erdem çok dik kafalıydı. Madeni kapatırsa 400 işçi aç kalırdı, bunu ona anlattım."',
-          '"Arabamdaki çanta mı? Erdem odamda unuttu, yarın iade edecektim!"',
-          '"Ben deli miyim kendi tesisimin asansörünü patlatayım? Maden 6 ay mühürlendi, asıl zararı ben gördüm!"'
+          '"Rüşvet teklif ettim çünkü maden kapanırsa 400 işçi ve ben batardık; ama cinayet işlemedim!"',
+          '"Arabamdaki çantayı Erdem odamda unutmuştu, ertesi gün iade edecektim."',
+          '"Madenimi patlatsam ağırlaştırılmış müebbet alırım ve tesis mühürlenir; akıl kârı değil!"'
         ],
-        motiveHypothesis: 'Madenin kapatılmasını ve iflas etmeyi engellemek için denetçiyi susturmak.',
+        motiveHypothesis: 'Madenin mühürlenmesini engellemek ve kapatma raporunu yok etmek.',
         initialSuspicion: 75,
         photoPlaceholder: {
           initials: 'HK',
@@ -701,18 +739,19 @@ Ben bir katil değilim; ben hayatımı ve tiyatromu bir sahtekâra karşı koruy
       {
         id: 'murat-cetin',
         name: 'Murat Çetin',
-        title: 'Vardiya Amiri & Maden İşçisi',
+        title: 'Vardiya Amiri & Şaft Çalışanı',
         age: 31,
-        relation: 'Şaft Sorumlusu & Saha Çalışanı',
-        description: 'Geçen yıl madendeki ihmal yüzünden kardeşini kaybetmiş öfkeli bir işçi. Olay saatinde asit ve kimyasal deposunun anahtarı üzerindeydi ve asansör makine dairesinden çıkarken görüldü.',
-        alibi: 'Şaft lambalarını tamir ettiğini iddia ediyor.',
+        relation: 'Gece Vardiyası Şaft Sorumlusu',
+        description:
+          'Geçen yıl şaft ihmalinden kardeşini kaybetmiş öfkeli bir işçi. Olaydan önce asansör makine dairesinde görüldü; tulumunda mazot lekesinin yanı sıra iş güvenliği atölyesine ait metal/kurşun talaşı da tespit edildi.',
+        alibi: 'Makine dairesine jeneratörden mazot çekmek için girdiğini, asansöre dokunmadığını iddia ediyor.',
         suspiciousQuotes: [
-          '"Hasan Karaca gibiler işçinin canını hiçe sayar. Erdem Bey doğru bir adamdı, madeni kapatacaktı."',
-          '"Asit deposuna kaçak lamba yakıtı almak için girdim, inkâr etmiyorum. Ama asansör halatına dokunmadım!"',
-          '"Berna Hanım’ın laboratuvardan geç saatte elinde sarı bidonla çıktığını gördüm, ona neden sormuyorsunuz?"'
+          '"Makine dairesine kaçak mazot için girdim, inkâr etmiyorum; ama halata asit dökmedim!"',
+          '"Tulumumdaki metal talaşı gündüz vardiya onarımından kalma, takoz çakmadım."',
+          '"Gece 21:18 civarı Berna Hanım’ı elinde korumalı numune çantasıyla kule yolunda gördüm."'
         ],
-        motiveHypothesis: 'İhmalleri protesto etmek ve tesisi sabotajla durdurmak.',
-        initialSuspicion: 65,
+        motiveHypothesis: 'Kardeşinin ölümünün intikamını almak ve ihmalkâr tesisi sabotajla durdurmak.',
+        initialSuspicion: 70,
         photoPlaceholder: {
           initials: 'MÇ',
           tint: 'from-blue-950 to-slate-900',
@@ -720,20 +759,43 @@ Ben bir katil değilim; ben hayatımı ve tiyatromu bir sahtekâra karşı koruy
         }
       },
       {
+        id: 'kemal-aksoy',
+        name: 'Kemal Aksoy',
+        title: 'Şaft Bakım & İş Güvenliği Başmühendisi',
+        age: 44,
+        relation: 'Asansör Bakım Sorumlusu & Teknik Amir',
+        description:
+          'Asansörün mekanik fren dişlilerine ve kurşun denge takozlarına doğrudan erişimi olan başmühendis. Halat bakım raporunu 2 gün önce sahte imzaladığı ve patron Hasan Karaca’dan gizli prim aldığı belirlendi.',
+        alibi: 'Saat 21:00’den sonra şantiye dışındaki lojmanda uyuduğunu iddia ediyor.',
+        suspiciousQuotes: [
+          '"Bakım raporunu Hasan Bey’in baskısıyla erken imzaladım, halatta mekanik sorun yoktu!"',
+          '"Kurşun takozlar bakım atölyesinde açıkta durur, gece vardiyasındaki herkes alabilirdi."',
+          '"Ben mekanikçiyim, o özel kimyasal asidi nereden bulup süreceğim?"'
+        ],
+        motiveHypothesis: 'Sahte güvenlik onayının denetçi tarafından savcılığa verilmesini engellemek.',
+        initialSuspicion: 65,
+        photoPlaceholder: {
+          initials: 'KA',
+          tint: 'from-emerald-950 to-slate-900',
+          silhouetteStyle: 'bg-emerald-900/30 border-emerald-600/40 text-emerald-300'
+        }
+      },
+      {
         id: 'berna-tezcan',
-        name: 'Berna Tezcan',
+        name: 'Dr. Berna Tezcan',
         title: 'Tesis Baş Jeoloğu & Kimya Laboratuvar Şefi',
         age: 37,
-        relation: 'Erdem’in Üniversiteden Eski Laboratuvar Ortağı',
-        description: 'Sessiz, bilimsel kariyerine odaklı bir araştırmacı. Tesisin derin katmanlarında devasa bir lityum rezervi keşfetmiş ve patenti Erdem ile ortak tescillemek üzereydi. Ancak Erdem’in madeni çevreye zehir saçtığı için kapatma kararı aldığını ve patentin kamuya devredileceğini öğrendi.',
-        alibi: 'Olay gecesi 21:00’den itibaren laboratuvarda spektrometre testleri yaptığını belirtti.',
+        relation: 'Erdem’in Eski Üniversite Ortağı',
+        description:
+          'Tesiste 50 Milyon Dolarlık lityum rezervi keşfetmişti. Erdem’in çevre raporu nedeniyle madeni kapatıp lityum sahasını kamu korumasına devredeceğini öğrenince olay günü patent ortaklığından Erdem’in adını sildi.',
+        alibi: 'Saat 21:00’den itibaren kimya laboratuvarında gece vardiyası lityum testi yaptığını belirtiyor.',
         suspiciousQuotes: [
-          '"Erdem ile 10 yıldır bilimsel araştırmalar yapıyorduk. O benim meslektaşımdı."',
-          '"Lityum patenti 50 Milyon Dolar değerinde. Erdem bu madeni kapatırsa bütün araştırmamız çöpe gidecekti."',
-          '"Laboratuvarımdaki asitler kilit altındadır. Anahtar yalnızca bende ve vardiya amirinde bulunur."'
+          '"Erdem projeye aylardır katkı sunmadığı için adını patentten çıkardım; cinayet sebebi değil!"',
+          '"Asit korozyonu aramalarım maden kuyu borularındaki paslanma simülasyonu içindi."',
+          '"Laboratuvara kartla giriş yapabilen başka yetkililer de var; kumpas kuruluyor."'
         ],
-        motiveHypothesis: '50 Milyon Dolarlık lityum batarya patentini tek başına ele geçirmek ve patentin iptalini engellemek.',
-        initialSuspicion: 55,
+        motiveHypothesis: '50 Milyon Dolarlık lityum patentini tek başına sahiplenmek ve saha kapanışını önlemek.',
+        initialSuspicion: 60,
         photoPlaceholder: {
           initials: 'BT',
           tint: 'from-purple-950 to-indigo-900',
@@ -748,9 +810,9 @@ Ben bir katil değilim; ben hayatımı ve tiyatromu bir sahtekâra karşı koruy
         title: 'Şaft Enkazı Kriminal Raporu & Kopan Çelik Halat',
         category: 'document',
         roleAccess: ['forensics', 'ballistics', 'field', 'profiler'],
-        summary: 'Asansör halatının mekanik yorgunluktan değil; sülfürik-hidroklorik asit karışımıyla kasten eritilerek koparıldığı belirlendi.',
-        fullReport: 'Kriminalistik Olay Yeri Zabtı:\n26 Ekim saat 22:10’da -200 kotuna çakılan servis asansöründe yapılan incelemede:\n- Çelik taşıyıcı halatın kopma noktasında kimyasal erime ve yeşilimsi korozyon köpüğü tespit edilmiştir.\n- Olay bir mekanik aşınma değil, yüksek saflıkta derişik asit tatbikiyle gerçekleşmiş bir sabotajdır.\n- Kabin fren blokaj mekanizmasının arasına kasten kurşun takoz sıkıştırılarak acil fren devre dışı bırakılmıştır.',
-        keyDeduction: 'Sabotajcı kimya bilgisine ve maden fren sisteminin teknik detaylarına tam hakimdir.',
+        summary: '40 tonluk çelik halat mekanik yorgunluktan değil, güçlü bir asit karışımıyla kasten eritilerek koparılmış; acil fren ise kurşun takozla kilitlenmiş.',
+        fullReport: 'Kriminalistik Olay Yeri Zabtı:\n26 Ekim saat 22:10’da -200 kotuna çakılan servis asansöründe yapılan incelemede:\n- Çelik taşıyıcı halatın kopma noktasında kimyasal erime ve yeşilimsi korozyon köpüğü tespit edilmiştir.\n- 40 tonluk halat liflerinin kopma seviyesine inmesi için derişik asidin en az 35-45 dakika önce uygulanmış olması gerekmektedir.\n- Kabin fren dişlisinin arasına bakım atölyesi standardında döküm kurşun takoz çakılarak acil fren devre dışı bırakılmıştır.',
+        keyDeduction: 'Sabotaj hem kimyasal erime süresi (21:15-21:30 uygulaması) hem de fren mekanizması takozu içeren iki aşamalı bir plandır.',
         mediaType: 'image',
         mediaUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
         mediaCaption: 'Kriminal Fotoğraf: Asitle eritilmiş çelik taşıyıcı kablo',
@@ -766,9 +828,9 @@ Ben bir katil değilim; ben hayatımı ve tiyatromu bir sahtekâra karşı koruy
         title: 'Şaft Telsiz Panik ve Alarm Ses Bandı',
         category: 'audio',
         roleAccess: ['cryptology', 'profiler', 'archive', 'forensics'],
-        summary: 'Asansör düşmeden 25 saniye önceki telsiz anonsu ve Erdem Soydan’ın son sözleri.',
-        fullReport: 'Telsiz Kayıt Bandı #M-03 (Saat 22:09:40):\nErdem Soydan: "Merkez! Şaft kabini kayıyor, acil durdurma devreye girmiyor! Biri kabloları kurcalamış!"\nMerkez Operatörü: "Erdem Bey freni manuel çekin!"\nErdem Soydan: "Manuel fren sıkışmış! Berna... Berna’nın raporundaki veriler doğruydu, maden değil laboratuvar..." (Şiddetli gürültü ve telsiz paraziti)\nSaat 22:10:05 - Çarpma sesi ve hat kesintisi.',
-        keyDeduction: 'Erdem son anlarında laboratuvar verilerine ve Berna’ya dikkat çekmektedir.',
+        summary: 'Asansör düşmeden 25 saniye önceki telsiz anonsunda Erdem Soydan frenin sıkıştığını ve kapatma raporunun çantasından alındığını söylüyor.',
+        fullReport: 'Telsiz Kayıt Bandı #M-03 (Saat 22:09:40):\nErdem Soydan: "Merkez! Şaft kabini kayıyor, acil durdurma tutmuyor!"\nMerkez Operatörü: "Erdem Bey manuel freni çekin!"\nErdem Soydan: "Fren dişlisi takozla kilitlenmiş! Eğer çıkamazsam... kapatma raporumu ve numune dosyasını çantamdan..." (Şiddetli gürültü ve hat kesintisi)\nSaat 22:10:05 - Çarpma sesi.',
+        keyDeduction: 'Erdem son anlarında çantasındaki kapatma raporuna ve numune dosyasına işaret etmektedir.',
         mediaType: 'audio',
         mediaUrl: '',
         mediaCaption: 'Şaft Telsiz Kaydı: Erdem Soydan’ın acil durum anonsu',
@@ -781,12 +843,12 @@ Ben bir katil değilim; ben hayatımı ve tiyatromu bir sahtekâra karşı koruy
       {
         id: 'ev-3-1-3',
         envelope: 1,
-        title: 'Polis & İş Güvenliği Sorgu Tutanağı: Baş Teknisyen Celal Demir',
+        title: 'Tanık ve Güvenlik Kamera Özeti: Baş Teknisyen Celal Demir',
         category: 'interrogation',
         roleAccess: ['field', 'forensics', 'profiler', 'archive'],
-        summary: 'Şaft Baş Teknisyeni Celal Usta’nın ifadesi: Kurşun takoz sabotajı ve saat 21:35’te kulede görülen beyaz önlüklü kişi.',
-        fullReport: 'T.C. ZONGULDAK İL EMNİYET MÜDÜRLÜĞÜ ASAYİŞ ŞUBE\nTANIK İFADE VE TEKNİK TESPİT ZAPTI\n\nTanık: Celal Demir (58, Baş Maden Şaft Teknisyeni)\nSorgulayan: Komiser Orhan Yıldız / Sicil: 29014\nTarih: 27 Ekim 2026 - Saat 01:30\n\nSORU: Düşen asansörün halatları ve acil fren tertibatı en son ne zaman kontrol edildi? Sabotaj izi var mı?\nCEVAP: "Komiserim, o asansör 40 tonluk çelik halat taşır; bakımı iki gün önce yapıldı, sapasağlamdı! Halatın koptuğu yere mikroskopla baktık; çelik sanki tereyağı gibi köpürerek erimiş. Bu sıradan bir pas veya aşınma değil, yüksek dereceli kimyasal asit erimesi! Dahası, acil fren disklerinin arasına döküm kurşun bir takoz çakılmış. Fren tırnakları diski tutamasın diye bilerek sıkıştırılmış. Saat 21:35 sularında motor dairesinden inerken kule basamaklarında üzerinde beyaz laboratuvar önlüğü ve mavi nitril eldiven olan birinin hızla idari binaya doğru yürüdüğünü gördüm. Gece karanlığında yüzünü seçemedim ama maden işçisi değildi; işçiler sarı tulum giyer, önlük yalnızca kimya laboratuvarındakilerde vardır!"',
-        keyDeduction: 'Sabotajcı acil freni kurşun takozla kilitlemiş ve halata asit sürmüştür. Şüpheli saat 21:35’te kulede görülen beyaz önlüklü kişidir (Berna Tezcan).',
+        summary: 'Kule kamerasının kör noktasından saat 21:20’de sarı yağmurluklu ve mavi nitril eldivenli bir şahıs geçmiş; saat 21:40’ta ise Murat makine dairesinde görülmüş.',
+        fullReport: 'T.C. ZONGULDAK İL EMNİYET MÜDÜRLÜĞÜ\nTANIK VE KAMERA ÖZET ZAPTI\n\nTanık: Celal Demir (58, Şaft Baş Teknisyeni)\nCEVAP: "Kule kapısı yanındaki kamera kör noktayı tam görmüyor ama saat 21:20’de üzerinde standart sarı saha yağmurluğu, başında baret ve elinde mavi nitril eldiven olan birinin kule basamaklarına yöneldiğini gördüm. Karanlıkta yüzünü ve boyunu seçemedim; yağmurluk da eldiven de tesiste laboratuvardan bakım ekibine kadar herkeste var. Saat 21:40’ta ise vardiya amiri Murat’ı makine dairesi kapısından elinde bidonla çıkarken gördüm."',
+        keyDeduction: 'Saat 21:20’deki şahıs herkesin kullandığı sarı yağmurluk ve mavi eldiven giyerek kimliğini gizlemiştir; saat 21:40’ta ise Murat makine dairesindeydi.',
         mediaType: 'text',
         metadata: {
           date: '27 Ekim 2026',
@@ -797,12 +859,12 @@ Ben bir katil değilim; ben hayatımı ve tiyatromu bir sahtekâra karşı koruy
       {
         id: 'ev-3-2-1',
         envelope: 2,
-        title: 'Laboratuvar Asit Envanteri ve Spektrometre Eşleşmesi',
+        title: 'Asit Spektrometre Analizi & Kartlı Giriş Logları',
         category: 'toxicology',
         roleAccess: ['forensics', 'cryptology', 'profiler', 'field'],
-        summary: 'Halattaki asidin yalnızca Berna Tezcan’ın özel jeokimya projesinde kullanılan florosülfonik asit formülü olduğu kanıtlandı.',
-        fullReport: 'Adli Kimya İhtisas Raporu:\nÇelik halat üzerindeki korozyon kalıntısı gaz kromatografisiyle analiz edilmiştir. Kullanılan asit sıradan bir sanayi asidi olmayıp, yalnızca Berna Tezcan’ın lityum zenginleştirme deneylerinde kullandığı özel florosülfürik katalizör karışımıdır. Bu kimyasal tesiste yalnızca Berna’nın parmak iziyle açılan özel çelik kasasında saklanmaktadır.',
-        keyDeduction: 'Kimyasal doğrudan Berna Tezcan’ın kilitli laboratuvar kasasından alınmıştır.',
+        summary: 'Halattaki asit özel florosülfonik katalizör karışımı çıktı; ancak laboratuvar dış kapısına gece Murat, Kemal ve Berna’nın kartlarıyla erişim izni bulunuyor.',
+        fullReport: 'Adli Kimya ve Erişim Kontrol Raporu:\n1. Halat üzerindeki korozyon kalıntısı yalnızca bu tesiste lityum zenginleştirme deneyleri için ithal edilen florosülfonik asit karışımıdır.\n2. Kimya laboratuvarının ana koridor kapısına vardiya amiri Murat, bakım mühendisi Kemal ve laboratuvar şefi Berna’nın giriş kartları tanımlıdır. Ancak asidin saklandığı iç çelik kasa yalnızca biyometrik parmak izi ile açılmaktadır.\n3. Kasa açılış logları siber incelemeye gönderilmiştir.',
+        keyDeduction: 'Asit sıradan bir depo asidi değil özel florosülfonik karışımdır; dış kapıya üç kişinin erişimi olsa da iç kasa biyometrik kilide sahiptir.',
         mediaType: 'image',
         mediaUrl: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=800&q=80',
         mediaCaption: 'Laboratuvar Analiz Raporu: Florosülfonik asit izotop eşleşmesi',
@@ -815,28 +877,28 @@ Ben bir katil değilim; ben hayatımı ve tiyatromu bir sahtekâra karşı koruy
       {
         id: 'ev-3-2-2',
         envelope: 2,
-        title: 'Asayiş ve Şantiye Karakolu Sorgu Tutanağı: Şüpheli Murat Çetin',
+        title: 'Sorgu Tutanağı: Murat Çetin & Kemal Aksoy',
         category: 'interrogation',
         roleAccess: ['profiler', 'field', 'archive', 'forensics'],
-        summary: 'Murat Çetin olay saatinde asansör makine dairesinde görülmüştü; ancak jeneratörden mazot çaldığını itiraf etti.',
-        fullReport: 'T.C. ZONGULDAK ASAYİŞ VE ŞANTİYE KARAKOLU\nŞÜPHELİ ÇAPRAZ SORGU TUTANAĞI\n\nŞüpheli: Murat Çetin (31, Vardiya Amiri)\nSorgulayan: Başkomiser Hakan Erdem\nTarih: 27 Ekim 2026 - Saat 03:20\n\nSORU: Olaydan 40 dakika önce makine dairesinde görüldünüz. Asit deposunun anahtarı üzerinizdeydi. Asansör halatına asidi siz mi döktünüz?\nCEVAP: "Komiserim, Hasan Karaca’dan nefret ederim. Geçen yıl ihmalden kardeşimi göçükte kaybettim. Ama Erdem Soydan doğru dürüst bir mühendisti, madeni kapatmak için rapor yazıyordu. Ben onu niye öldüreyim? Makine dairesine girdiğimi inkâr etmiyorum ama jeneratör deposundan bidonlara kaçak mazot çekiyordum! Asansörün koptuğunu duyunca panikle bidonları atıp kaçtım. Asit deposuna gelince; anahtar bende ama asıl kimyasal anahtarı Berna Hanım’ın parmak iziyle açılan laboratuvar kasasındadır. Hatta dün gece 21:20 civarı laboratuvarın arka kapısından Berna Hanım’ın elinde sarı cam şişeyle çıktığını bizzat gördüm. O kadına bakın!"\n\nKriminal Teyit: Murat’ın tulumunda yalnızca mazot hidrokarbonları tespit edilmiş; florosülfonik asit izine rastlanmamıştır.',
-        keyDeduction: 'Murat yakıt hırsızlığı yapmış ancak asit kullanmamıştır (Yanıltıcı Şüpheli). Berna’nın gece 21:20’de asit şişesiyle çıktığını doğrulamıştır.',
+        summary: 'Murat’ın tulumunda mazotla birlikte kurşun talaşı çıkarken, Kemal’in 2 gün önce sahte halat bakım raporu imzaladığı ve Hasan’dan gizli prim aldığı belirlendi.',
+        fullReport: 'T.C. ZONGULDAK ASAYİŞ ŞUBE\nÇAPRAZ SORGU TUTANAĞI\n\n1. Murat Çetin (31):\nTulumunda mazot ve kurşun talaşı bulundu. Murat: "Öğlen kaynak atölyesinde boru tamiri yaptım, talaş oradan! Gece 21:40’ta makine dairesine sadece jeneratörden mazot çekmeye girdim; ama 21:18 civarı Berna Hanım’ı elinde korumalı çantayla kule yolunda gördüm" dedi.\n\n2. Kemal Aksoy (44):\nBakım mühendisi Kemal’in 2 gün önce şaft halatına sahte "Kusursuz" onayı verdiği ve Hasan Karaca’dan 450 bin TL gizli ödeme aldığı çıktı. Kemal: "Olay gecesi lojmandaydım" dese de lojman bekçisi Kemal’in aracının 21:30’da saha dışından geri döndüğünü bildirdi.',
+        keyDeduction: 'Murat’ın tulumundaki kurşun talaşı ve makine dairesi varlığı, Kemal’in ise sahte bakım onayı ve lojman alibisindeki açık şüpheyi üçlü arasında güçlü tutmaktadır.',
         mediaType: 'text',
         metadata: {
           date: '27 Ekim 2026',
-          caseRef: 'SORGU-MURAT-02',
+          caseRef: 'SORGU-MURAT-KEMAL',
           confidentiality: 'GİZLİ',
         }
       },
       {
         id: 'ev-3-2-3',
         envelope: 2,
-        title: 'Cumhuriyet Savcılığı Çapraz Sorgu Tutanağı: Şüpheli Hasan Karaca',
+        title: 'Cumhuriyet Savcılığı Sorgu Tutanağı: Hasan Karaca',
         category: 'interrogation',
         roleAccess: ['profiler', 'archive', 'field', 'cryptology', 'forensics'],
-        summary: 'Maden sahibi Hasan Karaca’nın rüşvet itirafı, makam arabasındaki çanta ve iflas korkusu hakkındaki sorgusu.',
-        fullReport: 'T.C. ZONGULDAK CUMHURİYET BAŞSAVCILIĞI\nŞÜPHELİ SORGU VE İFADE TUTANAĞI\n\nŞüpheli: Hasan Karaca (52, Karaca Madencilik Tesis Sahibi)\nSorgulayan: Cumhuriyet Savcısı Avni Kaya & Cinayet Büro\nTarih: 27 Ekim 2026 - Saat 05:40\n\nSORU: Maktul Erdem Soydan’ın evrak çantası makam arabanızın bagajında bulundu. Madeni kapatmaması için 3 Milyon TL rüşvet teklif ettiğiniz dekontlarla sabit. Asansörü siz mi sabote ettirdiniz?\nCEVAP: "Sayın Savcım, evet suçluyum; rüşvet teklif ettim, inkâr etmiyorum. Erdem Bey madeni kapatırsa 400 işçi aç kalacaktı, bankalar gırtlağıma çökecekti. Çantayı akşam 18:00’de odamda unuttu, içine para teklif mektubunu koyup düşünsün diye arabamda tuttum. Ama cinayet asla! Ben aptal mıyım kendi madenimin ana şaftını patlatayım? Maden şimdi savcılık kararıyla en az 6 ay mühürlendi! Milyonlarca lira zarar ettim, asıl ben battım! Erdem madeni kapatsa sadece ceza yerdim, cinayet işlesem idamlık olurum. Bana değil, lityum laboratuvarına bakın! Berna Hanım ile Erdem dün akşam lityum patenti yüzünden koridorda birbirine girdi!"\n\nSavcılık Değerlendirmesi: Hasan Karaca rüşvet suçunu ikrar etmiştir ancak sabotaj tekniğine sahip değildir ve madenin kapanması ekonomik olarak en çok kendisine zarar vermiştir.',
-        keyDeduction: 'Hasan Karaca rüşvet vermiş ancak asansör sabotajıyla ilgisi yoktur (Yanıltıcı Şüpheli). Asıl çatışmanın patent ortaklığı olduğunu açıklamıştır.',
+        summary: 'Bagajında Erdem’in evrak çantası çıkan Hasan Karaca rüşvet ve sahte bakım primi verdiğini kabul etti; ancak cinayet sabotajını reddetti.',
+        fullReport: 'T.C. ZONGULDAK CUMHURİYET BAŞSAVCILIĞI\nŞÜPHELİ SORGU TUTANAĞI\n\nŞüpheli: Hasan Karaca (52)\nCEVAP: "Sayın Savcım, maden kapanmasın diye Erdem’e 3 Milyon TL teklif ettim, Kemal’e de bakım işlerini hızlandırsın diye prim verdim. Erdem’in evrak çantasını da içindeki kapatma taslağını incelemek için akşam 18:30’da bagajıma aldım. Ama şaftı düşürmedim! Maden savcılık tarafından mühürlendi, ağırlaştırılmış müebbet alacağım bir cinayeti kendi tesisimde neden işleyeyim? Asıl kavga lityum patentinde; dün akşam Berna ile Erdem birbirine girdi!"',
+        keyDeduction: 'Hasan Karaca rüşveti ve çantayı almayı kabul etmiştir; ancak sabotaj tekniği ve özel asit erişimi henüz netleşmemiştir.',
         mediaType: 'text',
         metadata: {
           date: '27 Ekim 2026',
@@ -847,12 +909,12 @@ Ben bir katil değilim; ben hayatımı ve tiyatromu bir sahtekâra karşı koruy
       {
         id: 'ev-3-3-1',
         envelope: 3,
-        title: 'Berna Tezcan’ın Gizli Patent Başvurusu ve Bilgisayar Kayıtları',
+        title: 'Biyometrik Kasa Logu & Siber Bilişim Raporu',
         category: 'document',
         roleAccess: ['archive', 'cryptology', 'field', 'forensics', 'profiler'],
-        summary: 'Berna’nın cinayetten 3 saat önce Türk Patent Enstitüsü’ne tek başına 50 Milyon Dolarlık lityum patenti başvurduğu belgelendi!',
-        fullReport: 'Siber Suçlar ve Mali İnceleme Raporu:\n1. Berna Tezcan’ın dizüstü bilgisayarında yapılan adli bilişim incelemesinde:\n- Olay günü saat 19:15’te Erdem Soydan’ın adını patent ortaklığından silerek tek isimle başvuru yaptığı tespit edilmiştir.\n- Bilgisayar arama geçmişinde: "Çelik asansör halatı kopma süresi", "Florosülfonik asit metal aşınma hızı" aramaları bulunmuştur.\n2. Hasan Karaca’nın rüşvet çantası: Hasan Karaca madenin kapanmasını önlemek için Erdem’e para teklif etmiş ancak cinayet sabotajından tamamen habersizdir.',
-        keyDeduction: 'Berna’nın patent başvurusundan Erdem’i silmesi ve bilgisayar arama geçmişi ağır bir şüphe odağı oluşturuyor. Ancak Hasan Karaca’nın bagajındaki rüşvet çantası ve Murat’ın makine dairesindeki şüpheli varlığı dedektifler için sabotajın arkasındaki el konusunda çoklu ihtimalleri canlı tutuyor.',
+        summary: 'Biyometrik asit kasası saat 21:08’de yalnızca Berna Tezcan’ın parmak iziyle açılmış; aynı gün saat 19:15’te patentten Erdem’in adı silinmiş ve halat aşınma süresi aratılmış.',
+        fullReport: 'Siber Suçlar ve Güvenlik Logu Raporu:\n1. Laboratuvar iç çelik kasasının elektronik denetim loguna göre kasa olay gecesi saat 21:08:12’de Berna Tezcan’ın parmak iziyle açılmış ve 21:10’da kapanmıştır. Başka hiçbir kart veya parmak izi kaydı yoktur.\n2. Berna’nın bilgisayarında saat 19:15’te Türk Patent Enstitüsü portalından 50 Milyon Dolarlık lityum patent başvurusu güncellenerek Erdem Soydan’ın ismi silinmiştir.\n3. Arama geçmişinde saat 19:40’ta "40 tonluk çelik halat florosülfonik asit kopma süresi" sorgusu ve laboratuvar yıkama lavabosunda sarı saha yağmurluğu cebine düşmüş kurşun takoz sürtünme izi saptanmıştır.',
+        keyDeduction: '21:08 biyometrik kasa açılışı, 19:15 patent silme işlemi, 19:40 halat aşınma araması ve 21:20 yağmurluklu kule geçişi aynı zaman penceresinde kesişmektedir.',
         mediaType: 'text',
         metadata: {
           date: '27 Ekim 2026',
@@ -863,12 +925,12 @@ Ben bir katil değilim; ben hayatımı ve tiyatromu bir sahtekâra karşı koruy
       {
         id: 'ev-3-3-2',
         envelope: 3,
-        title: 'Cinayet Büro Çapraz Sorgu Tutanağı: Dr. Berna Tezcan',
+        title: 'Son Çapraz Sorgu: Dr. Berna Tezcan',
         category: 'interrogation',
         roleAccess: ['forensics', 'profiler', 'archive'],
-        summary: 'Berna Tezcan’ın patent başvurusu, laboratuvar kasası açılış logları ve maden kulesindeki adli aramalara dair ifadesi.',
-        fullReport: 'T.C. ZONGULDAK EMNİYET MÜDÜRLÜĞÜ CİNAYET VE SİBER SUÇLAR BÜROSU\nÇAPRAZ SORGU VE SAVUNMA TUTANAĞI\n\nŞüpheli: Dr. Berna Tezcan (37, Tesis Baş Jeoloğu & Kimya Laboratuvar Şefi)\nSorgulayan: Başkomiser Hakan Erdem & Bilişim Müfettişi\nTarih: 27 Ekim 2026 - Saat 11:30\n\nSORU: Bilgisayarınızda saat 19:15’te Erdem Soydan’ı 50 Milyon Dolarlık lityum patentinden sildiğiniz, saat 21:15’te florosülfonik asit kasasını parmak izinizle açtığınız ve "çelik asansör halatı asit aşınma süresi" aramalarınız tespit edildi. Açıklamanız nedir?\nCEVAP: "Bana kumpas kuruluyor! Evet, Erdem’in adını patent başvurusundan çıkardım çünkü Erdem aylardır jeokimya analizlerine bir satır katkı sunmadı! Dahası Erdem’in Hasan Karaca ile gizli pazarlıklar yaptığını, madeni kapatmamak karşılığında 3 Milyon TL rüşvet aldığını duydum. Bilimsel bir patente bir rüşvetçinin adını yazamazdım!\nKasayı saat 21:15’te açtığım doğru; çünkü gece vardiyasında lityum numunelerinin saflaştırma reaksiyonunu yürütüyordum. Asit arama geçmişine gelince; Karaca Madencilik’in kuyu borularında asit korozyonu vardı, işletme benden resmi aşınma simülasyonu istemişti. Ben bir bilim insanıyım! Asansör halatına asit sürecek kadar alçalır mıyım?\nMurat Çetin bana iftira atıyor! Murat motor dairesinde kaçak mazot satıyor, kimyasal bidonlarını karıştırıyordu. Hasan Karaca da maden kapanmasın diye Erdem’i susturmak için her şeyi yapacak bir adamdı; Erdem’in evrak çantası Hasan’ın makam arabasının bagajından çıktı! Neden Hasan Karaca ve Murat’ı aklayıp bütün suçu bir kadının bilimsel araştırmasına yıkıyorsunuz?"',
-        keyDeduction: 'Berna Tezcan patent ve asit aramalarını akademik gerekçelerle savunmuş, sabotajı ve cinayeti şiddetle reddetmiştir. Şüphe oklarını bagajında maktulün çantası çıkan patron Hasan Karaca ve makine dairesindeki şüpheli teknisyen Murat Çetin’e yöneltmiştir.',
+        summary: 'Berna Tezcan kasa açılışını rutin lityum deneyi, aramayı kuyu borusu korozyonu olarak savundu; Hasan’ın çantasını, Kemal’in sahte raporunu ve Murat’ın kurşun talaşını işaret etti.',
+        fullReport: 'T.C. ZONGULDAK EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO\nSON ÇAPRAZ SORGU TUTANAĞI\n\nŞüpheli: Dr. Berna Tezcan (37)\nCEVAP: "Kasayı 21:08’de gece lityum numunesi için açtım, bu benim rutin işim! Patentten Erdem’i sildim çünkü Hasan Karaca’dan rüşvet alacağından şüphelendim! Korozyon araması kuyu boruları içindi. Bütün şüpheyi üzerime yıkıyorsunuz ama düşünün: Kurşun takozu frene çakan kişi ben olsam tulumumda kurşun talaşı çıkardı; talaş Murat Çetin’de çıktı! Sahte bakım onayını imzalayan Kemal Aksoy, Erdem’in çantasını bagajına saklayan ise Hasan Karaca! Ben bilim insanıyım!"',
+        keyDeduction: 'Dört şüphelinin de tesis içinde güçlü motifi ve fiziki şüphe izi vardır; ancak biyometrik asit kasasını 21:08’de açan tek kişi ve 21:20’de kuleye çıkan sarı yağmurluklu figür penceresi incelenmelidir.',
         mediaType: 'text',
         metadata: {
           date: '27 Ekim 2026',
@@ -880,70 +942,60 @@ Ben bir katil değilim; ben hayatımı ve tiyatromu bir sahtekâra karşı koruy
     gates: {
       1: {
         envelope: 1,
-        title: 'Zarf 1 Soruşturma Sorusu: Asansör Kazasının Sebebi',
-        instructions: 'Zarf 1 kriminal raporundaki bulguları değerlendirin.',
-        question: 'Asansör kabininin düşmesine neden olan ana fiziksel etken nedir?',
+        title: 'Zarf 1 Doğrulama Sorusu: Sabotajın Yapısı ve Zamanlaması',
+        instructions: 'Zarf 1 kriminal ve tanık raporlarını birleştirin.',
+        question: 'Kriminal rapora göre asansör sabotajı nasıl gerçekleştirilmiştir ve uygulama zamanı neye işaret eder?',
         options: [
-          { id: 'q1-1', text: 'Çelik taşıyıcı halatın derişik asitle kasten eritilmesi ve fren mekanizmasının takozla kilitlenmesi.', isCorrect: true },
-          { id: 'q1-2', text: 'Maden şaftında metan gazı patlaması meydana gelmesi.', isCorrect: false },
-          { id: 'q1-3', text: 'Aşırı yük taşınması sonucu motorun yanması.', isCorrect: false }
+          { id: 'q1-1', text: 'Fren kurşun takozla kilitlenmiş, halata ise kopmadan 35-45 dakika önce (21:15-21:30 arası) derişik asit sürülmüştür.', isCorrect: true },
+          { id: 'q1-2', text: 'Asansör motoru uzaktan kumandayla yakılmış ve halat saat 22:08’de mekanik olarak kesilmiştir.', isCorrect: false },
+          { id: 'q1-3', text: 'Kabine aşırı yük yüklenmiş ve güvenlik kilidi saat 21:40’ta Murat tarafından sökülmüştür.', isCorrect: false }
         ],
-        explanation: 'Kriminal inceleme halatın asitle eritildiğini ve acil frenin takozla engellendiğini kanıtlamıştır.'
+        explanation: '40 tonluk çelik halatın asitle erimesi 35-45 dakikalık bir kimyasal etki penceresi (21:15-21:30) gerektirir.'
       },
       2: {
         envelope: 2,
-        title: 'Zarf 2 Soruşturma Sorusu: Kimyasalın Menşei',
-        instructions: 'Zarf 2’deki spektrometre kimya raporunu inceleyin.',
-        question: 'Halatı eriten özel florosülfürik asit tesiste nerede ve kimin sorumluluğunda saklanmaktadır?',
+        title: 'Zarf 2 Doğrulama Sorusu: Kimyasal Erişim Kısıtı',
+        instructions: 'Asit spektrometre ve erişim kontrol raporunu inceleyin.',
+        question: 'Halatı eriten özel florosülfonik asidin temini hakkında erişim kontrol raporu neyi göstermektedir?',
         options: [
-          { id: 'q2-1', text: 'Yalnızca Berna Tezcan’ın parmak iziyle açılan özel jeokimya araştırma kasasında.', isCorrect: true },
-          { id: 'q2-2', text: 'Maden işçilerinin soyunma odasındaki ortak dolapta.', isCorrect: false },
-          { id: 'q2-3', text: 'Hasan Karaca’nın makam odasındaki buzdolabında.', isCorrect: false }
+          { id: 'q2-1', text: 'Dış laboratuvar kapısına üç kişinin kartı tanımlı olsa da asidin bulunduğu iç kasa yalnızca biyometrik parmak iziyle açılmaktadır.', isCorrect: true },
+          { id: 'q2-2', text: 'Söz konusu asit maden işçilerinin ortak soyunma odasındaki açık dolaptan herkesçe alınabilmektedir.', isCorrect: false },
+          { id: 'q2-3', text: 'Asit iki gün önce Kemal Aksoy’un lojmanındaki bakım sandığından getirilmiştir.', isCorrect: false }
         ],
-        explanation: 'Özel asit sadece Berna’nın lityum projesi için ithal edilmiş ve şifreli kasada kilitlidir.'
+        explanation: 'Dış kapı kartları birden fazla kişide olsa da özel asidin saklandığı iç kasa biyometrik kilide sahiptir.'
       },
       3: {
         envelope: 3,
-        title: 'Zarf 3 Soruşturma Sorusu: Dijital İnceleme Tespiti',
-        instructions: 'Siber suçlar ve patent inceleme dökümündeki arama geçmişini değerlendirin.',
-        question: 'Siber suçlar ve patent inceleme raporundaki dijital arama logları hangi kritik bulguyu ortaya çıkarmıştır?',
+        title: 'Zarf 3 Doğrulama Sorusu: Biyometrik Log ve Dijital İzler',
+        instructions: 'Zarf 3’teki biyometrik kasa logunu ve siber incelemeyi birleştirin.',
+        question: 'Siber ve kasa denetim logları 21:20’deki kule sabotajı ile nasıl örtüşmektedir?',
         options: [
-          { id: 'q3-1', text: 'Olay gecesi 50 Milyon Dolarlık lityum patentinden maktulün adının silindiğini ve halat aşınma süresinin aratıldığını.', isCorrect: true },
-          { id: 'q3-2', text: 'Madenin tüm hisselerinin yabancı bir şirkete gizlice devredildiğini.', isCorrect: false },
-          { id: 'q3-3', text: 'Tesis kasasından 10 Milyon TL nakit çekildiğini.', isCorrect: false }
+          { id: 'q3-1', text: '19:15’te patentten Erdem’in adı silinmiş, 19:40’ta halat kopma süresi aratılmış ve 21:08’de asit kasası biyometrik izle açılmıştır.', isCorrect: true },
+          { id: 'q3-2', text: 'Hasan Karaca saat 21:08’de kendi kartıyla asit kasasını açıp Evrak Çantası dosyalarını silmiştir.', isCorrect: false },
+          { id: 'q3-3', text: 'Kemal Aksoy 21:30’da lojmandan dönüp bilgisayar üzerinden sahte bakım raporunu düzenlemiştir.', isCorrect: false }
         ],
-        explanation: 'Dijital loglar cinayet öncesinde patentten maktulün çıkarıldığını ve asit aşınma sürelerinin araştırıldığını ortaya koymuştur.'
+        explanation: '19:15 patent değişikliği, 19:40 halat aşınma araması ve 21:08 biyometrik kasa açılışı sabotaj saatinden hemen önceki zinciri kurar.'
       }
     },
     solution: {
       culpritId: 'berna-tezcan',
-      culpritName: 'Berna Tezcan',
+      culpritName: 'Dr. Berna Tezcan',
       motiveTitle: '50 Milyon Dolarlık Lityum Patentini Tek Başına Sahiplenmek',
-      keyEvidenceTitle: 'Florosülfonik Asit Laboratuvar Kasası & Saat 19:15 Patent Başvurusu',
+      keyEvidenceTitle: 'Biyometrik Kasa Logu & Siber Bilişim Raporu',
       fullChronology: [
-        { time: '17:00', action: 'Erdem Soydan, madenin çevre raporunu olumsuz kapatacağını ve lityum sahasının kamuya devredileceğini Berna’ya bildirir.', proof: 'Erdem’in çalışma günlüğü' },
-        { time: '19:15', action: 'Berna Tezcan, dizüstü bilgisayarından patent başvurusunu güncelleyip Erdem’in adını çıkarır.', proof: 'Siber suçlar raporu' },
-        { time: '21:15', action: 'Berna, laboratuvardan aldığı florosülfonik asidi servis asansörünün halatına sürer ve fren takozunu yerleştirir.', proof: 'Kriminal Kimya Raporu & Celal Usta ifadesi' },
-        { time: '22:05', action: 'Erdem denetim için kabine biner; asit halatı koparır ve kabin -200 kotuna çakılır.', proof: 'Şaft Telsiz Bandı' },
-        { time: '22:30', action: 'Berna laboratuvara dönüp deney yapıyormuş gibi bilgisayar logları oluşturmaya çalışır.', proof: 'Bilişim log analizleri' }
+        { time: '17:00', action: 'Erdem Soydan, madenin kapatılacağını ve lityum sahasının kamu korumasına devredileceğini Berna’ya bildirir.', proof: 'Erdem’in çalışma günlüğü' },
+        { time: '19:15 - 19:40', action: 'Berna patent başvurusundan Erdem’in adını siler ve çelik halatın florosülfonik asitle kopma süresini aratır.', proof: 'Siber Bilişim Raporu' },
+        { time: '21:08', action: 'Berna biyometrik parmak iziyle iç kasayı açıp florosülfonik asidi alır.', proof: 'Biyometrik Kasa Denetim Logu' },
+        { time: '21:18 - 21:25', action: 'Berna kimliğini gizlemek için standart sarı yağmurluk ve mavi nitril eldivenle kuleye çıkar, halata asit sürer ve bakım atölyesinden aldığı kurşun takozu frene çakar.', proof: 'Kule Tanığı & Yıkama Lavabosu İzi' },
+        { time: '22:10', action: 'Erdem’in bindiği kabinin halatı kopar ve -200 kotuna çakılır.', proof: 'Şaft Telsiz Bandı' }
       ],
-      verdictSummary: 'Dedektif ekibinin oylaması sonucunda sabotajın faili Berna Tezcan olarak tespit edildi. Hasan Karaca rüşvet suçundan, Berna Tezcan ise planlı cinayet ve sanayi casusluğundan adliyeye sevk edildi.',
-      confessionAudioTranscript: 'İtiraf Bandı: "O lityum rezervini 10 yıllık emeğimle buldum! Erdem gibi bir bürokratın bir çevre raporuyla hayatımın çalışmasını yok etmesine izin veremezdim. O maden kapatılsaydı patent hükümsüz kalacaktı!"',
-      confessionLetter: `[ADLİ EMANET KASASI - DR. BERNA TEZCAN'IN GİZLİ GÜNLÜK İTİRAFI VE MEKTUBU]
+      verdictSummary: 'Sabotajın faili Dr. Berna Tezcan’dır. Hasan Karaca rüşvet ve çanta gizlemekten, Kemal Aksoy sahte bakım onayından, Murat Çetin ise yakıt hırsızlığından şüphe çekmiş ve açık kapı yaratmıştır; ancak biyometrik kasayı 21:08’de açıp 19:40’ta halat aşınma süresini aratan fail Berna Tezcan’dır.',
+      confessionAudioTranscript: 'İtiraf Bandı: "10 yıllık emeğimi tek bir kapatma raporuyla çöpe atacaktı. Tesisin herkesi şüphelendiren kaosu içinde kimse laboratuvar şefinin kuleye çıkacağını tahmin edemezdi."',
+      confessionLetter: `[ADLİ EMANET KASASI - DR. BERNA TEZCAN'IN İTİRAF MEKTUBU]
 
-"Beni mahkemenin önüne çıkaracaklar, bana bir 'katil' diyecekler... Ama kimse bilimin ve 10 yıllık uykusuz gecelerin ne demek olduğunu anlamayacak.
+"10 yılımı yerin 200 metre altındaki zehirli çamurda Türkiye'nin en saf lityum rezervini bulmaya adadım. 50 Milyon Dolarlık patent tam hazırdı ki Erdem saat 17:00'de gelip madeni mühürleyeceğini ve sahanın kamulaştırılacağını söyledi.
 
-Zonguldak'ın bu karanlık vadisinde, yerin 200 metre altındaki zehirli çamurun içinde Türkiye'nin en saf lityum rezervini tek başıma keşfettim. Uluslararası otomotiv devleri ve batarya konsorsiyumları bu patent için 50 Milyon Dolar teklif ediyordu. Hayatımın projesiydi; adımı bilim tarihine yazdıracaktım.
-
-Sonra Erdem geldi. Bürokratik kibriyle, elindeki denetim damgasıyla karşıma dikildi. Pazar günü saat 17:00'de odama girdi, 'Berna, maden çevre kriterlerine uymuyor. Pazartesi sabahı mühür basıyorum. Maden kapanınca lityum sahası da kamu korumasına devredilecek, patentiniz dondurulacak' dedi. 
-
-Yalvardım. '10 yılımı verdim Erdem, iki hafta süre ver filtreleri takalım' dedim. Yüzünde soğuk, acımasız bir bürokrat gülümsemesiyle 'Kural kuraldır Berna, bilimin benim kurallarımın önüne geçemez' dedi ve kapıyı çarptı. Tek bir imzayla benim hayatımı çöpe atacaktı.
-
-Dayanamadım. Saat 19:15'te lityum patent sistemine girip Erdem'in ismini sildim. Saat 21:15'te laboratuvar çelik kasasından florosülfonik asit şişesini ve naylon fırçayı aldım. Servis kulesinin metal basamaklarını tırmandım. Erdem'in saat 22:00'de son denetim için -200 kotuna ineceğini biliyordum. Çelik asansör halatının sürtünme noktasına asidi tabaka halinde sürdüm; 15 dakika içinde çelik liflerin kimyasal olarak gevşeyip ilk sarsıntıda kopacağını hesaplamıştım. Acil frenin devreye girmemesi için de döküm kurşun takozu fren dişlisine çaktım.
-
-Maden sahibi Hasan Karaca'nın arabasındaki çantayı ve Murat'ın makine dairesindeki mazot hırsızlığını biliyordum; suçu onların arasındaki husumete yıkmak mükemmel bir plandı.
-
-Erdem aşağı çakıldığında kalbim sızlamadı değil. Ama o maden kapansaydı ben zaten ruhen ölmüş olacaktım. Ben katil değilim; ben hayatımın emeğini bir bürokratın tek bir kurşun kalem darbesinden korudum."`
+19:15'te patentten adını sildim, 19:40'ta çelik halatın florosülfonik asitle erime süresini hesapladım. 21:08'de kasadan asidi alıp herkesin giydiği sarı yağmurluğu geçirdim; kimse beyaz önlüklü bir bilim insanını kulede beklemezdi. Hasan'ın rüşveti, Kemal'in sahte bakım imzası ve Murat'ın makine dairesindeki mazot hırsızlığı herkesin dikkatini dağıtacaktı. Ama biyometrik kasa logunu ve siber geçmişi hesaba katamadım."`
     }
   }
 ];

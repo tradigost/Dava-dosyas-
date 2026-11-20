@@ -80,11 +80,32 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
         '"Ben gariban bir demiryolcuyum, ne anlarım zehirden! Ama peronda avukat hanımın mühendis beye bağırdığını gördüm."'
       ],
       motiveHypothesis: 'Şantaj veya rüşvet karşılığı servise aracılık etmek.',
-      initialSuspicion: 40,
+      initialSuspicion: 55,
       photoPlaceholder: {
         initials: 'RÇ',
         tint: 'from-emerald-950 to-zinc-900',
         silhouetteStyle: 'bg-emerald-900/30 border-emerald-600/40 text-emerald-300'
+      }
+    },
+    {
+      id: 'leyla-soydan',
+      name: 'Leyla Soydan',
+      title: 'Maktulün Boşanma Aşamasındaki Eşi',
+      age: 43,
+      relation: 'Eşi (12 Yıllık Evli, Gizli Mal Kaçırma Davası)',
+      description: 'Ferit Soydan’ın servetini İsviçre’ye aktardığını öğrenmiş, olay gecesi kimliğini gizleyerek farklı isimle tren bileti alıp Sirkeci Garı’na gelmiştir.',
+      alibi: 'Olay saatinde Nişantaşı’ndaki evinde olduğunu ve gara hiç gitmediğini iddia ediyor.',
+      suspiciousQuotes: [
+        '"Ferit’in İsviçre emanet fişini bulmak için gara gittim, evet; ama kompartımana hiç girmedim!"',
+        '"Vagon koridorunda saat 22:53’te kondüktör Rüstem ile çarpıştım, hepsi bu."',
+        '"Zehir nereden bulayım? Çantamda sadece boşanma avukatımın dosyaları vardı."'
+      ],
+      motiveHypothesis: 'İsviçre emanet fişini ele geçirip boşanma öncesi servet transferini durdurmak.',
+      initialSuspicion: 70,
+      photoPlaceholder: {
+        initials: 'LS',
+        tint: 'from-rose-950 to-slate-900',
+        silhouetteStyle: 'bg-rose-900/30 border-rose-600/40 text-rose-300'
       }
     }
   ],
@@ -171,17 +192,17 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
     {
       id: 'ev-exp-301',
       envelope: 3,
-      title: 'Sirkeci Garı Peron Güvenlik Kamerası (Saat 22:52)',
+      title: 'Sirkeci Garı Peron Güvenlik Kamerası & Servis Koridoru (22:50 - 22:55)',
       category: 'gps',
       roleAccess: ['field', 'cryptology'],
-      summary: 'Kamera kaydı: Haluk Demir’in kondüktör Rüstem çay tepsisini hazırlarken gizlice tepsiyi tezgaha bırakmasını fırsat bilip bardağa damlalıkla müdahale ettiği an!',
+      summary: 'Kamera kaydı: Çay servis masası kör noktada; ancak 22:50-22:55 arasında 3. vagon geçişinde Haluk, Av. Zerrin, Leyla ve Rüstem art arda görülüyor.',
       fullReport:
         'EMNİYET KAMERA İNCELEME VE GÖRÜNTÜ İYİLEŞTİRME TUTANAĞI\n' +
         'Kamera: Sirkeci Garı 3. Peron Hizmet Servis Noktası.\n' +
-        'Saat 22:52:14: Kondüktör Rüstem demlenen adaçayını porselen bardağa koyup şeker almak için arkasını döndü.\n' +
-        'Saat 22:52:28: Haluk Demir koyu renk montu ve lateks eldiveniyle servis masasına yaklaştı, cebinden çıkardığı damlalıkla bardağın içine 3 damla sıvı damlatıp hızla vagonun arka körüğüne yöneldi.\n' +
-        'Saat 22:54:10: Rüstem tepsiyi alıp 3 numaralı kompartımana götürdü ve Ferit Soydan’a bizzat teslim etti.',
-      keyDeduction: 'Cinayetin fiziksel kanıtı kamera kayıtlarıyla tescillendi. Rüstem suikastın farkında olmadan bardağı servis etmiştir.',
+        '1. Çay tepsisinin hazırlandığı servis masası kolon arkasındaki kör noktada kalmaktadır.\n' +
+        '2. Saat 22:51:10 - 22:54:05 aralığında servis koridorundan sırasıyla Av. Zerrin Kara, Leyla Soydan (şapkalı) ve montlu Haluk Demir geçmektedir.\n' +
+        '3. Saat 22:54:10: Rüstem tepsiyi alıp 3 numaralı kompartımana götürdü ve Ferit Soydan’a bizzat teslim etti.',
+      keyDeduction: 'Kamera kör noktası yüzünden dört şüphelinin de tepsiye temas ihtimali vardır; ancak 3. vagon koridorundaki florokarbon ayakkabı lekesi ve çantadaki Akonitin şişesi yalnızca bir şüpheliyle eşleşmektedir.',
       metadata: {
         date: '25 Ekim 03:30',
         caseRef: 'PTS-2026-SRK',
@@ -278,7 +299,7 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
       ],
       explanation: 'Nihai suçlama oturumu başlıyor! Her dedektif kendi cihazından failini ve kanıtını seçmelidir.',
       hintByRole: {
-        field: 'Saat 22:52 kamera kaydında Haluk’un demlenen çay bardağına damlalıkla zehir damlattığı görülüyor.',
+        field: '22:50-22:55 koridor geçişi kör noktada olsa da 3. vagon florokarbon lekesi yalnızca Haluk’un ayakkabısıyla eşleşiyor.',
         archive: '1.8 Milyon Euro’luk kaçakçılık komisyonu ana motivasyondur.'
       }
     }
@@ -287,9 +308,9 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
     culpritId: 'muhendis-haluk',
     culpritName: 'Haluk Demir (Lojistik Operasyon Mühendisi)',
     motiveTitle: '1.8 Milyon Euro Kaçak Kimyasal Rüşvetini Korumak ve Savcılık İhbarını Engellemek',
-    keyEvidenceTitle: 'Saat 22:52 Peron Kamera Kaydı ve Sırt Çantasındaki Akonitin Flakonu',
+    keyEvidenceTitle: 'Mühendis Haluk’un Sırt Çantası & Kimyasal Analizi',
     verdictSummary:
-      'Katil, kurbanın operasyon mühendisi Haluk Demir’dir! Haluk, şirketin soğuk hava zincirini kullanarak limandan kaçak kimyasal madde sokmuş ve 1.8 Milyon Euro rüşvet almıştır. Kurban Ferit Soydan bunu öğrenip trende son konuşmayı yapacağını ve savcılığa gideceğini Telegram’dan bildirince, Haluk suikast planını devreye sokmuştur. Peronda kondüktör Rüstem adaçayını doldurup sırtını döndüğü 14 saniyelik anda, lateks eldivenli eliyle bardağa 3 damla Akonitin zehri damlatmıştır. Kurban kapıyı içeriden kilitleyip çayını yudumladığında dakikalar içinde kalbi durmuştur.',
+      'Katil, kurbanın operasyon mühendisi Haluk Demir’dir! Av. Zerrin hisse vasiyeti, Leyla Soydan İsviçre emanet fişi ve Kondüktör Rüstem servis erişimi nedeniyle son ana kadar şüpheli görünse de; Haluk’un çantasındaki Akonitin + florokarbon flakonu, 3. vagon koridorundaki 42 numara florokarbon ayakkabı lekesi ve Telegram tehdidi birbirini tamamlayarak faili kanıtlamıştır.',
     fullChronology: [
       {
         time: '24 Ekim 21:10',
@@ -302,9 +323,9 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
         proof: 'Gar Giriş Turnike Kayıtları'
       },
       {
-        time: '24 Ekim 22:52',
-        action: 'Kondüktör Rüstem şeker almaya giderken Haluk porselen bardağa 3 damla zehir damlattı.',
-        proof: '3. Peron Güvenlik Kamerası 22:52:28'
+        time: '24 Ekim 22:51 - 22:54',
+        action: 'Servis koridorundan Zerrin, Leyla ve Haluk art arda geçerken, Haluk kör noktadaki servis masasında porselen bardağa 3 damla Akonitin damlattı.',
+        proof: '3. Peron Kamera Zaman Çizelgesi & Florokarbon Ayakkabı İzi'
       },
       {
         time: '24 Ekim 22:55',
@@ -319,8 +340,8 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
     ],
     confessionAudioTranscript:
       '"(Sorgu Masası - 25 Ekim 04:15)\n' +
-      'Başkomiser: Haluk, 22:52 kamera görüntüleri ve çantanızdaki akonitin şişesi masada. Ne diyeceksiniz?\n' +
-      'Haluk Demir: (Titreyen ellerini yüzüne kapatır) ...Ben... Ben sadece kendimi korumak istedim! Ferit Bey beni bitirecekti! 15 yıl hapis yatamazdım! Bardağa damlattım... Kompartımana hiç girmedim bile, kapıyı kendisi kilitledi. Çayı içti ve bitti... O parayı hak etmiştim ben! Lanet olsun, o kameranın açısını hesaplayamadım..."'
+      'Başkomiser: Haluk, çantanızdaki akonitin flakonu ve 3. vagon koridorundaki ayakkabı iziniz masada. Ne diyeceksiniz?\n' +
+      'Haluk Demir: (Titreyen ellerini yüzüne kapatır) ...Ben... Ben sadece kendimi korumak istedim! Ferit Bey beni bitirecekti! 15 yıl hapis yatamazdım! Zerrin, Leyla ve Rüstem de oradaydı diye kimse benden şüphelenmez sanmıştım... Ayakkabımdaki çözücü lekesini hesaba katamadım..."'
   }
 };
 

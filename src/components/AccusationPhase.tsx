@@ -115,7 +115,7 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
     return () => clearInterval(timer);
   }, [isDebateActive, debateTimeLeft]);
 
-  // Generate motives dynamically from scenario
+  // Generate motives dynamically from scenario with deterministic non-spoiling order
   const motives = scenario ? [
     {
       id: 'motive-solution',
@@ -131,14 +131,14 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
         suspectTarget: s.id,
         isCorrect: false,
       }))
-  ] : suspects.map((s, idx) => ({
+  ].sort((a, b) => a.label.localeCompare(b.label, 'tr')) : suspects.map((s, idx) => ({
     id: `motive-${s.id}`,
     label: s.motiveHypothesis,
     suspectTarget: s.id,
     isCorrect: idx === 0,
   }));
 
-  // Generate key evidence options dynamically from scenario
+  // Generate key evidence options dynamically from scenario with deterministic non-spoiling order
   const keyEvidences = scenario ? [
     {
       id: 'evidence-solution',
@@ -153,7 +153,7 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
         label: ev.title,
         isCorrect: false,
       }))
-  ] : [
+  ].sort((a, b) => a.label.localeCompare(b.label, 'tr')) : [
     { id: 'ev-1', label: 'Adli Tıp Olay Yeri Raporu', isCorrect: true },
     { id: 'ev-2', label: 'Şüpheli İfadeleri & Çelişkiler', isCorrect: false },
   ];
