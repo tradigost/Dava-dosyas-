@@ -174,7 +174,7 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
       envelope: 2,
       title: 'Şifreli Telegram Mesajı & Tehdit Dökümü',
       category: 'cipher',
-      roleAccess: ['cryptology', 'archive'],
+      roleAccess: ['cryptology', 'archive', 'profiler'],
       summary: 'Kurbanın kilitli telefonundan kurtarılan Telegram mesajında Haluk’a gönderilen son ültimatom bulundu.',
       fullReport:
         'SİBER SUÇLAR VE TELEKOMÜNİKASYON RAPORU\n' +
@@ -194,7 +194,7 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
       envelope: 3,
       title: 'Sirkeci Garı Peron Güvenlik Kamerası & Servis Koridoru (22:50 - 22:55)',
       category: 'gps',
-      roleAccess: ['field', 'cryptology'],
+      roleAccess: ['field', 'cryptology', 'forensics'],
       summary: 'Kamera kaydı: Çay servis masası kör noktada; ancak 22:50-22:55 arasında 3. vagon geçişinde Haluk, Av. Zerrin, Leyla ve Rüstem art arda görülüyor.',
       fullReport:
         'EMNİYET KAMERA İNCELEME VE GÖRÜNTÜ İYİLEŞTİRME TUTANAĞI\n' +
@@ -341,7 +341,12 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
     confessionAudioTranscript:
       '"(Sorgu Masası - 25 Ekim 04:15)\n' +
       'Başkomiser: Haluk, çantanızdaki akonitin flakonu ve 3. vagon koridorundaki ayakkabı iziniz masada. Ne diyeceksiniz?\n' +
-      'Haluk Demir: (Titreyen ellerini yüzüne kapatır) ...Ben... Ben sadece kendimi korumak istedim! Ferit Bey beni bitirecekti! 15 yıl hapis yatamazdım! Zerrin, Leyla ve Rüstem de oradaydı diye kimse benden şüphelenmez sanmıştım... Ayakkabımdaki çözücü lekesini hesaba katamadım..."'
+      'Haluk Demir: (Titreyen ellerini yüzüne kapatır) ...Ben... Ben sadece kendimi korumak istedim! Ferit Bey beni bitirecekti! 15 yıl hapis yatamazdım! Zerrin, Leyla ve Rüstem de oradaydı diye kimse benden şüphelenmez sanmıştım... Ayakkabımdaki çözücü lekesini hesaba katamadım..."',
+    confessionLetter: `[ADLİ EMANET KASASI - HALUK DEMİR'İN İTİRAF METNİ]
+
+"Limandaki kimyasal yüklerin sahte evraklarını imzalayan tek kişi ben değildim; Ferit Soydan en başından beri komisyonun yarısını alıyordu. Ama savcılık soruşturması yaklaşınca bütün suçu benim üzerime yıkıp 21:10'da Telegram'dan ültimatom gönderdi.
+
+Sirkeci Garı'nda servis masası kör noktadaydı. Rüstem arkasını döndüğünde lateks eldivenle porselen bardağa üç damla Akonitin damlattım. Av. Zerrin, Leyla Hanım ve Rüstem de aynı dakikalarda koridordan geçtiği için kimsenin benden şüphelenmeyeceğini düşündüm. Ama ayakkabımdaki florokarbon çözücü lekesini ve çantamdaki flakonu temizleyemeden gar kapısında yakalandım."`
   }
 };
 
