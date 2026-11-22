@@ -184,7 +184,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         mediaType: 'image',
         mediaUrl: '/cases/vaka1/olay-yeri.png',
         mediaCaption: 'Olay Yeri Fotoğrafı #1: Çalışma masası, kırık porselen fincan ve açık kasa',
-        narrationUrl: '/cases/vaka1/ev-1-1.wav',
+        narrationUrl: '/cases/vaka1/ev-1-1.mp3',
         metadata: {
           date: '18 Ekim 2026',
           caseRef: 'KND-01',
@@ -201,7 +201,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         fullReport: '112 Acil Çağrı Kaydı Çözüm Tutanağı (Ses Dosyası #A-01):\nSaat 23:52:14\nOperatör: 112 Acil, buyrun?\nYadigar: (Nefes nefese) Ambulans gönderin hemen! Kandilli, Ulusoy Yalısı... Hikmet Bey nefes almıyor, masasında yığıldı kaldı!\nOperatör: Sakin olun efendim, nabız kontrolü yapabiliyor musunuz?\nYadigar: Nabız yok, elleri buz gibi... Aman Allahım kasayı açmışlar, zümrüt hançeri çalmışlar!\nOperatör: Ekipler yönlendirildi, lütfen olay yerine ve kasaya dokunmayın.',
         keyDeduction: 'Yadigar olay yerine henüz ilk giren kişi olarak kasanın içindeki kayıp eseri hemen fark etmiştir.',
         mediaType: 'audio',
-        mediaUrl: '/cases/vaka1/112-ihbar.wav',
+        mediaUrl: '/cases/vaka1/112-ihbar.mp3',
         mediaCaption: '112 Acil Çağrı Bandı: Yadigar Çelik’in ihbar kaydı',
         metadata: {
           date: '18 Ekim 2026',
@@ -219,7 +219,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ ASAYİŞ ŞUBE CİNAYET BÜRO\nTANIK İFADE VE SORGU TUTANAĞI\n\nİfade Veren: Niyazi Kalkan (54, Kandilli Yalısı Güvenlik Amiri)\nTarih: 19 Ekim 2026 - Saat 01:15\n\nCEVAP: "Saat 22:30’da Tarık Bey ön bahçe kapısından girdi, tartışma sesleri 22:50’ye kadar sürdü. Saat 23:00’te sahil ve müştemilat kameraları birden kesildi; o şalter kutusu müştemilat koridorunda ve anahtarı yalnızca Yadigar Usta ile Hikmet Bey’in çalışma odasındaki yedek anahtarlıkta durur. Saat 23:25’te kulübenin yan penceresinden baktığımda Banu Hanım’ın arka sahil kapısından elinde siyah büyük bir deri çantayla çıkıp bekleyen taksiye bindiğini gördüm. Ayrıca 23:02 sularında sahil iskelesi tarafındaki çalılıklardan koyu renk paltolu, elinde doktor çantasına benzer bir çanta taşıyan bir adamın geçtiğini de hayal meyal seçtim."',
         keyDeduction: 'Kamera kesintisi saat 23:00’te yapılmıştır. Aynı gece 23:00-23:25 aralığında Tarık, Banu, Yadigar ve doktor çantalı bir şahıs yalı çevresinde bulunmuştur.',
         mediaType: 'text',
-        narrationUrl: '/cases/vaka1/ev-1-3.wav',
+        narrationUrl: '/cases/vaka1/ev-1-3.mp3',
         metadata: {
           date: '19 Ekim 2026',
           caseRef: 'SORGU-GÜV-01',
@@ -239,7 +239,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         mediaType: 'image',
         mediaUrl: '/cases/vaka1/toksikoloji-cay.png',
         mediaCaption: 'Adli Toksikoloji Kanıtı: Kırık fincan örneği ve melisa çayı kalıntısı',
-        narrationUrl: '/cases/vaka1/ev-2-1.wav',
+        narrationUrl: '/cases/vaka1/ev-2-1.mp3',
         metadata: {
           date: '19 Ekim 2026',
           caseRef: 'TOX-408',
@@ -256,7 +256,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO AMİRLİĞİ\nÇAPRAZ SORGU TUTANAĞI\n\n1. Şüpheli Banu Ulusoy:\nBebek’te olduğunu iddia etmesine rağmen HTS ve taksi plaka kayıtları 23:15-23:25 arası Kandilli Yalısı’nda olduğunu ortaya koyunca ifadesini değiştirdi: "Tamam, 23:20’de yukarı çıktım! Hikmet koltukta nefes almakta zorlanıyordu. Kasa açıktı değil, şifreyi girip bana ait sahte ekspertiz dosyalarını ve evlilik öncesi mektuplarımı siyah çantama koydum. Hançer o an kutusunda duruyordu!"\n\n2. Şüpheli Dr. Selim Koray:\nBaz istasyonu kaydı 22:55-23:15 arası Kandilli sahil hattında çıkınca kabul etti: "23:00’te arka bahçe kapısından gizlice girdim çünkü Hikmet beni vakıf denetimi için çağırmıştı. Tansiyonunu ölçüp tartışmadan sonra 23:08’de ayrıldım. Çayına dokunmadım, ben çıktığımda yaşıyordu."',
         keyDeduction: 'Hem Banu hem Dr. Selim olay saatinde yalıda bulunduklarını gizlemişlerdir; ikisinin de odaya ve ilaç/kasa bilgilerine erişimi vardır.',
         mediaType: 'text',
-        narrationUrl: '/cases/vaka1/ev-2-2.wav',
+        narrationUrl: '/cases/vaka1/ev-2-2.mp3',
         metadata: {
           date: '19 Ekim 2026',
           caseRef: 'SORGU-HTS-02',
@@ -273,7 +273,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO\nÇAPRAZ SORGU TUTANAĞI\n\nŞüpheli: Tarık Ulusoy (36)\nSORU: 23:05’te evden ayrıldığınızı söylediniz ama Kandilli Sahil PTS kamerası aracınızı saat 23:28’de çıkış yaparken kaydetmiş. Ayrıca ceketinizdeki çay lekesi ne zaman oluştu?\nCEVAP: "22:50’de tartışırken babam ilk fincanı üzerime fırlattı, ben 23:05’te kapıdan çıktım; merdivende Yadigar elinde taze demlikle yukarı çıkıyordu! Sonra sahildeki tefeci kuryesiyle buluşmak için sokakta arabada 20 dakika bekledim. İçeri bir daha girmedim!"\n\nKriminal Not: Tarık’ın ceketindeki leke melisa çayı olup zehir konsantrasyonu saptanmamıştır. Ancak kasa şifresinin Tarık tarafından da bilindiği ve 23:05-23:28 arası yalıya tekrar girme ihtimali soruşturma dosyasında açık tutulmuştur.',
         keyDeduction: 'İlk fincan temizdir; ölümcül zehir 23:05’ten sonra verilen ikinci çayla ya da 23:10-23:25 arasında odada bulunan şüphelilerden biri tarafından verilmiştir.',
         mediaType: 'text',
-        narrationUrl: '/cases/vaka1/ev-2-3.wav',
+        narrationUrl: '/cases/vaka1/ev-2-3.mp3',
         metadata: {
           date: '19 Ekim 2026',
           caseRef: 'SORGU-TARIK-02',
@@ -293,7 +293,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         mediaType: 'image',
         mediaUrl: '/cases/vaka1/atolye-hancer.png',
         mediaCaption: 'Delil Fotoğrafı #3: Atölyedeki reçine hançer replikası ve tansiyon çayı kavanozu',
-        narrationUrl: '/cases/vaka1/ev-3-1.wav',
+        narrationUrl: '/cases/vaka1/ev-3-1.mp3',
         metadata: {
           date: '20 Ekim 2026',
           caseRef: 'KRM-YADIGAR',
@@ -310,7 +310,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO AMİRLİĞİ\nSON ÇAPRAZ SORGU TUTANAĞI\n\nŞüpheli: Yadigar Çelik (57)\nCEVAP: "O reçine hançer Hikmet Bey’in müze sergisi için bizzat yaptırdığı bir kopyaydı! Digitalis tohumunu ceviz kütüphanedeki tahta kurtları için cila karışımı diye aldım; çay kavanozuna nasıl karıştı bilmiyorum! Ben saat 23:10’da çayı bırakıp müştemilata indim. Benden önce saat 23:00’te Dr. Selim gizlice odaya girmiş; digoksinin uzmanı bir kalp doktoru dururken neden bana bakıyorsunuz? Üstelik 23:20’de Banu Hanım kasayı açıp kaçtı, Tarık Bey de 23:28’e kadar sokağın başında bekledi. Herkesin yalıda olduğu bir gecede suçu 30 yıllık emektara yıkamazsınız!"',
         keyDeduction: 'Dört şüphelinin de saat 23:00-23:28 penceresinde yalıya erişimi ve güçlü motifi vardır; ancak saflaştırılmış tohum ekstraksiyonu faturası + çay kavanozundaki kalıntı + 23:10 çay servisi + şalter anahtarı + sahte replika hançer kesişimi incelenmelidir.',
         mediaType: 'text',
-        narrationUrl: '/cases/vaka1/ev-3-2.wav',
+        narrationUrl: '/cases/vaka1/ev-3-2.mp3',
         metadata: {
           date: '20 Ekim 2026',
           caseRef: 'SES-SORGU-02',
@@ -507,6 +507,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         mediaType: 'image',
         mediaUrl: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=800&q=80',
         mediaCaption: 'Olay Yeri Fotoğrafı: Makyaj aynasındaki ruj yazısı ve kral kostümü',
+        narrationUrl: '/cases/vaka2/ev-2-1-1.mp3',
         metadata: {
           date: '24 Ekim 2026',
           caseRef: 'TYT-01',
@@ -523,7 +524,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         fullReport: 'Ses Kaydı Analizi #T-02:\n[20:52 - Koridor]: Caner (kapı dışından): "Bunu yapamazsın Altan, bu rol benim hakkımdı!"\nAltan (içeriden kapıyı kilitleyerek): "Haddini bil Caner. Londra biletlerim hazır, yarın bu tiyatroda ne sen kalacaksın ne diğerleri!"\n[20:56 - Oda İçi]: Altan kilidi açtıktan sonra Kadın Sesi (soğukkanlı): "Bu kostüm sana çok yakışacak Altan... Son sahnende herkes seni konuşacak."\n[21:02 - Koridor]: Ayak sesleri ve yapımcı Orhan’ın sesi: "Altan, imza evrakını masana bıraktım, Londra işini unut!"',
         keyDeduction: 'Odaya 20:50-21:05 arasında birden fazla şüpheli erişmiştir; kapı 20:55 sonrası açık kalmıştır.',
         mediaType: 'audio',
-        mediaUrl: '',
+        mediaUrl: '/cases/vaka2/interkom-kaydi.mp3',
         mediaCaption: 'İnterkom Telsiz Bandı: 20:52 - 21:02 kulis kayıtları',
         metadata: {
           date: '24 Ekim 2026',
@@ -541,6 +542,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         fullReport: 'T.C. KADIKÖY İLÇE EMNİYET MÜDÜRLÜĞÜ\nTANIK İFADE TUTANAĞI\n\nTanık: Rıza Kurtuluş (51, Baş Sahne Amiri)\nCEVAP: "20:45’te Melis Hanım elinde makasla ağlayarak odaya daldı, 20:50’de çıktı. 20:52’de Caner kapıyı yumrukladı ama Altan içeriden sürgülemişti. 20:55’te Gülfem Hanım dikiş sepetiyle geldi, Altan kapıyı ona açtı; Gülfem Hanım broşu yakasına takıp 21:00’de çıktı. 21:02’de yapımcı Orhan Bey elinde bir dosya ile koridordan Altan’ın kapısına yürüdü. Saat 21:06 civarı ise tuvalet kapısı tarafından Melis Hanım’ın tekrar bu koridora doğru baktığını gördüm. 21:15’te anons için girdiğimde Altan cansız yatıyordu."',
         keyDeduction: 'Dört şüphelinin de 20:45-21:08 arasında soyunma odasına ve koridora fiili erişimi vardır.',
         mediaType: 'text',
+        narrationUrl: '/cases/vaka2/ev-2-1-3.mp3',
         metadata: {
           date: '24 Ekim 2026',
           caseRef: 'SORGU-AMİR-01',
@@ -559,6 +561,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         mediaType: 'image',
         mediaUrl: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
         mediaCaption: 'Mikroskop Fotoğrafı: Broş iğnesindeki mikro-kanallı balmumu kapsülü',
+        narrationUrl: '/cases/vaka2/ev-2-2-1.mp3',
         metadata: {
           date: '25 Ekim 2026',
           caseRef: 'KRM-TOX-02',
@@ -575,6 +578,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         fullReport: 'T.C. KADIKÖY ASAYİŞ ŞUBE CİNAYET MASASI\nÇAPRAZ SORGU TUTANAĞI\n\n1. Caner Ertekin (47):\nDolabında parçalanmış yedek pelerin ve tüm kulis odalarını açan yedek anahtar bulundu. Caner: "Anahtarı kostümün yedeklerini kesmek için aldım, broşa dokunmadım!" dedi. İfadesinde makyaj masası suyuna uyku ilacı karıştırmayı düşündüğünü ancak vazgeçtiğini söyledi.\n\n2. Orhan Karahan (53):\nTiyatronun kasasından 8 Milyon TL kaçırıldığını doğrulayan banka ekstreleri ve Altan’ın ölümü halinde yapımcıya 12 Milyon TL ödeyen sigorta poliçesi ele geçirildi. Orhan: "21:02’de sadece fesih protokolü imzalatmak için kapıdan baktım, Altan broşunu yeni takmıştı, yalnızdı" dedi.',
         keyDeduction: 'Caner’de tüm odaları açan anahtar ve sahne sabotajı motifi, Orhan’da ise 12 Milyon TL’lik sigorta tazminatı ve 21:02 oda erişimi vardır.',
         mediaType: 'text',
+        narrationUrl: '/cases/vaka2/ev-2-2-2.mp3',
         metadata: {
           date: '25 Ekim 2026',
           caseRef: 'SORGU-CANER-ORHAN',
@@ -591,6 +595,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO\nŞÜPHELİ SORGU ZAPTI\n\nŞüpheli: Melis Haznedar (29)\nSORU: 20:50’de ayrıldığınızı söylediniz ama sahne amiri sizi 21:06’da tekrar koridorda görmüş. Aynadaki bordo mat ruj da sizin markanızla eşleşti!\nCEVAP: "21:06’da unuttuğum telefonumu almak için koridora döndüm ama odaya girmedim! Atkıyı makasla kestiğimi inkâr etmiyorum. O ruju üç gün önce kuliste kaybetmiştim! Aynadaki yazıya dikkatli bakın, harflerin eğimi benim el yazım değil!"\n\nKriminal Not: Aynadaki ruj yazısı sol eğimli baskı izi taşımaktadır; rujun dış kılıfında ise silinmiş parmak izi mevcuttur.',
         keyDeduction: 'Melis saat 21:06’da koridorda bulunmuştur ve ruj kendisine aittir; ancak ruj yazısının el eğimi solak bir kullanıma işaret etmektedir.',
         mediaType: 'text',
+        narrationUrl: '/cases/vaka2/ev-2-2-3.mp3',
         metadata: {
           date: '25 Ekim 2026',
           caseRef: 'SORGU-MELIS-02',
@@ -607,6 +612,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         fullReport: 'Emniyet Mali Şube ve Kriminal Ekspertiz Raporu:\n1. Altan’ın valizinde 8 Milyon TL’lik Londra transfer dekontu ve ertesi sabah 06:30 uçuş bileti bulundu.\n2. Gülfem Saygın’ın kilitli iplik kutusunda iğne mikro-delme ucu ile aynı erime derecesine (37.2°C) ayarlı balmumu karışımı ve eser miktarda nörotoksin kalıntısı tespit edildi.\n3. Kriminal El Analizi: Aynadaki "GURURUN SONUN OLACAK" yazısı solak bir el tarafından hızlıca yazılmıştır. Şüphelilerden Melis sağlak, Orhan sağlak, Caner ise her iki elini kullanan (ambidextrous) bir oyuncudur; Gülfem ise doğuştan solaktır.',
         keyDeduction: 'Atölyedeki mikro-delme aparatı ve 37.2°C özel balmumu karışımı broş düzeneğiyle eşleşmektedir; aynadaki yazı ise solak bir el tarafından Altan’ın çöküşü sırasında yazılmıştır.',
         mediaType: 'text',
+        narrationUrl: '/cases/vaka2/ev-2-3-1.mp3',
         metadata: {
           date: '25 Ekim 2026',
           caseRef: 'MALİ-GULFEM',
@@ -623,6 +629,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         fullReport: 'T.C. İSTANBUL EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO\nSON ÇAPRAZ SORGU ZAPTI\n\nŞüpheli: Gülfem Saygın (46)\nCEVAP: "Tarihi kostümlerin yakasını sertleştirmek için balmumu ve ince iğne uçları kullanmam kadar doğal ne var? Zehir bulaşığı varsa bile Caner’de yedek anahtar vardı, atölyeme de girebilirdi! Caner iki elini de kullanabilen bir aktör değil mi? Ya da 12 Milyon TL sigorta tazminatı alacak olan Orhan Karahan’a, 21:06’da koridorda yakalanan ve aynada kendi ruju çıkan Melis’e neden aynı sertlikte bakmıyorsunuz? Ben 20:55’te broşu taktım ve çıktım!"',
         keyDeduction: 'Gülfem suçu Orhan’ın sigorta poliçesine, Caner’in anahtarına ve Melis’in rujuna yöneltmektedir; ancak 20:55’te broşu bizzat takması, 10-12 dakikalık erime penceresi (ölüm 21:12) ve özel 37.2°C balmumu karışımı kritik zamanlamayı oluşturmaktadır.',
         mediaType: 'text',
+        narrationUrl: '/cases/vaka2/ev-2-3-2.mp3',
         metadata: {
           date: '25 Ekim 2026',
           caseRef: 'SES-GULFEM-03',
@@ -816,6 +823,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         mediaType: 'image',
         mediaUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
         mediaCaption: 'Kriminal Fotoğraf: Asitle eritilmiş çelik taşıyıcı kablo',
+        narrationUrl: '/cases/vaka3/ev-3-1-1.mp3',
         metadata: {
           date: '26 Ekim 2026',
           caseRef: 'SAB-01',
@@ -832,7 +840,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         fullReport: 'Telsiz Kayıt Bandı #M-03 (Saat 22:09:40):\nErdem Soydan: "Merkez! Şaft kabini kayıyor, acil durdurma tutmuyor!"\nMerkez Operatörü: "Erdem Bey manuel freni çekin!"\nErdem Soydan: "Fren dişlisi takozla kilitlenmiş! Eğer çıkamazsam... kapatma raporumu ve numune dosyasını çantamdan..." (Şiddetli gürültü ve hat kesintisi)\nSaat 22:10:05 - Çarpma sesi.',
         keyDeduction: 'Erdem son anlarında çantasındaki kapatma raporuna ve numune dosyasına işaret etmektedir.',
         mediaType: 'audio',
-        mediaUrl: '',
+        mediaUrl: '/cases/vaka3/saft-telsiz.mp3',
         mediaCaption: 'Şaft Telsiz Kaydı: Erdem Soydan’ın acil durum anonsu',
         metadata: {
           date: '26 Ekim 2026',
@@ -850,6 +858,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         fullReport: 'T.C. ZONGULDAK İL EMNİYET MÜDÜRLÜĞÜ\nTANIK VE KAMERA ÖZET ZAPTI\n\nTanık: Celal Demir (58, Şaft Baş Teknisyeni)\nCEVAP: "Kule kapısı yanındaki kamera kör noktayı tam görmüyor ama saat 21:20’de üzerinde standart sarı saha yağmurluğu, başında baret ve elinde mavi nitril eldiven olan birinin kule basamaklarına yöneldiğini gördüm. Karanlıkta yüzünü ve boyunu seçemedim; yağmurluk da eldiven de tesiste laboratuvardan bakım ekibine kadar herkeste var. Saat 21:40’ta ise vardiya amiri Murat’ı makine dairesi kapısından elinde bidonla çıkarken gördüm."',
         keyDeduction: 'Saat 21:20’deki şahıs herkesin kullandığı sarı yağmurluk ve mavi eldiven giyerek kimliğini gizlemiştir; saat 21:40’ta ise Murat makine dairesindeydi.',
         mediaType: 'text',
+        narrationUrl: '/cases/vaka3/ev-3-1-3.mp3',
         metadata: {
           date: '27 Ekim 2026',
           caseRef: 'SORGU-TEKNİK-01',
@@ -868,6 +877,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         mediaType: 'image',
         mediaUrl: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=800&q=80',
         mediaCaption: 'Laboratuvar Analiz Raporu: Florosülfonik asit izotop eşleşmesi',
+        narrationUrl: '/cases/vaka3/ev-3-2-1.mp3',
         metadata: {
           date: '27 Ekim 2026',
           caseRef: 'KIMYA-771',
@@ -884,6 +894,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         fullReport: 'T.C. ZONGULDAK ASAYİŞ ŞUBE\nÇAPRAZ SORGU TUTANAĞI\n\n1. Murat Çetin (31):\nTulumunda mazot ve kurşun talaşı bulundu. Murat: "Öğlen kaynak atölyesinde boru tamiri yaptım, talaş oradan! Gece 21:40’ta makine dairesine sadece jeneratörden mazot çekmeye girdim; ama 21:18 civarı Berna Hanım’ı elinde korumalı çantayla kule yolunda gördüm" dedi.\n\n2. Kemal Aksoy (44):\nBakım mühendisi Kemal’in 2 gün önce şaft halatına sahte "Kusursuz" onayı verdiği ve Hasan Karaca’dan 450 bin TL gizli ödeme aldığı çıktı. Kemal: "Olay gecesi lojmandaydım" dese de lojman bekçisi Kemal’in aracının 21:30’da saha dışından geri döndüğünü bildirdi.',
         keyDeduction: 'Murat’ın tulumundaki kurşun talaşı ve makine dairesi varlığı, Kemal’in ise sahte bakım onayı ve lojman alibisindeki açık şüpheyi üçlü arasında güçlü tutmaktadır.',
         mediaType: 'text',
+        narrationUrl: '/cases/vaka3/ev-3-2-2.mp3',
         metadata: {
           date: '27 Ekim 2026',
           caseRef: 'SORGU-MURAT-KEMAL',
@@ -900,6 +911,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         fullReport: 'T.C. ZONGULDAK CUMHURİYET BAŞSAVCILIĞI\nŞÜPHELİ SORGU TUTANAĞI\n\nŞüpheli: Hasan Karaca (52)\nCEVAP: "Sayın Savcım, maden kapanmasın diye Erdem’e 3 Milyon TL teklif ettim, Kemal’e de bakım işlerini hızlandırsın diye prim verdim. Erdem’in evrak çantasını da içindeki kapatma taslağını incelemek için akşam 18:30’da bagajıma aldım. Ama şaftı düşürmedim! Maden savcılık tarafından mühürlendi, ağırlaştırılmış müebbet alacağım bir cinayeti kendi tesisimde neden işleyeyim? Asıl kavga lityum patentinde; dün akşam Berna ile Erdem birbirine girdi!"',
         keyDeduction: 'Hasan Karaca rüşveti ve çantayı almayı kabul etmiştir; ancak sabotaj tekniği ve özel asit erişimi henüz netleşmemiştir.',
         mediaType: 'text',
+        narrationUrl: '/cases/vaka3/ev-3-2-3.mp3',
         metadata: {
           date: '27 Ekim 2026',
           caseRef: 'SORGU-HASAN-02',
@@ -916,6 +928,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         fullReport: 'Siber Suçlar ve Güvenlik Logu Raporu:\n1. Laboratuvar iç çelik kasasının elektronik denetim loguna göre kasa olay gecesi saat 21:08:12’de Berna Tezcan’ın parmak iziyle açılmış ve 21:10’da kapanmıştır. Başka hiçbir kart veya parmak izi kaydı yoktur.\n2. Berna’nın bilgisayarında saat 19:15’te Türk Patent Enstitüsü portalından 50 Milyon Dolarlık lityum patent başvurusu güncellenerek Erdem Soydan’ın ismi silinmiştir.\n3. Arama geçmişinde saat 19:40’ta "40 tonluk çelik halat florosülfonik asit kopma süresi" sorgusu ve laboratuvar yıkama lavabosunda sarı saha yağmurluğu cebine düşmüş kurşun takoz sürtünme izi saptanmıştır.',
         keyDeduction: '21:08 biyometrik kasa açılışı, 19:15 patent silme işlemi, 19:40 halat aşınma araması ve 21:20 yağmurluklu kule geçişi aynı zaman penceresinde kesişmektedir.',
         mediaType: 'text',
+        narrationUrl: '/cases/vaka3/ev-3-3-1.mp3',
         metadata: {
           date: '27 Ekim 2026',
           caseRef: 'SİBER-PATENT',
@@ -932,6 +945,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         fullReport: 'T.C. ZONGULDAK EMNİYET MÜDÜRLÜĞÜ CİNAYET BÜRO\nSON ÇAPRAZ SORGU TUTANAĞI\n\nŞüpheli: Dr. Berna Tezcan (37)\nCEVAP: "Kasayı 21:08’de gece lityum numunesi için açtım, bu benim rutin işim! Patentten Erdem’i sildim çünkü Hasan Karaca’dan rüşvet alacağından şüphelendim! Korozyon araması kuyu boruları içindi. Bütün şüpheyi üzerime yıkıyorsunuz ama düşünün: Kurşun takozu frene çakan kişi ben olsam tulumumda kurşun talaşı çıkardı; talaş Murat Çetin’de çıktı! Sahte bakım onayını imzalayan Kemal Aksoy, Erdem’in çantasını bagajına saklayan ise Hasan Karaca! Ben bilim insanıyım!"',
         keyDeduction: 'Dört şüphelinin de tesis içinde güçlü motifi ve fiziki şüphe izi vardır; ancak biyometrik asit kasasını 21:08’de açan tek kişi ve 21:20’de kuleye çıkan sarı yağmurluklu figür penceresi incelenmelidir.',
         mediaType: 'text',
+        narrationUrl: '/cases/vaka3/ev-3-3-2.mp3',
         metadata: {
           date: '27 Ekim 2026',
           caseRef: 'SES-BERNA-03',
