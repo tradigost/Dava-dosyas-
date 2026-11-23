@@ -64,6 +64,7 @@ export interface Suspect {
   suspiciousQuotes: string[];
   motiveHypothesis?: string;
   initialSuspicion: number; // 0-100
+  photoUrl?: string;
   photoPlaceholder?: {
     initials: string;
     tint: string;

@@ -445,11 +445,19 @@ export const AccusationPhase: React.FC<AccusationPhaseProps> = ({
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <div
-                        className={`w-9 h-9 rounded-lg border flex items-center justify-center font-bold text-xs ${suspect.photoPlaceholder?.silhouetteStyle || 'bg-[#d6cdbc] border-[#c8bfae] text-[#4a443c]'}`}
-                      >
-                        {suspect.photoPlaceholder?.initials || suspect.name.slice(0, 2).toUpperCase()}
-                      </div>
+                      {suspect.photoUrl ? (
+                        <img
+                          src={suspect.photoUrl}
+                          alt={suspect.name}
+                          className="w-10 h-10 rounded-lg border border-[#c8bfae] object-cover shrink-0"
+                        />
+                      ) : (
+                        <div
+                          className={`w-10 h-10 rounded-lg border flex items-center justify-center font-bold text-xs shrink-0 ${suspect.photoPlaceholder?.silhouetteStyle || 'bg-[#d6cdbc] border-[#c8bfae] text-[#4a443c]'}`}
+                        >
+                          {suspect.photoPlaceholder?.initials || suspect.name.slice(0, 2).toUpperCase()}
+                        </div>
+                      )}
                       <div className="min-w-0 flex-1">
                         <p className="font-bold text-xs truncate">{suspect.name}</p>
                         <p className="text-[11px] text-[#4a443c] truncate">{suspect.title}</p>

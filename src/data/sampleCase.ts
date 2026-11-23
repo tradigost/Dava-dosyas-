@@ -40,7 +40,8 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
       ],
       motiveHypothesis: 'Miras sözleşmesine gizlice eklenen %20 hisse payını yürürlüğe sokmak.',
       initialSuspicion: 55,
-      photoPlaceholder: {
+      photoUrl: '/cases/vaka4/av-zerrin.jpg',
+        photoPlaceholder: {
         initials: 'ZK',
         tint: 'from-amber-950 to-stone-900',
         silhouetteStyle: 'bg-amber-900/30 border-amber-600/40 text-amber-300'
@@ -61,7 +62,8 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
       ],
       motiveHypothesis: 'Gümrük kaçakçılığı skandalının faturasını tek başına ödememek ve Ferit’in tehdidini susturmak.',
       initialSuspicion: 80,
-      photoPlaceholder: {
+      photoUrl: '/cases/vaka4/muhendis-haluk.jpg',
+        photoPlaceholder: {
         initials: 'HD',
         tint: 'from-blue-950 to-slate-900',
         silhouetteStyle: 'bg-blue-900/30 border-blue-600/40 text-blue-300'
@@ -81,7 +83,8 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
       ],
       motiveHypothesis: 'Şantaj veya rüşvet karşılığı servise aracılık etmek.',
       initialSuspicion: 55,
-      photoPlaceholder: {
+      photoUrl: '/cases/vaka4/rustem-efendi.jpg',
+        photoPlaceholder: {
         initials: 'RÇ',
         tint: 'from-emerald-950 to-zinc-900',
         silhouetteStyle: 'bg-emerald-900/30 border-emerald-600/40 text-emerald-300'
@@ -102,7 +105,8 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
       ],
       motiveHypothesis: 'İsviçre emanet fişini ele geçirip boşanma öncesi servet transferini durdurmak.',
       initialSuspicion: 70,
-      photoPlaceholder: {
+      photoUrl: '/cases/vaka4/leyla-soydan.jpg',
+        photoPlaceholder: {
         initials: 'LS',
         tint: 'from-rose-950 to-slate-900',
         silhouetteStyle: 'bg-rose-900/30 border-rose-600/40 text-rose-300'
@@ -125,6 +129,9 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
         '3. Bardağın kulpunda ve ağız kısmında maktulün tükürüğü ile birlikte BİLİNMEYEN LATEKS ELDİVEN TALK İZİ tespit edildi.\n' +
         '4. Şekerliğe veya çay süzgecine değil, doğrudan kurbana sunulan porselen kupaya dökülmüştür.',
       keyDeduction: 'Katil çay servisi yapılmadan hemen önce ya da bardağı hazırlarken lateks eldivenle zehri bardağa damlatmıştır.',
+      mediaType: 'image',
+      mediaUrl: '/cases/vaka4/ekspres-fincan.jpg',
+      mediaCaption: 'Olay Yeri Fotoğrafı: Kompartıman masasında porselen fincan ve talk izi',
       metadata: {
         date: '25 Ekim 01:20',
         caseRef: 'ATK-2026-EXP',
@@ -144,6 +151,9 @@ export const DEMO_CUSTOM_CASE: CaseScenario = {
         '2. Kapının üstündeki havalandırma menfezinin 2 adet vidası ince uçlu bir aletle çıkarılmış ve pervazda taze metal çizikleri oluşmuştur.\n' +
         '3. Koridor halısında 42 numara kauçuk taban ayakkabı tozu ve kimyasal florokarbon lekesi saptanmıştır.',
       keyDeduction: 'Kapı içeriden kilitli olsa da katil menfezi kullanarak kurban kilitledikten sonra içeriye bir şey ulaştırmış veya doğrudan servis anında müdahale etmiştir.',
+      mediaType: 'image',
+      mediaUrl: '/cases/vaka4/ekspres-menfez.jpg',
+      mediaCaption: 'Olay Yeri Fotoğrafı: İçeriden kilitli kapı ve gevşetilmiş üst havalandırma menfezi',
       metadata: {
         date: '25 Ekim 01:45',
         caseRef: 'OYI-2026-VGN',

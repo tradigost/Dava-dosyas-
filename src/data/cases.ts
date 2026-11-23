@@ -97,6 +97,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         ],
         motiveHypothesis: '40 Milyon TL’lik boşanma hakkını kaybetmemek ve galerisindeki sahte sertifikaları kasadan almak.',
         initialSuspicion: 70,
+        photoUrl: '/cases/vaka1/banu-ulusoy.jpg',
         photoPlaceholder: {
           initials: 'BU',
           tint: 'from-amber-950 to-stone-900',
@@ -119,6 +120,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         ],
         motiveHypothesis: 'Tefeci borçlarını kapatmak için hançeri ele geçirmek ve tek varis olarak mirasa konmak.',
         initialSuspicion: 75,
+        photoUrl: '/cases/vaka1/tarik-ulusoy.jpg',
         photoPlaceholder: {
           initials: 'TU',
           tint: 'from-blue-950 to-slate-900',
@@ -141,6 +143,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         ],
         motiveHypothesis: 'Klinik deney usulsüzlüğünü gizlemek ve yüksek doz kalp ilacıyla doğal ölüm süsü vermek.',
         initialSuspicion: 65,
+        photoUrl: '/cases/vaka1/dr-selim-koray.jpg',
         photoPlaceholder: {
           initials: 'SK',
           tint: 'from-purple-950 to-slate-900',
@@ -163,6 +166,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         ],
         motiveHypothesis: 'Sahte antika replika vurgununun savcılığa bildirilmesini önlemek.',
         initialSuspicion: 55,
+        photoUrl: '/cases/vaka1/yadigar-celik.jpg',
         photoPlaceholder: {
           initials: 'YÇ',
           tint: 'from-emerald-950 to-teal-900',
@@ -237,7 +241,7 @@ export const CASE_SCENARIOS: CaseScenario[] = [
         fullReport: 'Adli Tıp Kurumu Toksikoloji İhtisas Dairesi Raporu:\nMaktulün mide içeriğinde ve masadaki kırık fincanda 4.8 mg/L oranında Digoksin/Digitalis glikozidi tespit edilmiştir. Bu doz normal tedavi dozunun 10 katı olup oral alımdan 20-30 dakika sonra ventriküler fibrilasyona yol açar. Zehrin keskin acı tadı yoğun aromatik melisa çayı ile maskelenmiştir. Laboratuvar analizine göre kullanılan bileşen, piyasada satılan standart kalp haplarının ezilmiş hali değildir; doğrudan bitki tohumundan veya saf laboratuvar stokundan ekstrakte edilmiş yüksek saflıkta sıvı/kristal formdur.',
         keyDeduction: 'Zehir standart ezilmiş kalp hapı değil, saflaştırılmış ekstrakt formundadır ve ölümden 20-30 dakika önce (23:10-23:20 aralığında) içilmiştir.',
         mediaType: 'image',
-        mediaUrl: '/cases/vaka1/toksikoloji-cay.png',
+        mediaUrl: '/cases/vaka1/toksikoloji-cay.jpg',
         mediaCaption: 'Adli Toksikoloji Kanıtı: Kırık fincan örneği ve melisa çayı kalıntısı',
         narrationUrl: '/cases/vaka1/ev-2-1.mp3',
         metadata: {
@@ -421,6 +425,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         ],
         motiveHypothesis: 'Kariyerini ve itibarını kurtarmak için şantajcı eski partnerini susturmak.',
         initialSuspicion: 70,
+        photoUrl: '/cases/vaka2/melis-haznedar.jpg',
         photoPlaceholder: {
           initials: 'MH',
           tint: 'from-rose-950 to-pink-900',
@@ -443,6 +448,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         ],
         motiveHypothesis: '20 yıllık gölgeden çıkıp prömiyer başrolünü devralmak ve Altan’dan intikam almak.',
         initialSuspicion: 75,
+        photoUrl: '/cases/vaka2/caner-ertekin.jpg',
         photoPlaceholder: {
           initials: 'CE',
           tint: 'from-zinc-950 to-neutral-900',
@@ -465,6 +471,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         ],
         motiveHypothesis: '8 Milyon TL’lik kaçışı durdurmak ve 12 Milyon TL’lik sigorta tazminatıyla tiyatroyu kurtarmak.',
         initialSuspicion: 65,
+        photoUrl: '/cases/vaka2/orhan-karahan.jpg',
         photoPlaceholder: {
           initials: 'OK',
           tint: 'from-blue-950 to-slate-900',
@@ -487,6 +494,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         ],
         motiveHypothesis: 'Tiyatronun sermayesini ve 15 yıllık emeğini Londra’ya kaçıran eşini sahnede durdurmak.',
         initialSuspicion: 55,
+        photoUrl: '/cases/vaka2/gulfem-saygin.jpg',
         photoPlaceholder: {
           initials: 'GS',
           tint: 'from-amber-950 to-orange-900',
@@ -505,7 +513,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         fullReport: 'Kadıköy İlçe Emniyet Olay Yeri İnceleme Raporu:\n24 Ekim saat 21:15’te sahne amirinin ihbarıyla odaya girilmiştir. Altan Saygın Kral Lear kostümü içinde koltuğa yığılmış ve solunum durması sonucu hayatını kaybetmiştir. Yaka broşunun boyna bakan iğne ucunda mikroskobik reçine/jel kalıntısı görülmüştür. Makyaj aynasında bordo mat rujla yazılmış "GURURUN SONUN OLACAK" ibaresi mevcuttur. Kritik bulgu: Aynadaki su buharı ve ruj yağının dağılımı, yazının sıcak su ısıtıcısı açıkken yani Altan yere yığıldıktan hemen sonra (21:05-21:12 arası) yazıldığını göstermektedir.',
         keyDeduction: 'Ölüm broş iğnesindeki toksinle gerçekleşmiştir; aynadaki ruj yazısı ise Altan kostümü giydikten sonra, hedef şaşırtmak için sonradan yazılmış olabilir.',
         mediaType: 'image',
-        mediaUrl: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=800&q=80',
+        mediaUrl: '/cases/vaka2/kulis-olay-yeri.jpg',
         mediaCaption: 'Olay Yeri Fotoğrafı: Makyaj aynasındaki ruj yazısı ve kral kostümü',
         narrationUrl: '/cases/vaka2/ev-2-1-1.mp3',
         metadata: {
@@ -559,7 +567,7 @@ O gece şans bana yardım etti: Tarık içeride kavga ediyordu, Dr. Selim arka k
         fullReport: 'Kriminal Kimya ve Lif İhtisas Raporu:\nBroş iğnesindeki kurar-türevi nörotoksin, iğne gövdesine mikroskop altında açılan 0.3 mm’lik kanallara doldurulmuş ve doğal arı balmumu-reçine karışımıyla mühürlenmiştir. Deneysel simülasyona göre boyun derisi 37.2 derece sıcaklığa ulaştığında balmumu tam 10-12 dakika içinde eriyerek toksini serbest bırakmaktadır. Altan’ın ölüm saati 21:12 olduğuna göre broş boyna yaklaşık 20:58-21:02 aralığında temas etmiştir. Ayrıca broş klipsinin arka yüzeyinde sol el başparmak kavrama izi saptanmıştır.',
         keyDeduction: 'Broşun hazırlanması mikro-terzilik ve arı balmumu bilgisi gerektirir; temas ise 20:58-21:02 aralığında başlamıştır.',
         mediaType: 'image',
-        mediaUrl: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
+        mediaUrl: '/cases/vaka2/bros-toksikoloji.jpg',
         mediaCaption: 'Mikroskop Fotoğrafı: Broş iğnesindeki mikro-kanallı balmumu kapsülü',
         narrationUrl: '/cases/vaka2/ev-2-2-1.mp3',
         metadata: {
@@ -737,6 +745,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         ],
         motiveHypothesis: 'Madenin mühürlenmesini engellemek ve kapatma raporunu yok etmek.',
         initialSuspicion: 75,
+        photoUrl: '/cases/vaka3/hasan-karaca.jpg',
         photoPlaceholder: {
           initials: 'HK',
           tint: 'from-amber-950 to-stone-900',
@@ -759,6 +768,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         ],
         motiveHypothesis: 'Kardeşinin ölümünün intikamını almak ve ihmalkâr tesisi sabotajla durdurmak.',
         initialSuspicion: 70,
+        photoUrl: '/cases/vaka3/murat-cetin.jpg',
         photoPlaceholder: {
           initials: 'MÇ',
           tint: 'from-blue-950 to-slate-900',
@@ -781,6 +791,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         ],
         motiveHypothesis: 'Sahte güvenlik onayının denetçi tarafından savcılığa verilmesini engellemek.',
         initialSuspicion: 65,
+        photoUrl: '/cases/vaka3/kemal-aksoy.jpg',
         photoPlaceholder: {
           initials: 'KA',
           tint: 'from-emerald-950 to-slate-900',
@@ -803,6 +814,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         ],
         motiveHypothesis: '50 Milyon Dolarlık lityum patentini tek başına sahiplenmek ve saha kapanışını önlemek.',
         initialSuspicion: 60,
+        photoUrl: '/cases/vaka3/berna-tezcan.jpg',
         photoPlaceholder: {
           initials: 'BT',
           tint: 'from-purple-950 to-indigo-900',
@@ -821,7 +833,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         fullReport: 'Kriminalistik Olay Yeri Zabtı:\n26 Ekim saat 22:10’da -200 kotuna çakılan servis asansöründe yapılan incelemede:\n- Çelik taşıyıcı halatın kopma noktasında kimyasal erime ve yeşilimsi korozyon köpüğü tespit edilmiştir.\n- 40 tonluk halat liflerinin kopma seviyesine inmesi için derişik asidin en az 35-45 dakika önce uygulanmış olması gerekmektedir.\n- Kabin fren dişlisinin arasına bakım atölyesi standardında döküm kurşun takoz çakılarak acil fren devre dışı bırakılmıştır.',
         keyDeduction: 'Sabotaj hem kimyasal erime süresi (21:15-21:30 uygulaması) hem de fren mekanizması takozu içeren iki aşamalı bir plandır.',
         mediaType: 'image',
-        mediaUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
+        mediaUrl: '/cases/vaka3/saft-halat.jpg',
         mediaCaption: 'Kriminal Fotoğraf: Asitle eritilmiş çelik taşıyıcı kablo',
         narrationUrl: '/cases/vaka3/ev-3-1-1.mp3',
         metadata: {
@@ -875,7 +887,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
         fullReport: 'Adli Kimya ve Erişim Kontrol Raporu:\n1. Halat üzerindeki korozyon kalıntısı yalnızca bu tesiste lityum zenginleştirme deneyleri için ithal edilen florosülfonik asit karışımıdır.\n2. Kimya laboratuvarının ana koridor kapısına vardiya amiri Murat, bakım mühendisi Kemal ve laboratuvar şefi Berna’nın giriş kartları tanımlıdır. Ancak asidin saklandığı iç çelik kasa yalnızca biyometrik parmak izi ile açılmaktadır.\n3. Kasa açılış logları siber incelemeye gönderilmiştir.',
         keyDeduction: 'Asit sıradan bir depo asidi değil özel florosülfonik karışımdır; dış kapıya üç kişinin erişimi olsa da iç kasa biyometrik kilide sahiptir.',
         mediaType: 'image',
-        mediaUrl: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=800&q=80',
+        mediaUrl: '/cases/vaka3/asit-lab.jpg',
         mediaCaption: 'Laboratuvar Analiz Raporu: Florosülfonik asit izotop eşleşmesi',
         narrationUrl: '/cases/vaka3/ev-3-2-1.mp3',
         metadata: {

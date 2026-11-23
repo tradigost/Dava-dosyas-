@@ -118,7 +118,15 @@ export const ProfilerNotes: React.FC<ProfilerNotesProps> = ({
                 : 'bg-zinc-950/60 border-zinc-800 text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            <UserCheck className="w-3.5 h-3.5" />
+            {suspect.photoUrl ? (
+              <img
+                src={suspect.photoUrl}
+                alt={suspect.name}
+                className="w-5 h-5 rounded-full object-cover border border-zinc-700"
+              />
+            ) : (
+              <UserCheck className="w-3.5 h-3.5" />
+            )}
             <span>{suspect.name}</span>
             <span className="text-[10px] opacity-70">({suspect.title.split(' ')[0]})</span>
           </button>
