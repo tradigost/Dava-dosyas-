@@ -11,6 +11,7 @@ import {
   loginWithGoogle,
   resetPassword,
   logoutUser,
+  deleteCurrentAccount,
 } from '../services/firebase';
 import { soundManager } from '../utils/audioEffects';
 import {
@@ -24,6 +25,7 @@ import {
   CheckCircle2,
   KeyRound,
   LogOut,
+  Trash2,
 } from 'lucide-react';
 
 interface AuthModalProps {
@@ -43,6 +45,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -144,6 +147,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     onClose();
   };
 
+  const handleDeleteAccount = async () => {
+    setIsLoading(true);
+    setErrorMsg(null);
+    try {
+      soundManager.playKeyClick();
+      await deleteCurrentAccount();
+      soundManager.playSuccessSound();
+      onClose();
+    } catch (err: any) {
+      soundManager.playErrorSound();
+      setErrorMsg(
+        err?.code === 'auth/requires-recent-login'
+          ? 'Güvenlik gereği hesabınızı silmek için çıkış yapıp yeniden giriş yaptıktan hemen sonra deneyin.'
+          : err?.message || 'Hesap silinemedi.'
+      );
+      setConfirmDelete(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1f1c18]/55 backdrop-blur-[2px] animate-fade-in">
       <div className="bg-[#faf6ed] border border-[#1f1c18] rounded-sm w-full max-w-md p-6 shadow-[0_12px_36px_rgba(31,28,24,0.2)] text-[#1f1c18]">
@@ -209,6 +233,48 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               >
                 Kapat
               </button>
+            </div>
+
+            {errorMsg && (
+              <div className="p-2.5 bg-[#fffdf8] border border-[#8b1e1e] text-[#8b1e1e] text-[11px] rounded-sm">
+                {errorMsg}
+              </div>
+            )}
+
+            <div className="pt-2 border-t border-dashed border-[#d6cdbc]">
+              {!confirmDelete ? (
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(true)}
+                  className="text-[11px] font-typewriter text-[#7c7265] hover:text-[#8b1e1e] inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  <span>Hesabımı Kalıcı Olarak Sil</span>
+                </button>
+              ) : (
+                <div className="p-3 bg-[#fffdf8] border border-[#8b1e1e] rounded-sm space-y-2">
+                  <p className="text-[11px] text-[#8b1e1e] font-medium">
+                    Hesabınız ve dedektif sicil puanlarınız kalıcı olarak silinecek. Emin misiniz?
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      disabled={isLoading}
+                      onClick={handleDeleteAccount}
+                      className="px-3 py-1.5 bg-[#8b1e1e] text-[#faf6ed] rounded-sm text-[11px] font-typewriter font-bold cursor-pointer"
+                    >
+                      {isLoading ? 'Siliniyor...' : 'Evet, Hesabımı Sil'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDelete(false)}
+                      className="px-3 py-1.5 bg-[#ebe5d8] text-[#1f1c18] rounded-sm text-[11px] font-typewriter cursor-pointer"
+                    >
+                      Vazgeç
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ) : (

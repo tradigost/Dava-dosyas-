@@ -309,19 +309,45 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
     }
   };
 
+  const activeScenarioTitle =
+    scenarios.find((s) => s.id === (currentRoom?.scenarioId || selectedScenarioId))?.title ||
+    'Suç Dosyası';
+
+  const getInviteMessage = (roomCode: string) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://davadosyasi.vercel.app';
+    const inviteUrl = `${origin}/?room=${roomCode}`;
+    return {
+      inviteUrl,
+      text: `🔎 Suç Dosyası - Dedektiflik Daveti!\n\nSeninle "${activeScenarioTitle}" dosyasını çözeceğiz.\n\n📲 Masaya Bağlan:\n1. Linke tıkla: ${inviteUrl}\n2. Adını yaz ve boş koltuğa otur!\n\n(Oda Kodu: ${roomCode})`,
+    };
+  };
+
   // WhatsApp Share URL generator
   const getWhatsAppShareUrl = (roomCode: string) => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const inviteUrl = `${origin}/?room=${roomCode}`;
-    const text = encodeURIComponent(
-      `🔎 Masadaki Dosya - Dedektiflik Daveti!\n\nSeninle aynı masada oturup "Son Kadeh Cinayeti"ni çözeceğiz.\n\n📲 Telefonundan Masaya Bağlan:\n1. Linke tıkla: ${inviteUrl}\n2. Adını yaz ve boş koltuğa otur!\n\n(Oda Kodu: ${roomCode})`
-    );
-    return `https://api.whatsapp.com/send?text=${text}`;
+    const { text } = getInviteMessage(roomCode);
+    return `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+  };
+
+  const handleNativeShare = async (roomCode: string) => {
+    soundManager.playKeyClick();
+    const { inviteUrl, text } = getInviteMessage(roomCode);
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: `Suç Dosyası · ${activeScenarioTitle}`,
+          text,
+          url: inviteUrl,
+        });
+        return;
+      } catch {
+        // user cancelled or unsupported -> fall back to clipboard
+      }
+    }
+    handleCopyLink(roomCode);
   };
 
   const handleCopyLink = (roomCode: string) => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const inviteUrl = `${origin}/?room=${roomCode}`;
+    const { inviteUrl } = getInviteMessage(roomCode);
     navigator.clipboard.writeText(inviteUrl);
     soundManager.playKeyClick();
     setCopiedLink(true);
@@ -440,17 +466,28 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
               </div>
             </div>
 
-            {/* WhatsApp Invite Actions */}
+            {/* WhatsApp & Native Share Invite Actions */}
             <div className="space-y-2">
-              <a
-                href={getWhatsAppShareUrl(currentRoom.roomCode)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2.5 transition-all shadow-lg hover:shadow-emerald-600/20"
-              >
-                <MessageCircle className="w-5 h-5 fill-current" />
-                <span>WhatsApp ile Arkadaşını Masaya Çağır</span>
-              </a>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <a
+                  href={getWhatsAppShareUrl(currentRoom.roomCode)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-emerald-600/20"
+                >
+                  <MessageCircle className="w-4 h-4 fill-current" />
+                  <span>WhatsApp ile Davet Et</span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => handleNativeShare(currentRoom.roomCode)}
+                  className="w-full py-3 px-4 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span>Diğer Uygulamalarla Paylaş</span>
+                </button>
+              </div>
 
               <button
                 type="button"

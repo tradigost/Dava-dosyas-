@@ -15,6 +15,18 @@ rules_version = '2';
 //   - createdAt: string (optional, 0..64 chars)
 //   - roleTitle: string (optional, 0..100 chars)
 //
+// Collection: leaderboard
+// Document ID: {userId} (Firebase Auth UID)
+// Fields:
+//   - uid: string (required, immutable, == userId)
+//   - displayName: string (required, 1..150 chars)
+//   - totalXp: number (required, 0..1000000)
+//   - solvedCaseIds: list (optional, <= 500 items)
+//   - solvedCount: number (required, 0..1000)
+//   - bestScore: number (required, 0..1000)
+//   - rankTitle: string (required, 1..120 chars)
+//   - updatedAt: string (optional, 0..64 chars)
+//
 // Collection: case_ratings
 // Document ID: {ratingId} (rate_{scenarioId}_{userId})
 // Fields:
@@ -160,6 +172,30 @@ service cloud.firestore {
         && (!('isGuest' in data) || data.isGuest is bool)
         && isValidOptionalString(data, 'createdAt', 0, 64)
         && isValidOptionalString(data, 'roleTitle', 0, 100);
+    }
+
+    function isValidLeaderboardEntry(userId, data) {
+      return hasRequiredFields(['uid', 'displayName', 'totalXp', 'solvedCount', 'rankTitle', 'bestScore'])
+        && hasOnlyAllowedFields(['uid', 'displayName', 'totalXp', 'solvedCaseIds', 'solvedCount', 'bestScore', 'rankTitle', 'updatedAt'])
+        && data.uid is string
+        && data.uid == userId
+        && data.displayName is string
+        && data.displayName.size() > 0
+        && data.displayName.size() <= 150
+        && data.totalXp is number
+        && data.totalXp >= 0
+        && data.totalXp <= 1000000
+        && data.solvedCount is number
+        && data.solvedCount >= 0
+        && data.solvedCount <= 1000
+        && data.bestScore is number
+        && data.bestScore >= 0
+        && data.bestScore <= 1000
+        && data.rankTitle is string
+        && data.rankTitle.size() > 0
+        && data.rankTitle.size() <= 120
+        && (!('solvedCaseIds' in data) || (data.solvedCaseIds is list && data.solvedCaseIds.size() <= 500))
+        && isValidOptionalString(data, 'updatedAt', 0, 64);
     }
 
     function isValidCaseRating(ratingId, data) {
@@ -335,7 +371,14 @@ service cloud.firestore {
         && isValidUser(userId, request.resource.data)
         && canActAsUser(userId)
         && request.resource.data.uid == resource.data.uid;
-      allow delete: if false;
+      allow delete: if isAdmin() || isOwner(userId);
+    }
+
+    // Public Detective Leaderboard (non-PII rank & XP standings; owner-managed)
+    match /leaderboard/{userId} {
+      allow read: if true;
+      allow create, update: if isOwner(userId) && isValidLeaderboardEntry(userId, request.resource.data);
+      allow delete: if isAdmin() || isOwner(userId);
     }
 
     // Case Ratings (5-star ratings & reviews submitted by detectives)

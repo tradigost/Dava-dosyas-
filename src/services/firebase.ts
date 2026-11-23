@@ -17,6 +17,7 @@ import {
   GoogleAuthProvider, 
   signOut, 
   onAuthStateChanged,
+  deleteUser,
   User 
 } from 'firebase/auth';
 import { 
@@ -1491,6 +1492,130 @@ export function subscribeToCustomCases(callback: (cases: CaseScenario[]) => void
     customCasesListeners.delete(callback);
     unsubFirestore();
   };
+}
+
+// =========================================================================
+// PERSISTENT DETECTIVE RANK & LEADERBOARD + ACCOUNT DELETION (STORE POLICY)
+// =========================================================================
+
+export interface LeaderboardEntry {
+  uid: string;
+  displayName: string;
+  totalXp: number;
+  solvedCount: number;
+  rankTitle: string;
+  bestScore: number;
+}
+
+export async function recordDetectiveMatchResult(
+  user: DetectiveProfile | null | undefined,
+  params: { caseId: string; score: number; rankTitle: string; solved: boolean }
+): Promise<void> {
+  if (!user || user.isGuest || !user.uid) return;
+  try {
+    const lbRef = doc(db, 'leaderboard', user.uid);
+    const snap = await getDoc(lbRef);
+    const existing = snap.exists() ? snap.data() : {};
+    const prevSolvedIds: string[] = Array.isArray(existing.solvedCaseIds)
+      ? existing.solvedCaseIds
+      : [];
+    const isFirstSolve = params.solved && !prevSolvedIds.includes(params.caseId);
+    const updatedSolvedIds = isFirstSolve
+      ? [...prevSolvedIds, params.caseId]
+      : prevSolvedIds;
+    const prevXp = Number(existing.totalXp) || 0;
+    const xpGain = params.solved ? (isFirstSolve ? params.score : 10) : 5;
+    const nextTotalXp = prevXp + xpGain;
+    const nextBestScore = Math.max(Number(existing.bestScore) || 0, params.score);
+
+    await setDoc(
+      lbRef,
+      {
+        uid: user.uid,
+        displayName: user.displayName || 'Dedektif',
+        totalXp: nextTotalXp,
+        solvedCaseIds: updatedSolvedIds,
+        solvedCount: updatedSolvedIds.length,
+        bestScore: nextBestScore,
+        rankTitle: params.rankTitle,
+        updatedAt: new Date().toISOString(),
+      },
+      { merge: true }
+    );
+  } catch (err) {
+    console.warn('Could not persist detective match rank:', err);
+  }
+}
+
+export async function fetchDetectiveLeaderboard(
+  maxEntries: number = 15
+): Promise<LeaderboardEntry[]> {
+  try {
+    const q = query(
+      collection(db, 'leaderboard'),
+      orderBy('totalXp', 'desc'),
+      limit(maxEntries)
+    );
+    const snap = await getDocs(q);
+    return snap.docs
+      .map((d) => {
+        const data = d.data();
+        return {
+          uid: d.id,
+          displayName: data.displayName || 'Dedektif',
+          totalXp: Number(data.totalXp) || 0,
+          solvedCount: Number(data.solvedCount) || 0,
+          rankTitle: data.rankTitle || 'Stajyer Dedektif',
+          bestScore: Number(data.bestScore) || 0,
+        };
+      })
+      .filter((entry) => entry.totalXp > 0);
+  } catch (err) {
+    console.warn('Leaderboard query fallback triggered:', err);
+    try {
+      const snap = await getDocs(collection(db, 'leaderboard'));
+      return snap.docs
+        .map((d) => {
+          const data = d.data();
+          return {
+            uid: d.id,
+            displayName: data.displayName || 'Dedektif',
+            totalXp: Number(data.totalXp) || 0,
+            solvedCount: Number(data.solvedCount) || 0,
+            rankTitle: data.rankTitle || 'Stajyer Dedektif',
+            bestScore: Number(data.bestScore) || 0,
+          };
+        })
+        .filter((e) => e.totalXp > 0)
+        .sort((a, b) => b.totalXp - a.totalXp)
+        .slice(0, maxEntries);
+    } catch {
+      return [];
+    }
+  }
+}
+
+export async function deleteCurrentAccount(): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) {
+    await logoutUser();
+    return;
+  }
+  try {
+    await deleteDoc(doc(db, 'users', user.uid));
+  } catch (err) {
+    console.warn('Could not delete user profile document before auth deletion:', err);
+  }
+  try {
+    await deleteDoc(doc(db, 'leaderboard', user.uid));
+  } catch (err) {
+    console.warn('Could not delete leaderboard document before auth deletion:', err);
+  }
+  await deleteUser(user);
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('detective_local_user');
+  }
+  notifyAuthListeners(null);
 }
 
 

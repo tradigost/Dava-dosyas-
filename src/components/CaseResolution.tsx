@@ -3,13 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CaseScenario, Player, AccusationSubmission } from '../types';
 import { calculateDetectiveScore, evaluateTableVerdict } from '../utils/gameRules';
 import { soundManager } from '../utils/audioEffects';
 import { 
   DetectiveProfile, 
-  submitCaseRating 
+  submitCaseRating,
+  recordDetectiveMatchResult,
 } from '../services/firebase';
 import { 
   Award, 
@@ -61,6 +62,46 @@ export const CaseResolution: React.FC<CaseResolutionProps> = ({
   }));
   const tableVerdict = evaluateTableVerdict(votesList, solution.culpritId);
   const majoritySuspect = scenario.suspects.find((s) => s.id === tableVerdict.majoritySuspectId);
+  const hasRecordedRankRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!currentUser || currentUser.isGuest) return;
+    if (hasRecordedRankRef.current === scenario.id) return;
+    hasRecordedRankRef.current = scenario.id;
+
+    const mySub =
+      submissions[currentUser.uid] ||
+      Object.values(submissions).find((s) => s.playerName === currentUser.displayName) ||
+      submissions[players[0]?.id || ''];
+    const isSuspectCorrect = mySub?.suspectId === solution.culpritId;
+    const isMotiveCorrect = mySub?.motiveId === 'motive-solution';
+    const isEvidenceCorrect = mySub?.evidenceId === 'evidence-solution';
+    const gateEntries = Object.entries(scenario.gates || {});
+    let quizCorrectCount = 0;
+    if (mySub?.quizAnswers) {
+      gateEntries.forEach(([envNumStr, gate]) => {
+        const selectedOptionId = mySub.quizAnswers?.[Number(envNumStr)];
+        if (gate.options.some((opt) => opt.id === selectedOptionId && opt.isCorrect)) {
+          quizCorrectCount++;
+        }
+      });
+    }
+    const myScore = calculateDetectiveScore({
+      correctSuspectSelected: isSuspectCorrect,
+      correctMotiveSelected: isMotiveCorrect,
+      correctEvidenceSelected: isEvidenceCorrect,
+      quizCorrectCount,
+      quizTotalCount: gateEntries.length,
+      gateAttempts,
+    });
+
+    recordDetectiveMatchResult(currentUser, {
+      caseId: scenario.id,
+      score: myScore.totalScore,
+      rankTitle: myScore.rankTitle,
+      solved: tableVerdict.isWon || isSuspectCorrect,
+    });
+  }, [currentUser, scenario, submissions, players, gateAttempts, solution, tableVerdict.isWon]);
 
   const handleRateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

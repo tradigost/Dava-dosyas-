@@ -16,10 +16,24 @@ import {
 } from '../services/firebase';
 import { isVerifiedAdminUser } from '../utils/scenarioUtils';
 import {
+  isPaidScenario,
+  hasCaseAccess,
+  loadLocalPurchasedCases,
+  triggerCasePurchase,
+} from '../services/monetization';
+import {
+  downloadCasePack,
+  getDownloadedCaseIds,
+} from '../services/caseDownloader';
+import {
   Play,
   LogIn,
   ShieldCheck,
   Smartphone,
+  Trophy,
+  Download,
+  Check,
+  Lock,
 } from 'lucide-react';
 
 interface LobbyViewProps {
@@ -34,6 +48,7 @@ interface LobbyViewProps {
   onOpenOnlineModal: () => void;
   onOpenAuthModal?: () => void;
   onOpenAdminModal?: () => void;
+  onOpenLeaderboard?: () => void;
   currentUser?: DetectiveProfile | null;
   onlineRoomCode?: string | null;
 }
@@ -50,11 +65,15 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
   onOpenOnlineModal,
   onOpenAuthModal,
   onOpenAdminModal,
+  onOpenLeaderboard,
   currentUser,
   onlineRoomCode,
 }) => {
   const [lockedAlertReason, setLockedAlertReason] = useState<string | null>(null);
   const [ratingsMap, setRatingsMap] = useState<Record<string, { average: number; count: number }>>({});
+  const [purchasedIds, setPurchasedIds] = useState<string[]>(() => loadLocalPurchasedCases());
+  const [downloadedIds, setDownloadedIds] = useState<string[]>(() => getDownloadedCaseIds());
+  const [downloadProgress, setDownloadProgress] = useState<Record<string, number>>({});
 
   useEffect(() => {
     scenarios.forEach(async (sc) => {
@@ -84,6 +103,33 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
     }
   };
 
+  const handlePurchaseCase = async (e: React.MouseEvent, scenario: CaseScenario) => {
+    e.stopPropagation();
+    soundManager.playKeyClick();
+    const res = await triggerCasePurchase(scenario);
+    if (res.success) {
+      setPurchasedIds(loadLocalPurchasedCases());
+      setLockedAlertReason(null);
+    } else {
+      setLockedAlertReason(res.message);
+    }
+  };
+
+  const handleDownloadCase = async (e: React.MouseEvent, scenario: CaseScenario) => {
+    e.stopPropagation();
+    soundManager.playKeyClick();
+    setDownloadProgress((prev) => ({ ...prev, [scenario.id]: 10 }));
+    await downloadCasePack(scenario, (pct) => {
+      setDownloadProgress((prev) => ({ ...prev, [scenario.id]: pct }));
+    });
+    setDownloadedIds(getDownloadedCaseIds());
+    setDownloadProgress((prev) => {
+      const next = { ...prev };
+      delete next[scenario.id];
+      return next;
+    });
+  };
+
   const handleCountChange = (num: number) => {
     soundManager.playKeyClick();
     onChangePlayerCount(num);
@@ -96,6 +142,13 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
   };
 
   const handleStart = () => {
+    if (selectedScenario && !hasCaseAccess(selectedScenario, purchasedIds)) {
+      soundManager.playErrorSound();
+      setLockedAlertReason(
+        `"${selectedScenario.title}" ücretli bir vakadır. Başlatmak için vaka paketini açmanız (veya satın almış bir arkadaşınızın odasına katılmanız) gerekir.`
+      );
+      return;
+    }
     if (!canStart.allowed) {
       soundManager.playErrorSound();
       setLockedAlertReason(canStart.reason || 'Oyuncu sayısı yetersiz.');
@@ -133,6 +186,20 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            {onOpenLeaderboard && (
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playKeyClick();
+                  onOpenLeaderboard();
+                }}
+                className="px-2.5 py-1.5 rounded-sm bg-[#faf6ed] border border-[#c8bfae] hover:border-[#1f1c18] text-xs font-typewriter text-[#1f1c18] inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+              >
+                <Trophy className="w-3.5 h-3.5 text-[#8b1e1e]" />
+                <span>Sıralama</span>
+              </button>
+            )}
+
             <button
               type="button"
               onClick={onOpenOnlineModal}
@@ -161,7 +228,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
             ARŞİV DOSYA MASASI
           </p>
           <h1 className="text-2xl sm:text-3xl font-bold font-typewriter tracking-[0.18em] text-[#1f1c18] mt-1">
-            MASADAKİ DOSYA
+            SUÇ DOSYASI
           </h1>
           <p className="text-xs sm:text-sm text-[#575046] mt-2 leading-relaxed">
             Belgeleri sırayla inceleyin, bulgularınızı birleştirin ve katili bulun.
@@ -203,26 +270,86 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-typewriter font-bold text-sm sm:text-base uppercase tracking-wide text-[#1f1c18]">
-                      {scenario.title}
-                    </h3>
-                    {isLocked ? (
-                      <span className="shrink-0 border border-[#8b1e1e] text-[#8b1e1e] px-1.5 py-0.5 text-[10px] font-typewriter uppercase tracking-wider rounded-sm">
-                        EN AZ {scenario.minPlayers} KİŞİ
-                      </span>
-                    ) : isSelected ? (
-                      <span className="shrink-0 border border-[#8b1e1e] text-[#8b1e1e] px-1.5 py-0.5 text-[10px] font-typewriter uppercase tracking-wider rounded-sm">
-                        SEÇİLDİ
-                      </span>
-                    ) : null}
+                    <div className="min-w-0">
+                      <h3 className="font-typewriter font-bold text-sm sm:text-base uppercase tracking-wide text-[#1f1c18]">
+                        {scenario.title}
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {isPaidScenario(scenario) ? (
+                        hasCaseAccess(scenario, purchasedIds) ? (
+                          <span className="border border-[#276749] text-[#276749] px-1.5 py-0.5 text-[10px] font-typewriter uppercase tracking-wider rounded-sm">
+                            AÇIK · PREMİUM
+                          </span>
+                        ) : (
+                          <span className="border border-[#8b1e1e] bg-[#8b1e1e] text-[#faf6ed] px-1.5 py-0.5 text-[10px] font-typewriter uppercase tracking-wider rounded-sm">
+                            {scenario.priceLabel || 'ÜCRETLİ'}
+                          </span>
+                        )
+                      ) : (
+                        <span className="border border-[#c8bfae] text-[#575046] px-1.5 py-0.5 text-[10px] font-typewriter uppercase tracking-wider rounded-sm">
+                          ÜCRETSİZ
+                        </span>
+                      )}
+
+                      {isLocked ? (
+                        <span className="border border-[#8b1e1e] text-[#8b1e1e] px-1.5 py-0.5 text-[10px] font-typewriter uppercase tracking-wider rounded-sm">
+                          EN AZ {scenario.minPlayers} KİŞİ
+                        </span>
+                      ) : isSelected ? (
+                        <span className="border border-[#8b1e1e] text-[#8b1e1e] px-1.5 py-0.5 text-[10px] font-typewriter uppercase tracking-wider rounded-sm">
+                          SEÇİLDİ
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
 
                   <p className="text-xs text-[#575046] line-clamp-2 mt-1.5 leading-relaxed">
                     {scenario.synopsis}
                   </p>
 
-                  <div className="text-[11px] font-typewriter text-[#7c7265] mt-3 pt-2 border-t border-dashed border-[#d6cdbc]">
-                    ~{scenario.estimatedMinutes} dk · {scenario.suspects?.length || 0} şüpheli · {getScenarioTotalEnvelopes(scenario)} zarf · ★ {stats.average}
+                  <div className="text-[11px] font-typewriter text-[#7c7265] mt-3 pt-2 border-t border-dashed border-[#d6cdbc] flex flex-wrap items-center justify-between gap-2">
+                    <span>
+                      ~{scenario.estimatedMinutes} dk · {scenario.suspects?.length || 0} şüpheli · {getScenarioTotalEnvelopes(scenario)} zarf · ★ {stats.average}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      {isPaidScenario(scenario) && !hasCaseAccess(scenario, purchasedIds) && (
+                        <button
+                          type="button"
+                          onClick={(e) => handlePurchaseCase(e, scenario)}
+                          className="px-2 py-0.5 rounded-sm bg-[#8b1e1e] text-[#faf6ed] text-[10px] font-typewriter font-bold inline-flex items-center gap-1 cursor-pointer"
+                        >
+                          <Lock className="w-3 h-3" />
+                          <span>Kilidi Aç</span>
+                        </button>
+                      )}
+                      {scenario.downloadable && (
+                        <button
+                          type="button"
+                          onClick={(e) => handleDownloadCase(e, scenario)}
+                          disabled={downloadProgress[scenario.id] !== undefined}
+                          className={`px-2 py-0.5 rounded-sm border text-[10px] font-typewriter inline-flex items-center gap-1 cursor-pointer ${
+                            downloadedIds.includes(scenario.id)
+                              ? 'border-[#276749] text-[#276749] bg-[#fffdf8]'
+                              : 'border-[#1f1c18] text-[#1f1c18] hover:bg-[#ebe5d8]'
+                          }`}
+                        >
+                          {downloadedIds.includes(scenario.id) ? (
+                            <>
+                              <Check className="w-3 h-3" />
+                              <span>İndirildi</span>
+                            </>
+                          ) : downloadProgress[scenario.id] !== undefined ? (
+                            <span>İndiriliyor %{downloadProgress[scenario.id]}</span>
+                          ) : (
+                            <>
+                              <Download className="w-3 h-3" />
+                              <span>Paket İndir</span>
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );

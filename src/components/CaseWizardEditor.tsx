@@ -67,6 +67,14 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
     initialScenario ? getScenarioTotalEnvelopes(initialScenario) : 4
   );
   const [status, setStatus] = useState<'published' | 'draft'>(initialScenario?.status || 'published');
+  const [isPaid, setIsPaid] = useState<boolean>(initialScenario?.isPaid === true);
+  const [priceLabel, setPriceLabel] = useState<string>(initialScenario?.priceLabel || '49,90 TL');
+  const [storeProductId, setStoreProductId] = useState<string>(
+    initialScenario?.storeProductId || ''
+  );
+  const [downloadable, setDownloadable] = useState<boolean>(
+    initialScenario?.downloadable ?? true
+  );
 
   // Victim
   const [victimName, setVictimName] = useState(initialScenario?.victim?.name || '');
@@ -323,6 +331,10 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
       maxPlayers: Number(maxPlayers) || 6,
       totalEnvelopes: Math.max(1, Number(totalEnvelopes) || 1),
       status: effectiveStatus,
+      isPaid: isPaid || undefined,
+      priceLabel: isPaid ? priceLabel.trim() || '49,90 TL' : undefined,
+      storeProductId: isPaid && storeProductId.trim() ? storeProductId.trim() : undefined,
+      downloadable: downloadable || undefined,
       createdAt: initialScenario?.createdAt,
       victim: {
         name: victimName.trim() || 'Maktul',
@@ -636,6 +648,58 @@ export const CaseWizardEditor: React.FC<CaseWizardEditorProps> = ({
                   />
                 </div>
               </div>
+            </div>
+
+            <div className="pt-3 border-t border-dashed border-[#d6cdbc] space-y-2.5">
+              <p className="font-typewriter font-bold text-[11px] uppercase tracking-wider text-[#1f1c18]">
+                Ücretlendirme &amp; İndirme (Mağaza)
+              </p>
+              <div className="flex flex-wrap items-center gap-4 text-xs">
+                <label className="inline-flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isPaid}
+                    onChange={(e) => setIsPaid(e.target.checked)}
+                    className="accent-[#8b1e1e]"
+                  />
+                  <span>Ücretli Vaka (Reklamsız · IAP Kilidi)</span>
+                </label>
+
+                <label className="inline-flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={downloadable}
+                    onChange={(e) => setDownloadable(e.target.checked)}
+                    className="accent-[#1f1c18]"
+                  />
+                  <span>Uygulama İçi İndirilebilir Paket (DLC)</span>
+                </label>
+              </div>
+
+              {isPaid && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className={labelClass}>Etiket Fiyatı</label>
+                    <input
+                      type="text"
+                      value={priceLabel}
+                      onChange={(e) => setPriceLabel(e.target.value)}
+                      placeholder="49,90 TL"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Store Ürün Kodu (SKU)</label>
+                    <input
+                      type="text"
+                      value={storeProductId}
+                      onChange={(e) => setStoreProductId(e.target.value)}
+                      placeholder={`case_${caseId}`}
+                      className={`${inputClass} font-typewriter`}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

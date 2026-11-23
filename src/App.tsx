@@ -25,8 +25,11 @@ import { BriefingView } from './components/BriefingView';
 import { WaitingTurnView } from './components/WaitingTurnView';
 import { AuthModal } from './components/AuthModal';
 import { AdminDashboardModal } from './components/AdminDashboardModal';
+import { AdGateModal } from './components/AdGateModal';
+import { LeaderboardModal } from './components/LeaderboardModal';
 import { soundManager } from './utils/audioEffects';
 import { mergeScenarios } from './utils/scenarioUtils';
+import { shouldShowEnvelopeAd } from './services/monetization';
 import { 
   auth, 
   testFirestoreConnection,
@@ -56,6 +59,8 @@ export default function App() {
   const [isOnlineModalOpen, setIsOnlineModalOpen] = useState<boolean>(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState<boolean>(false);
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState<boolean>(false);
+  const [pendingNextEnvelope, setPendingNextEnvelope] = useState<number | null>(null);
 
   // Scenario and lobby state
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('bogazda-kayip-koleksiyon');
@@ -346,10 +351,7 @@ export default function App() {
     setViewingEnvelope(envNum as EnvelopeNumber);
   };
 
-  const handleAdvanceToNextEnvelope = async () => {
-    setIsGateModalOpen(false);
-    const nextEnv = currentEnvelope + 1;
-
+  const executeAdvanceToNextEnvelope = async (nextEnv: number) => {
     if (nextEnv <= totalEnvelopes) {
       const nextEnvelopeEvidence = scenario.evidence.filter((ev) => ev.envelope === nextEnv);
       const nextParticipants = players.filter((p) => {
@@ -385,6 +387,18 @@ export default function App() {
         setGameView('ACCUSATION');
       }
     }
+  };
+
+  const handleAdvanceToNextEnvelope = async () => {
+    setIsGateModalOpen(false);
+    const nextEnv = currentEnvelope + 1;
+
+    if (nextEnv <= totalEnvelopes && shouldShowEnvelopeAd(scenario)) {
+      setPendingNextEnvelope(nextEnv);
+      return;
+    }
+
+    await executeAdvanceToNextEnvelope(nextEnv);
   };
 
   const handleSubmitVote = async (sub: AccusationSubmission) => {
@@ -460,6 +474,7 @@ export default function App() {
             onOpenOnlineModal={() => setIsOnlineModalOpen(true)}
             onOpenAuthModal={() => setIsAuthModalOpen(true)}
             onOpenAdminModal={() => setIsAdminModalOpen(true)}
+            onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
             currentUser={currentUser}
             onlineRoomCode={onlineRoomCode}
           />
@@ -575,9 +590,31 @@ export default function App() {
         />
       )}
 
+      {/* Detective Leaderboard Modal */}
+      {isLeaderboardOpen && (
+        <LeaderboardModal
+          currentUser={currentUser}
+          onClose={() => setIsLeaderboardOpen(false)}
+        />
+      )}
+
+      {/* Ad Gate Between Envelopes (Free Cases Only) */}
+      {pendingNextEnvelope !== null && (
+        <AdGateModal
+          nextEnvelopeNumber={pendingNextEnvelope}
+          scenarioTitle={scenario.title}
+          onComplete={async () => {
+            const target = pendingNextEnvelope;
+            setPendingNextEnvelope(null);
+            await executeAdvanceToNextEnvelope(target);
+          }}
+          onCancel={() => setPendingNextEnvelope(null)}
+        />
+      )}
+
       {/* Footer */}
       <footer className="border-t border-[#d6cdbc] bg-[#e4ddd0]/80 py-4 px-4 text-center text-xs text-[#575046]">
-        <p>Masadaki Dosya (Case Link) · Asimetrik Couch Co-Op Türkçe Dedektiflik Deneyimi</p>
+        <p>Suç Dosyası: Dedektiflik Oyunu · Asimetrik Çok Oyunculu Türkçe Dedektiflik Deneyimi</p>
       </footer>
     </div>
   );

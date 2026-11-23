@@ -152,6 +152,10 @@ export interface CaseScenario {
   gates: Record<number, GateQuestion>;
   solution: CaseSolution;
   status?: 'published' | 'draft';
+  isPaid?: boolean;
+  priceLabel?: string;
+  storeProductId?: string;
+  downloadable?: boolean;
   uploadedBy?: string;
   createdAt?: string;
   updatedAt?: string;
