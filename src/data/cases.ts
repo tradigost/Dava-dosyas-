@@ -4,6 +4,8 @@
  */
 
 import { CaseScenario, RoleInfo, RoleType } from '../types';
+import { DEMO_CUSTOM_CASE } from './sampleCase';
+import { KANDILLI_CASE } from './kandilliCase';
 
 export const ROLES: Record<RoleType, RoleInfo> = {
   forensics: {
@@ -1023,5 +1025,7 @@ Atölyemde broş iğnesine mikro kanallar açıp 37.2 derecede eriyen arı balmu
 
 19:15'te patentten adını sildim, 19:40'ta çelik halatın florosülfonik asitle erime süresini hesapladım. 21:08'de kasadan asidi alıp herkesin giydiği sarı yağmurluğu geçirdim; kimse beyaz önlüklü bir bilim insanını kulede beklemezdi. Hasan'ın rüşveti, Kemal'in sahte bakım imzası ve Murat'ın makine dairesindeki mazot hırsızlığı herkesin dikkatini dağıtacaktı. Ama biyometrik kasa logunu ve siber geçmişi hesaba katamadım."`
     }
-  }
+  },
+  DEMO_CUSTOM_CASE,
+  KANDILLI_CASE,
 ];
