@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 180" width="560" height="180" role="img" aria-labelledby="logo2-title logo2-desc">
+  <title id="logo2-title">Suç Dosyası: Dedektiflik Oyunu — Adli Parmak İzi &amp; Mercek</title>
+  <desc id="logo2-desc">Büyüteç merceği içinde kırmızı adli parmak izi ve kriminal nişangah içeren logo.</desc>
+  <defs>
+    <clipPath id="lens-clip-2">
+      <circle cx="80" cy="78" r="42" />
+    </clipPath>
+  </defs>
+
+  <!-- Sol Amblem: Kriminal Büyüteç & Parmak İzi -->
+  <g transform="translate(8, 6)">
+    <!-- Mercek cam zemini -->
+    <circle cx="80" cy="78" r="42" fill="#faf6ed" />
+
+    <!-- Kırpılmış tabler/tabler-icons: fingerprint.svg (MIT) -->
+    <g clip-path="url(#lens-clip-2)">
+      <g transform="translate(42, 40) scale(3.16)" fill="none" stroke="#8b1e1e" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18.9 7a8 8 0 0 1 1.1 5v1a6 6 0 0 0 .8 3" />
+        <path d="M8 11a4 4 0 0 1 8 0v1a10 10 0 0 0 2 6" />
+        <path d="M12 11v2a14 14 0 0 0 2.5 8" />
+        <path d="M8 15a18 18 0 0 0 1.8 6" />
+        <path d="M4.9 19a22 22 0 0 1 -.9 -7v-1a8 8 0 0 1 12 -6.95" />
+      </g>
+      <!-- İnce kriminal nişangah eksenleri -->
+      <line x1="80" y1="32" x2="80" y2="44" stroke="#1f1c18" stroke-width="1.2" opacity="0.45" />
+      <line x1="80" y1="112" x2="80" y2="124" stroke="#1f1c18" stroke-width="1.2" opacity="0.45" />
+      <line x1="34" y1="78" x2="46" y2="78" stroke="#1f1c18" stroke-width="1.2" opacity="0.45" />
+      <line x1="114" y1="78" x2="126" y2="78" stroke="#1f1c18" stroke-width="1.2" opacity="0.45" />
+    </g>
+
+    <!-- Büyüteç dış çerçeve ve sap -->
+    <circle cx="80" cy="78" r="44" fill="none" stroke="#1f1c18" stroke-width="5.5" />
+    <circle cx="80" cy="78" r="38" fill="none" stroke="#d6cdbc" stroke-width="1.2" />
+    <line x1="112" y1="110" x2="144" y2="142" stroke="#1f1c18" stroke-width="9" stroke-linecap="round" />
+    <line x1="112" y1="110" x2="144" y2="142" stroke="#575046" stroke-width="2.5" stroke-linecap="round" />
+  </g>
+
+  <!-- Sağ Tipografi Kilidi -->
+  <g transform="translate(174, 42)">
+    <text x="2" y="10" font-family="'JetBrains Mono', 'Courier Prime', 'Courier New', monospace" font-size="10.5" font-weight="600" letter-spacing="3.5" fill="#8b1e1e">
+      KRİMİNAL BÜRO // DELİL #04
+    </text>
+
+    <text x="0" y="56" font-family="'JetBrains Mono', 'Courier Prime', 'Courier New', monospace" font-size="39" font-weight="800" letter-spacing="4" fill="#1f1c18">
+      SUÇ DOSYASI
+    </text>
+
+    <rect x="2" y="70" width="346" height="2" fill="#1f1c18" />
+    <rect x="2" y="70" width="96" height="2" fill="#8b1e1e" />
+
+    <text x="2" y="96" font-family="'JetBrains Mono', 'Courier Prime', 'Courier New', monospace" font-size="15" font-weight="600" letter-spacing="5.2" fill="#575046">
+      DEDEKTİFLİK OYUNU
+    </text>
+  </g>
+</svg>

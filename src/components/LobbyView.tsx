@@ -36,6 +36,7 @@ import {
   Lock,
   HelpCircle,
 } from 'lucide-react';
+import { BrandLogo } from './BrandLogo';
 
 interface LobbyViewProps {
   scenarios: CaseScenario[];
@@ -242,12 +243,8 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
 
         {/* Editorial Masthead */}
         <div className="mb-10">
-          <p className="text-[10px] font-typewriter uppercase tracking-[0.25em] text-[#7c7265]">
-            ARŞİV DOSYA MASASI
-          </p>
-          <h1 className="text-2xl sm:text-3xl font-bold font-typewriter tracking-[0.18em] text-[#1f1c18] mt-1">
-            SUÇ DOSYASI
-          </h1>
+          <h1 className="sr-only">Suç Dosyası: Dedektiflik Oyunu</h1>
+          <BrandLogo variant="full" className="w-full max-w-[340px] sm:max-w-[420px] h-auto -ml-2" />
           <p className="text-xs sm:text-sm text-[#575046] mt-2 leading-relaxed">
             Belgeleri sırayla inceleyin, bulgularınızı birleştirin ve katili bulun.
           </p>

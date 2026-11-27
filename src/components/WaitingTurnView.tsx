@@ -6,7 +6,8 @@
 import React from 'react';
 import { EnvelopeNumber, RoleType } from '../types';
 import { ROLES } from '../data/cases';
-import { Radio, Eye } from 'lucide-react';
+import { Radio } from 'lucide-react';
+import { BrandLogo } from './BrandLogo';
 
 interface WaitingTurnViewProps {
   currentEnvelope: EnvelopeNumber;
@@ -30,9 +31,7 @@ export const WaitingTurnView: React.FC<WaitingTurnViewProps> = ({
         {/* Game Logo Badge */}
         <div className="relative inline-block">
           <div className="w-20 h-20 rounded-sm bg-[#faf6ed] border-2 border-[#1f1c18] flex items-center justify-center mx-auto text-[#1f1c18]">
-            <span className="font-typewriter text-3xl font-black tracking-widest text-[#1f1c18]">
-              SD
-            </span>
+            <BrandLogo variant="mark" className="w-14 h-14" />
           </div>
           <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#fffdf8] border border-[#8b1e1e] flex items-center justify-center">
             <Radio className="w-3.5 h-3.5 text-[#8b1e1e] animate-pulse" />
