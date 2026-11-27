@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { 
   Player, 
   EnvelopeNumber, 
@@ -20,16 +20,28 @@ import { EnvelopeGateModal } from './components/EnvelopeGateModal';
 import { AccusationPhase } from './components/AccusationPhase';
 import { CaseResolution } from './components/CaseResolution';
 import { LobbyView } from './components/LobbyView';
-import { OnlineRoomModal } from './components/OnlineRoomModal';
 import { BriefingView } from './components/BriefingView';
 import { WaitingTurnView } from './components/WaitingTurnView';
 import { AuthModal } from './components/AuthModal';
-import { AdminDashboardModal } from './components/AdminDashboardModal';
-import { AdGateModal } from './components/AdGateModal';
-import { LeaderboardModal } from './components/LeaderboardModal';
 import { soundManager } from './utils/audioEffects';
 import { mergeScenarios } from './utils/scenarioUtils';
 import { shouldShowEnvelopeAd } from './services/monetization';
+
+const OnlineRoomModal = lazy(() =>
+  import('./components/OnlineRoomModal').then((m) => ({ default: m.OnlineRoomModal }))
+);
+const AdminDashboardModal = lazy(() =>
+  import('./components/AdminDashboardModal').then((m) => ({ default: m.AdminDashboardModal }))
+);
+const AdGateModal = lazy(() =>
+  import('./components/AdGateModal').then((m) => ({ default: m.AdGateModal }))
+);
+const LeaderboardModal = lazy(() =>
+  import('./components/LeaderboardModal').then((m) => ({ default: m.LeaderboardModal }))
+);
+const HowToPlayModal = lazy(() =>
+  import('./components/HowToPlayModal').then((m) => ({ default: m.HowToPlayModal }))
+);
 import { 
   auth, 
   testFirestoreConnection,
@@ -60,7 +72,11 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState<boolean>(false);
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState<boolean>(false);
+  const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [pendingNextEnvelope, setPendingNextEnvelope] = useState<number | null>(null);
+  const [isOffline, setIsOffline] = useState<boolean>(
+    typeof navigator !== 'undefined' ? !navigator.onLine : false
+  );
 
   // Scenario and lobby state
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('bogazda-kayip-koleksiyon');
@@ -108,7 +124,7 @@ export default function App() {
     return () => unsub();
   }, []);
 
-  // Auth observer
+  // Auth observer & offline detection + first-visit guide
   useEffect(() => {
     testFirestoreConnection();
     checkRedirectResult().catch((err) => {
@@ -117,7 +133,26 @@ export default function App() {
     const unsub = subscribeToDetectiveAuth((profile) => {
       setCurrentUser(profile);
     });
-    return () => unsub();
+
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    try {
+      const hasRoom = new URLSearchParams(window.location.search).has('room');
+      if (!hasRoom && !localStorage.getItem('suc_dosyasi_seen_guide_v1')) {
+        setIsGuideOpen(true);
+      }
+    } catch {
+      // ignore
+    }
+
+    return () => {
+      unsub();
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   // URL Query Parser (?room=KND-884, ?admin=1, or ?autostart=1)
@@ -444,6 +479,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-paper-desk text-[#1f1c18] flex flex-col font-typewriter">
+      {isOffline && (
+        <div className="bg-[#8b1e1e] text-[#faf6ed] px-4 py-1.5 text-center text-[11px] font-typewriter">
+          İnternet bağlantısı kesildi — indirilmiş dosyalarla yerel oyuna devam edebilirsiniz.
+        </div>
+      )}
       {/* Top Bar (only visible when actively playing an envelope or viewing board) */}
       {gameView !== 'LOBBY' && gameView !== 'BRIEFING' && (
         <PlayerSimulatorBar
@@ -475,6 +515,7 @@ export default function App() {
             onOpenAuthModal={() => setIsAuthModalOpen(true)}
             onOpenAdminModal={() => setIsAdminModalOpen(true)}
             onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
+            onOpenGuide={() => setIsGuideOpen(true)}
             currentUser={currentUser}
             onlineRoomCode={onlineRoomCode}
           />
@@ -553,25 +594,63 @@ export default function App() {
         )}
       </main>
 
-      {/* Online Room & WhatsApp Modal */}
-      {isOnlineModalOpen && (
-        <OnlineRoomModal
-          currentUser={currentUser}
-          currentRoom={onlineRoom}
-          roomMembers={onlineMembers}
-          scenarios={allScenarios}
-          selectedScenarioId={selectedScenarioId}
-          onSelectScenario={setSelectedScenarioId}
-          playerCount={playerCount}
-          onChangePlayerCount={setPlayerCount}
-          initialRoomCode={onlineRoomCode}
-          onRoomJoined={(code) => {
-            setOnlineRoomCode(code);
-          }}
-          onStartOnlineGame={handleStartGame}
-          onClose={() => setIsOnlineModalOpen(false)}
-        />
-      )}
+      <Suspense fallback={null}>
+        {/* Online Room & WhatsApp Modal */}
+        {isOnlineModalOpen && (
+          <OnlineRoomModal
+            currentUser={currentUser}
+            currentRoom={onlineRoom}
+            roomMembers={onlineMembers}
+            scenarios={allScenarios}
+            selectedScenarioId={selectedScenarioId}
+            onSelectScenario={setSelectedScenarioId}
+            playerCount={playerCount}
+            onChangePlayerCount={setPlayerCount}
+            initialRoomCode={onlineRoomCode}
+            onRoomJoined={(code) => {
+              setOnlineRoomCode(code);
+            }}
+            onStartOnlineGame={handleStartGame}
+            onClose={() => setIsOnlineModalOpen(false)}
+          />
+        )}
+
+        {/* Admin Dashboard & Mobile Stores Blueprint Modal */}
+        {isAdminModalOpen && (
+          <AdminDashboardModal
+            currentUser={currentUser}
+            customCases={customCases}
+            onClose={() => setIsAdminModalOpen(false)}
+          />
+        )}
+
+        {/* Detective Leaderboard Modal */}
+        {isLeaderboardOpen && (
+          <LeaderboardModal
+            currentUser={currentUser}
+            onClose={() => setIsLeaderboardOpen(false)}
+          />
+        )}
+
+        {/* First-Time How-To-Play Modal */}
+        {isGuideOpen && (
+          <HowToPlayModal onClose={() => setIsGuideOpen(false)} />
+        )}
+
+        {/* Ad Gate Between Envelopes (Free Cases Only) */}
+        {pendingNextEnvelope !== null && (
+          <AdGateModal
+            nextEnvelopeNumber={pendingNextEnvelope}
+            scenarioTitle={scenario.title}
+            onComplete={async () => {
+              const target = pendingNextEnvelope;
+              setPendingNextEnvelope(null);
+              await executeAdvanceToNextEnvelope(target);
+            }}
+            onCancel={() => setPendingNextEnvelope(null)}
+          />
+        )}
+      </Suspense>
 
       {/* Detective Auth & Membership Modal */}
       {isAuthModalOpen && (
@@ -581,40 +660,18 @@ export default function App() {
         />
       )}
 
-      {/* Admin Dashboard & Mobile Stores Blueprint Modal */}
-      {isAdminModalOpen && (
-        <AdminDashboardModal
-          currentUser={currentUser}
-          customCases={customCases}
-          onClose={() => setIsAdminModalOpen(false)}
-        />
-      )}
-
-      {/* Detective Leaderboard Modal */}
-      {isLeaderboardOpen && (
-        <LeaderboardModal
-          currentUser={currentUser}
-          onClose={() => setIsLeaderboardOpen(false)}
-        />
-      )}
-
-      {/* Ad Gate Between Envelopes (Free Cases Only) */}
-      {pendingNextEnvelope !== null && (
-        <AdGateModal
-          nextEnvelopeNumber={pendingNextEnvelope}
-          scenarioTitle={scenario.title}
-          onComplete={async () => {
-            const target = pendingNextEnvelope;
-            setPendingNextEnvelope(null);
-            await executeAdvanceToNextEnvelope(target);
-          }}
-          onCancel={() => setPendingNextEnvelope(null)}
-        />
-      )}
-
       {/* Footer */}
-      <footer className="border-t border-[#d6cdbc] bg-[#e4ddd0]/80 py-4 px-4 text-center text-xs text-[#575046]">
+      <footer className="border-t border-[#d6cdbc] bg-[#e4ddd0]/80 py-4 px-4 text-center text-xs text-[#575046] space-y-1">
         <p>Suç Dosyası: Dedektiflik Oyunu · Asimetrik Çok Oyunculu Türkçe Dedektiflik Deneyimi</p>
+        <p className="text-[10px] space-x-3">
+          <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#1f1c18]">
+            Gizlilik Politikası
+          </a>
+          <span>·</span>
+          <a href="/terms.html" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#1f1c18]">
+            Kullanım Koşulları
+          </a>
+        </p>
       </footer>
     </div>
   );

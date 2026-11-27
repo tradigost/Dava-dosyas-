@@ -34,6 +34,7 @@ import {
   Download,
   Check,
   Lock,
+  HelpCircle,
 } from 'lucide-react';
 
 interface LobbyViewProps {
@@ -49,6 +50,7 @@ interface LobbyViewProps {
   onOpenAuthModal?: () => void;
   onOpenAdminModal?: () => void;
   onOpenLeaderboard?: () => void;
+  onOpenGuide?: () => void;
   currentUser?: DetectiveProfile | null;
   onlineRoomCode?: string | null;
 }
@@ -66,6 +68,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
   onOpenAuthModal,
   onOpenAdminModal,
   onOpenLeaderboard,
+  onOpenGuide,
   currentUser,
   onlineRoomCode,
 }) => {
@@ -185,7 +188,22 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {onOpenGuide && (
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playKeyClick();
+                  onOpenGuide();
+                }}
+                className="px-2.5 py-1.5 rounded-sm bg-[#faf6ed] border border-[#c8bfae] hover:border-[#1f1c18] text-xs font-typewriter text-[#1f1c18] inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+                title="Nasıl Oynanır?"
+              >
+                <HelpCircle className="w-3.5 h-3.5 text-[#575046]" />
+                <span className="hidden sm:inline">Nasıl Oynanır</span>
+              </button>
+            )}
+
             {onOpenLeaderboard && (
               <button
                 type="button"

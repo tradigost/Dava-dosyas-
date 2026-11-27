@@ -369,31 +369,31 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
     : false;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
-      <div className="bg-zinc-950 border border-amber-600/60 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative text-zinc-100 max-h-[92vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-[#1f1c18]/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+      <div className="bg-[#faf6ed] border border-[#1f1c18] rounded-sm max-w-lg w-full p-5 sm:p-6 shadow-[0_12px_36px_rgba(31,28,24,0.22)] relative text-[#1f1c18] max-h-[92vh] overflow-y-auto">
         
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-zinc-200 transition-colors rounded-full bg-zinc-900 border border-zinc-800"
+          className="absolute top-4 right-4 p-2 text-[#575046] hover:text-[#1f1c18] transition-colors rounded-sm bg-[#fffdf8] border border-[#c8bfae] cursor-pointer"
           aria-label="Kapat"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Modal Header */}
-        <div className="text-center pb-3 border-b border-zinc-800">
-          <div className="w-11 h-11 bg-emerald-500/10 border border-emerald-500/30 rounded-full flex items-center justify-center mx-auto mb-2 text-emerald-400">
+        <div className="text-center pb-3 border-b border-[#d6cdbc]">
+          <div className="w-11 h-11 bg-[#fffdf8] border border-[#1f1c18] rounded-sm flex items-center justify-center mx-auto mb-2 text-[#8b1e1e]">
             <Smartphone className="w-5 h-5" />
           </div>
-          <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-widest block">
+          <span className="text-[10px] font-typewriter text-[#8b1e1e] uppercase tracking-widest block font-bold">
             ÇOKLU TELEFON SENKRONİZASYONU
           </span>
-          <h3 className="text-lg sm:text-xl font-bold font-cinzel text-zinc-100 mt-1">
+          <h3 className="text-lg sm:text-xl font-bold font-typewriter text-[#1f1c18] mt-1">
             {isMember ? 'Masa Bekleme Odası' : 'Dedektif Masası'}
           </h3>
-          <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+          <p className="text-xs text-[#575046] mt-1 leading-relaxed">
             {isMember
               ? 'Tüm dedektifler bağlandığında Masa Şefi oyunu başlatır.'
               : 'Davet alan dedektifler boş koltuklara isimlerini yazarak doğrudan oturabilir.'}
@@ -402,32 +402,32 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
 
         {/* Structured Diagnostic Error Alert */}
         {authError && (
-          <div className="mt-3.5 p-3.5 bg-rose-950/50 border border-rose-800/80 rounded-2xl text-xs text-rose-200 space-y-2">
-            <div className="flex items-center gap-2 font-bold text-rose-300">
-              <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+          <div className="mt-3.5 p-3.5 bg-[#fffdf8] border border-[#8b1e1e] rounded-sm text-xs text-[#8b1e1e] space-y-2">
+            <div className="flex items-center gap-2 font-bold">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
               <span>{authError.title}</span>
             </div>
             
-            <p className="text-[11px] leading-relaxed text-rose-200/90">
+            <p className="text-[11px] leading-relaxed text-[#575046]">
               {authError.message}
             </p>
 
             {authError.code === 'auth/unauthorized-domain' && (
-              <div className="pt-1 border-t border-rose-900/60 space-y-2 text-[11px]">
-                <div className="bg-zinc-950/80 p-2.5 rounded-xl border border-zinc-800 space-y-1.5">
-                  <span className="font-semibold text-amber-300 block">
-                    🔧 Google Girişini Yetkilendirmek İçin:
+              <div className="pt-1 border-t border-[#d6cdbc] space-y-2 text-[11px]">
+                <div className="bg-[#ebe5d8] p-2.5 rounded-sm border border-[#c8bfae] space-y-1.5">
+                  <span className="font-semibold text-[#1f1c18] block">
+                    Google Girişini Yetkilendirmek İçin:
                   </span>
-                  <div className="flex items-center justify-between gap-2 bg-zinc-900 p-1.5 rounded-lg border border-zinc-700">
-                    <code className="font-mono text-[11px] text-emerald-400 truncate">
+                  <div className="flex items-center justify-between gap-2 bg-[#fffdf8] p-1.5 rounded-sm border border-[#c8bfae]">
+                    <code className="font-typewriter text-[11px] text-[#276749] truncate">
                       {currentHostname}
                     </code>
                     <button
                       type="button"
                       onClick={handleCopyHostname}
-                      className="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded text-[10px] font-mono flex items-center gap-1 shrink-0"
+                      className="px-2 py-1 bg-[#1f1c18] text-[#faf6ed] rounded-sm text-[10px] font-typewriter flex items-center gap-1 shrink-0 cursor-pointer"
                     >
-                      {copiedDomain ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                      {copiedDomain ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                       <span>{copiedDomain ? 'Kopyalandı' : 'Kopyala'}</span>
                     </button>
                   </div>
@@ -439,7 +439,7 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
 
         {/* Action Error Alert */}
         {actionError && !authError && (
-          <div className="mt-3 p-3 bg-rose-950/40 border border-rose-800/60 rounded-xl text-xs text-rose-300">
+          <div className="mt-3 p-3 bg-[#fffdf8] border border-[#8b1e1e] rounded-sm text-xs text-[#8b1e1e]">
             {actionError}
           </div>
         )}
@@ -450,17 +450,17 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
         {isMember && currentRoom ? (
           <div className="mt-5 space-y-4">
             {/* Room Code Card */}
-            <div className="p-4 bg-emerald-950/20 border border-emerald-600/40 rounded-2xl text-center">
-              <span className="text-[11px] font-mono text-emerald-400 uppercase tracking-wider block">
+            <div className="p-4 bg-[#fffdf8] border border-[#1f1c18] rounded-sm text-center">
+              <span className="text-[11px] font-typewriter text-[#7c7265] uppercase tracking-wider block">
                 MASA ODA KODU:
               </span>
-              <div className="text-3xl font-black font-mono text-emerald-300 tracking-[0.2em] my-1">
+              <div className="text-3xl font-black font-typewriter text-[#8b1e1e] tracking-[0.2em] my-1">
                 {currentRoom.roomCode}
               </div>
-              <div className="flex items-center justify-center gap-2 text-xs text-zinc-400 mt-1">
-                <span>Masa Şefi: <strong className="text-zinc-200">{currentRoom.hostName}</strong></span>
+              <div className="flex items-center justify-center gap-2 text-xs text-[#575046] mt-1">
+                <span>Masa Şefi: <strong className="text-[#1f1c18]">{currentRoom.hostName}</strong></span>
                 <span>·</span>
-                <span className={`font-mono font-bold ${isRoomFull ? 'text-emerald-400' : 'text-amber-400'}`}>
+                <span className={`font-typewriter font-bold ${isRoomFull ? 'text-[#276749]' : 'text-[#8b1e1e]'}`}>
                   {roomMembers.length} / {currentRoom.playerCount} Dedektif Masada
                 </span>
               </div>
@@ -473,7 +473,7 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                   href={getWhatsAppShareUrl(currentRoom.roomCode)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-emerald-600/20"
+                  className="w-full py-2.5 px-4 bg-[#276749] hover:bg-[#1f543b] text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs flex items-center justify-center gap-2 transition-colors"
                 >
                   <MessageCircle className="w-4 h-4 fill-current" />
                   <span>WhatsApp ile Davet Et</span>
@@ -482,7 +482,7 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                 <button
                   type="button"
                   onClick={() => handleNativeShare(currentRoom.roomCode)}
-                  className="w-full py-3 px-4 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer"
+                  className="w-full py-2.5 px-4 bg-[#1f1c18] hover:bg-[#8b1e1e] text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
                 >
                   <Share2 className="w-4 h-4" />
                   <span>Diğer Uygulamalarla Paylaş</span>
@@ -492,12 +492,12 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
               <button
                 type="button"
                 onClick={() => handleCopyLink(currentRoom.roomCode)}
-                className="w-full py-2.5 px-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-xl text-xs flex items-center justify-center gap-2 transition-colors"
+                className="w-full py-2.5 px-3 bg-[#fffdf8] hover:bg-[#ebe5d8] border border-[#c8bfae] text-[#1f1c18] font-typewriter rounded-sm text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 {copiedLink ? (
                   <>
-                    <Check className="w-4 h-4 text-emerald-400" />
-                    <span className="text-emerald-400 font-semibold">Davet Bağlantısı Kopyalandı!</span>
+                    <Check className="w-4 h-4 text-[#276749]" />
+                    <span className="text-[#276749] font-semibold">Davet Bağlantısı Kopyalandı!</span>
                   </>
                 ) : (
                   <>
@@ -509,17 +509,17 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
             </div>
 
             {/* Seated Detectives List */}
-            <div className="mt-4 pt-3 border-t border-zinc-800">
+            <div className="mt-4 pt-3 border-t border-[#d6cdbc]">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider block">
+                <span className="text-xs font-typewriter text-[#575046] uppercase tracking-wider block">
                   Masadaki Dedektifler ({roomMembers.length}/{currentRoom.playerCount}):
                 </span>
                 {isRoomFull ? (
-                  <span className="text-[11px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2 py-0.5 rounded">
+                  <span className="text-[11px] font-bold font-typewriter text-[#276749] bg-[#fffdf8] border border-[#276749] px-2 py-0.5 rounded-sm">
                     Masa Tamamlandı ✓
                   </span>
                 ) : (
-                  <span className="text-[11px] text-amber-400 bg-amber-950/40 border border-amber-800/40 px-2 py-0.5 rounded animate-pulse">
+                  <span className="text-[11px] font-typewriter text-[#8b1e1e] bg-[#fffdf8] border border-[#8b1e1e]/40 px-2 py-0.5 rounded-sm animate-pulse">
                     Boş Koltuk Var...
                   </span>
                 )}
@@ -534,10 +534,10 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                   return (
                     <div
                       key={member.userId}
-                      className={`p-3 rounded-xl border flex items-center justify-between ${
+                      className={`p-3 rounded-sm border flex items-center justify-between ${
                         isThisMe
-                          ? 'bg-amber-950/30 border-amber-500/50'
-                          : 'bg-zinc-900/60 border-zinc-800'
+                          ? 'bg-[#fffdf8] border-[#1f1c18]'
+                          : 'bg-[#ebe5d8]/60 border-[#d6cdbc]'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
@@ -545,26 +545,26 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                           <img
                             src={member.photoURL}
                             alt={member.displayName}
-                            className="w-7 h-7 rounded-full border border-zinc-700"
+                            className="w-7 h-7 rounded-full border border-[#c8bfae]"
                             referrerPolicy="no-referrer"
                           />
                         ) : (
-                          <div className="w-7 h-7 rounded-full bg-zinc-800 text-zinc-300 text-xs font-bold flex items-center justify-center">
+                          <div className="w-7 h-7 rounded-full bg-[#1f1c18] text-[#faf6ed] text-xs font-bold flex items-center justify-center">
                             {member.displayName ? member.displayName[0] : 'D'}
                           </div>
                         )}
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-xs font-bold text-zinc-200 truncate">
+                            <span className="text-xs font-bold text-[#1f1c18] truncate">
                               {member.displayName}
                             </span>
                             {isThisHost && (
-                              <span className="text-[10px] text-amber-400 bg-amber-950/60 border border-amber-800/40 px-1 rounded flex items-center gap-0.5">
+                              <span className="text-[10px] text-[#8b1e1e] bg-[#fffdf8] border border-[#8b1e1e]/40 px-1 rounded-sm flex items-center gap-0.5">
                                 <Crown className="w-2.5 h-2.5" /> Şef
                               </span>
                             )}
                             {isThisMe && (
-                              <span className="text-[10px] text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-1 rounded">
+                              <span className="text-[10px] text-[#276749] bg-[#fffdf8] border border-[#276749]/40 px-1 rounded-sm">
                                 Siz
                               </span>
                             )}
@@ -572,7 +572,7 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                         </div>
                       </div>
 
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-amber-300 shrink-0">
+                      <span className="text-[11px] font-typewriter px-2 py-0.5 rounded-sm bg-[#fffdf8] border border-[#c8bfae] text-[#1f1c18] shrink-0">
                         {roleData.title}
                       </span>
                     </div>
@@ -583,15 +583,15 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                 {Array.from({ length: Math.max(0, currentRoom.playerCount - roomMembers.length) }).map((_, idx) => (
                   <div
                     key={`vacant-${idx}`}
-                    className="p-3 rounded-xl border border-dashed border-zinc-800 bg-zinc-950/40 flex items-center justify-between text-zinc-500"
+                    className="p-3 rounded-sm border border-dashed border-[#c8bfae] bg-[#fffdf8]/60 flex items-center justify-between text-[#7c7265]"
                   >
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full border border-dashed border-zinc-700 flex items-center justify-center text-xs">
+                      <div className="w-7 h-7 rounded-full border border-dashed border-[#c8bfae] flex items-center justify-center text-xs">
                         ?
                       </div>
                       <span className="text-xs italic">Boş Dedektif Sandalyesi</span>
                     </div>
-                    <span className="text-[11px] font-mono text-zinc-600">Davet Bekleniyor</span>
+                    <span className="text-[11px] font-typewriter text-[#7c7265]">Davet Bekleniyor</span>
                   </div>
                 ))}
               </div>
@@ -600,16 +600,15 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
             {/* Host Controls OR Guest Waiting Panel */}
             <div className="pt-2 space-y-2">
               {isHost ? (
-                /* Host Action: Start button activates once room is FULL */
                 <div>
                   <button
                     type="button"
                     onClick={handleHostStartGame}
                     disabled={!isRoomFull || isSubmitting}
-                    className={`w-full py-3.5 rounded-2xl text-xs sm:text-sm font-bold transition-all shadow-xl flex items-center justify-center gap-2 ${
+                    className={`w-full py-3 rounded-sm text-xs font-typewriter font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 ${
                       isRoomFull && !isSubmitting
-                        ? 'bg-amber-600 hover:bg-amber-500 text-zinc-950 ring-2 ring-amber-400/50 animate-pulse cursor-pointer'
-                        : 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-zinc-700'
+                        ? 'bg-[#8b1e1e] hover:bg-[#1f1c18] text-[#faf6ed] cursor-pointer'
+                        : 'bg-[#d6cdbc] text-[#7c7265] cursor-not-allowed border border-[#c8bfae]'
                     }`}
                   >
                     {isSubmitting ? (
@@ -619,28 +618,27 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                     )}
                     <span>
                       {isRoomFull
-                        ? `✓ Masa Hazır (${roomMembers.length}/${currentRoom.playerCount}) - Vakayı Masaya Aç`
+                        ? `Masa Hazır (${roomMembers.length}/${currentRoom.playerCount}) - Vakayı Masaya Aç`
                         : `Arkadaşınız Bekleniyor (${roomMembers.length}/${currentRoom.playerCount})`}
                     </span>
                   </button>
                   {!isRoomFull && (
-                    <p className="text-[11px] text-center text-zinc-400 mt-2">
-                      * Oyunu başlatmak için arkadaşınızın WhatsApp linkiyle boş koltuğa oturması gerekir.
+                    <p className="text-[11px] text-center text-[#575046] mt-2">
+                      * Oyunu başlatmak için arkadaşınızın davet linkiyle boş koltuğa oturması gerekir.
                     </p>
                   )}
                 </div>
               ) : (
-                /* Guest View: Waiting for Host to Launch */
-                <div className="p-3.5 bg-zinc-900 border border-zinc-800 rounded-2xl text-center space-y-2">
-                  <div className="flex items-center justify-center gap-2 text-xs font-bold text-amber-400">
-                    <Radio className="w-4 h-4 animate-ping text-amber-500" />
+                <div className="p-3.5 bg-[#fffdf8] border border-[#d6cdbc] rounded-sm text-center space-y-2">
+                  <div className="flex items-center justify-center gap-2 text-xs font-bold text-[#8b1e1e]">
+                    <Radio className="w-4 h-4 animate-ping text-[#8b1e1e]" />
                     <span>
                       {isRoomFull
-                        ? `🎉 Masa Doldu! Masa Şefi (${currentRoom.hostName}) Vakayı Açıyor...`
+                        ? `Masa Doldu! Masa Şefi (${currentRoom.hostName}) Vakayı Açıyor...`
                         : `Diğer Dedektifin Masaya Oturması Bekleniyor (${roomMembers.length}/${currentRoom.playerCount})...`}
                     </span>
                   </div>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-[11px] text-[#575046]">
                     Oda sahibi &quot;Vakayı Aç&quot; dediğinde vaka dosyası telefonunuzda otomatik olarak açılacaktır.
                   </p>
                 </div>
@@ -649,7 +647,7 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
               <button
                 type="button"
                 onClick={handleLeaveRoom}
-                className="w-full py-2 text-xs text-zinc-500 hover:text-rose-400 transition-colors"
+                className="w-full py-2 text-xs font-typewriter text-[#7c7265] hover:text-[#8b1e1e] transition-colors cursor-pointer"
               >
                 Masadan Ayrıl
               </button>
@@ -661,9 +659,8 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
              ========================================================================= */
           <div className="mt-5 space-y-4">
             
-            {/* Tab switchers (only if not directly navigating to an invite link) */}
             {!initialRoomCode && (
-              <div className="flex rounded-xl bg-zinc-900 p-1 border border-zinc-800 text-xs">
+              <div className="flex border-b border-[#d6cdbc] text-xs font-typewriter">
                 <button
                   type="button"
                   onClick={() => {
@@ -671,13 +668,13 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                     setActiveTab('create');
                     setActionError(null);
                   }}
-                  className={`flex-1 py-2 font-bold rounded-lg transition-colors ${
+                  className={`flex-1 py-2.5 font-bold border-b-2 transition-colors cursor-pointer ${
                     activeTab === 'create'
-                      ? 'bg-amber-600 text-zinc-950'
-                      : 'text-zinc-400 hover:text-zinc-200'
+                      ? 'border-[#1f1c18] text-[#1f1c18]'
+                      : 'border-transparent text-[#7c7265] hover:text-[#1f1c18]'
                   }`}
                 >
-                  Yeni Masa Kur (Masa Şefi)
+                  Yeni Masa Kur (Şef)
                 </button>
                 <button
                   type="button"
@@ -686,10 +683,10 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                     setActiveTab('join');
                     setActionError(null);
                   }}
-                  className={`flex-1 py-2 font-bold rounded-lg transition-colors ${
+                  className={`flex-1 py-2.5 font-bold border-b-2 transition-colors cursor-pointer ${
                     activeTab === 'join'
-                      ? 'bg-amber-600 text-zinc-950'
-                      : 'text-zinc-400 hover:text-zinc-200'
+                      ? 'border-[#1f1c18] text-[#1f1c18]'
+                      : 'border-transparent text-[#7c7265] hover:text-[#1f1c18]'
                   }`}
                 >
                   Boş Koltuğa Otur (Davetli)
@@ -697,23 +694,20 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
               </div>
             )}
 
-            {/* -------------------------------------------------------------------
-                TAB A: CREATE ROOM (Strictly requires Google login for the Host)
-               ------------------------------------------------------------------- */}
+            {/* TAB A: CREATE ROOM */}
             {activeTab === 'create' && !initialRoomCode && (
               <div className="space-y-4">
                 {!isGoogleUser ? (
-                  /* Creator must sign in with Google */
-                  <div className="p-4 bg-gradient-to-br from-amber-950/40 to-zinc-900/90 border border-amber-500/50 rounded-2xl text-center space-y-3">
-                    <div className="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-500 flex items-center justify-center mx-auto text-amber-400">
+                  <div className="p-4 bg-[#fffdf8] border border-[#1f1c18] rounded-sm text-center space-y-3">
+                    <div className="w-10 h-10 rounded-sm bg-[#ebe5d8] border border-[#1f1c18] flex items-center justify-center mx-auto text-[#8b1e1e]">
                       <Crown className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-amber-300">
+                      <h4 className="text-sm font-bold font-typewriter text-[#1f1c18]">
                         Masa Şefi (Kurucu) Doğrulaması
                       </h4>
-                      <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
-                        Masayı kuracak dedektif için Google hesabı zorunludur. Davet edeceğiniz arkadaşlarınız ise <strong>Google hesabı olmadan</strong>, doğrudan isimlerini yazarak masaya katılabileceklerdir.
+                      <p className="text-xs text-[#575046] mt-1 leading-relaxed">
+                        Masayı kuracak dedektif için Google hesabı zorunludur. Davet edeceğiniz arkadaşlarınız ise <strong>hesap açmadan</strong>, doğrudan isimlerini yazarak masaya katılabilir.
                       </p>
                     </div>
 
@@ -721,40 +715,39 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                       type="button"
                       onClick={() => handleGoogleLogin(false)}
                       disabled={isSubmitting}
-                      className="w-full py-3 px-4 bg-white hover:bg-zinc-200 text-zinc-900 font-bold rounded-xl text-xs sm:text-sm transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-2.5 px-4 bg-[#1f1c18] hover:bg-[#8b1e1e] text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                       {isSubmitting ? (
-                        <Loader2 className="w-4 h-4 animate-spin text-zinc-900" />
+                        <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
-                        <LogIn className="w-4 h-4 text-zinc-900" />
+                        <LogIn className="w-4 h-4" />
                       )}
                       <span>Google ile Giriş Yap ve Masayı Kur</span>
                     </button>
                   </div>
                 ) : (
-                  /* Google-Verified Creator Controls */
                   <div className="space-y-4">
                     {/* Host Profile Card */}
-                    <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between gap-3">
+                    <div className="p-3 bg-[#fffdf8] border border-[#d6cdbc] rounded-sm flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5 min-w-0">
                         {currentUser?.photoURL ? (
                           <img
                             src={currentUser.photoURL}
                             alt={currentUser.displayName || 'Şef'}
-                            className="w-8 h-8 rounded-full border border-amber-500"
+                            className="w-8 h-8 rounded-full border border-[#c8bfae]"
                             referrerPolicy="no-referrer"
                           />
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-amber-600 text-zinc-950 font-bold flex items-center justify-center text-xs">
+                          <div className="w-8 h-8 rounded-full bg-[#1f1c18] text-[#faf6ed] font-bold flex items-center justify-center text-xs">
                             {currentUser?.displayName ? currentUser.displayName[0] : 'Ş'}
                           </div>
                         )}
                         <div className="min-w-0">
-                          <p className="text-xs font-bold text-zinc-100 truncate">
+                          <p className="text-xs font-bold text-[#1f1c18] truncate">
                             {currentUser?.displayName}
                           </p>
-                          <p className="text-[10px] text-emerald-400 flex items-center gap-1">
-                            <ShieldCheck className="w-3 h-3" /> Masa Şefi (Google Doğrulamalı)
+                          <p className="text-[10px] text-[#276749] flex items-center gap-1">
+                            <ShieldCheck className="w-3 h-3" /> Masa Şefi (Doğrulamalı)
                           </p>
                         </div>
                       </div>
@@ -762,7 +755,7 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                       <button
                         type="button"
                         onClick={logoutUser}
-                        className="text-[11px] text-zinc-400 hover:text-rose-400 px-2 py-1 rounded bg-zinc-950 border border-zinc-800"
+                        className="text-[11px] font-typewriter text-[#575046] hover:text-[#8b1e1e] px-2 py-1 rounded-sm bg-[#ebe5d8] border border-[#c8bfae] cursor-pointer"
                       >
                         Değiştir
                       </button>
@@ -771,11 +764,11 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                     {/* Player Count Selection */}
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
-                        <label className="text-xs font-mono uppercase tracking-wider text-amber-300 block">
+                        <label className="text-xs font-typewriter uppercase tracking-wider text-[#1f1c18] font-bold block">
                           Masada Kaç Dedektif Olacak?
                         </label>
-                        <span className="text-[10px] text-emerald-400 font-mono">
-                          {modalPlayerCount === 2 ? '⚡ 2 KİŞİ (İKİLİ ORTAKLIK)' : `${modalPlayerCount} KİŞİ`}
+                        <span className="text-[10px] text-[#276749] font-typewriter font-bold">
+                          {modalPlayerCount === 2 ? '2 KİŞİ (İKİLİ ORTAKLIK)' : `${modalPlayerCount} KİŞİ`}
                         </span>
                       </div>
                       <div className="flex gap-2">
@@ -791,10 +784,10 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                                 setHostSelectedRole('forensics');
                               }
                             }}
-                            className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${
+                            className={`flex-1 py-2 rounded-sm text-xs font-typewriter font-bold border transition-colors cursor-pointer ${
                               modalPlayerCount === cnt
-                                ? 'bg-amber-600 text-zinc-950 border-amber-400 shadow-md ring-1 ring-amber-400'
-                                : 'bg-zinc-900/60 border-zinc-800 text-zinc-300 hover:border-zinc-700'
+                                ? 'bg-[#1f1c18] text-[#faf6ed] border-[#1f1c18]'
+                                : 'bg-[#fffdf8] border-[#c8bfae] text-[#1f1c18] hover:border-[#1f1c18]'
                             }`}
                           >
                             {cnt} Kişi
@@ -805,7 +798,7 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
 
                     {/* Host's Own Role Selection */}
                     <div>
-                      <label className="text-xs font-mono uppercase tracking-wider text-amber-300 block mb-1.5">
+                      <label className="text-xs font-typewriter uppercase tracking-wider text-[#1f1c18] font-bold block mb-1.5">
                         Kendi Uzmanlık Alanınızı Seçin:
                       </label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -820,17 +813,17 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                                 soundManager.playKeyClick();
                                 setHostSelectedRole(roleKey);
                               }}
-                              className={`p-3 rounded-xl border text-left transition-all ${
+                              className={`p-3 rounded-sm border text-left transition-colors cursor-pointer ${
                                 isSelected
-                                  ? 'bg-amber-950/70 border-amber-500 text-amber-200 ring-1 ring-amber-500'
-                                  : 'bg-zinc-900/60 border-zinc-800 text-zinc-300 hover:border-zinc-700'
+                                  ? 'bg-[#fffdf8] border-[#8b1e1e] text-[#1f1c18]'
+                                  : 'bg-[#ebe5d8]/50 border-[#d6cdbc] text-[#4a443c] hover:border-[#1f1c18]'
                               }`}
                             >
                               <div className="flex items-center justify-between text-xs font-bold">
                                 <span>{role.title}</span>
-                                {isSelected && <span className="text-[10px] text-emerald-400">✓ Şef Rolü</span>}
+                                {isSelected && <span className="text-[10px] text-[#8b1e1e] font-typewriter">✓ Şef Rolü</span>}
                               </div>
-                              <p className="text-[11px] text-zinc-400 mt-1 leading-snug">
+                              <p className="text-[11px] text-[#575046] mt-1 leading-snug">
                                 {role.shortDesc}
                               </p>
                             </button>
@@ -844,30 +837,27 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                       type="button"
                       onClick={handleCreateRoom}
                       disabled={isSubmitting}
-                      className="w-full py-3.5 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-3 bg-[#1f1c18] hover:bg-[#8b1e1e] text-[#faf6ed] font-typewriter font-bold uppercase tracking-wider rounded-sm text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                       {isSubmitting ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <Share2 className="w-4 h-4" />
                       )}
-                      <span>Masayı Kur & WhatsApp Davet Bağlantısı Al</span>
+                      <span>Masayı Kur &amp; Davet Bağlantısı Al</span>
                     </button>
                   </div>
                 )}
               </div>
             )}
 
-            {/* -------------------------------------------------------------------
-                TAB B: JOIN ROOM VIA EMPTY SEATS (Zero Google Login Required!)
-               ------------------------------------------------------------------- */}
+            {/* TAB B: JOIN ROOM VIA EMPTY SEATS */}
             {(activeTab === 'join' || initialRoomCode) && (
               <div className="space-y-4">
                 
-                {/* Room Code Search (if not pre-filled by link) */}
                 {!initialRoomCode && (
-                  <div className="p-3 bg-zinc-900/80 border border-zinc-800 rounded-2xl space-y-2">
-                    <label className="text-xs text-zinc-300 block">
+                  <div className="p-3 bg-[#fffdf8] border border-[#d6cdbc] rounded-sm space-y-2">
+                    <label className="text-xs font-typewriter text-[#1f1c18] block">
                       Arkadaşınızın Paylaştığı 6 Haneli Masa Kodu:
                     </label>
                     <div className="flex gap-2">
@@ -883,13 +873,13 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                         }}
                         placeholder="Örn: KND-884"
                         maxLength={10}
-                        className="flex-1 px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-xl text-sm font-mono tracking-widest text-center text-zinc-100 uppercase focus:outline-none focus:border-amber-500"
+                        className="flex-1 px-3 py-2 bg-[#faf6ed] border border-[#c8bfae] rounded-sm text-sm font-typewriter tracking-widest text-center text-[#1f1c18] uppercase focus:outline-none focus:border-[#1f1c18]"
                       />
                       <button
                         type="button"
                         onClick={() => loadRoomForInspection(joinCodeInput)}
                         disabled={isInspecting}
-                        className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold rounded-xl text-xs transition-colors flex items-center gap-1.5"
+                        className="px-3.5 py-2 bg-[#1f1c18] hover:bg-[#8b1e1e] text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                       >
                         {isInspecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
                         <span>Masayı Bul</span>
@@ -899,32 +889,30 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                 )}
 
                 {inspectError && (
-                  <div className="p-3 bg-rose-950/40 border border-rose-800/60 rounded-xl text-xs text-rose-300 text-center">
+                  <div className="p-3 bg-[#fffdf8] border border-[#8b1e1e] rounded-sm text-xs text-[#8b1e1e] text-center">
                     {inspectError}
                   </div>
                 )}
 
-                {/* Target Room Details & Detective Seats Grid */}
                 {inspectedRoom ? (
                   <div className="space-y-3">
                     {/* Room Info Header */}
-                    <div className="p-3 bg-emerald-950/20 border border-emerald-600/40 rounded-2xl flex items-center justify-between">
+                    <div className="p-3 bg-[#fffdf8] border border-[#1f1c18] rounded-sm flex items-center justify-between">
                       <div>
-                        <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-widest block">
+                        <span className="text-[10px] font-typewriter text-[#8b1e1e] uppercase tracking-widest block font-bold">
                           MASA: {inspectedRoom.roomCode}
                         </span>
-                        <h4 className="text-xs font-bold text-zinc-100 mt-0.5">
+                        <h4 className="text-xs font-bold text-[#1f1c18] mt-0.5">
                           Masa Şefi: {inspectedRoom.hostName}
                         </h4>
                       </div>
-                      <span className="text-xs font-mono font-bold text-amber-300 bg-zinc-900 px-2.5 py-1 rounded-lg border border-zinc-800">
+                      <span className="text-xs font-typewriter font-bold text-[#1f1c18] bg-[#ebe5d8] px-2.5 py-1 rounded-sm border border-[#c8bfae]">
                         {inspectedMembers.length} / {inspectedRoom.playerCount} Koltuk Dolu
                       </span>
                     </div>
 
-                    {/* Detective Seats Header */}
                     <div className="flex items-center justify-between pt-1">
-                      <span className="text-xs font-mono uppercase tracking-wider text-amber-300 block">
+                      <span className="text-xs font-typewriter uppercase tracking-wider text-[#1f1c18] font-bold block">
                         Masa Koltukları (Boş Koltuğa İsminizi Yazıp Oturun):
                       </span>
                     </div>
@@ -943,40 +931,39 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                         return (
                           <div
                             key={roleKey}
-                            className={`p-3.5 rounded-2xl border transition-all ${
+                            className={`p-3.5 rounded-sm border transition-colors ${
                               isOccupied
                                 ? isOccupiedByMe
-                                  ? 'bg-amber-950/30 border-amber-500/60'
-                                  : 'bg-zinc-900/40 border-zinc-800/80 opacity-80'
-                                : 'bg-gradient-to-br from-zinc-900/90 to-zinc-950 border-emerald-500/50 shadow-md ring-1 ring-emerald-500/30'
+                                  ? 'bg-[#fffdf8] border-[#1f1c18]'
+                                  : 'bg-[#ebe5d8]/60 border-[#d6cdbc] opacity-80'
+                                : 'bg-[#fffdf8] border-[#276749]'
                             }`}
                           >
-                            <div className="flex items-center justify-between pb-2 border-b border-zinc-800/60">
+                            <div className="flex items-center justify-between pb-2 border-b border-[#d6cdbc]">
                               <div className="flex items-center gap-2">
-                                <Armchair className={`w-4 h-4 ${isOccupied ? 'text-zinc-500' : 'text-emerald-400'}`} />
-                                <span className={`text-xs font-bold ${isOccupied ? 'text-zinc-300' : 'text-zinc-100'}`}>
+                                <Armchair className={`w-4 h-4 ${isOccupied ? 'text-[#7c7265]' : 'text-[#276749]'}`} />
+                                <span className="text-xs font-bold text-[#1f1c18]">
                                   {role.title}
                                 </span>
                               </div>
 
                               {isOccupied ? (
-                                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">
+                                <span className="text-[10px] font-typewriter px-2 py-0.5 rounded-sm bg-[#ebe5d8] text-[#575046] border border-[#c8bfae]">
                                   ✓ {occupiedBy?.displayName} ({occupiedBy?.userId === inspectedRoom.hostId ? 'Şef' : 'Oturdu'})
                                 </span>
                               ) : (
-                                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800 font-bold">
-                                  🟢 BOŞ KOLTUK
+                                <span className="text-[10px] font-typewriter px-2 py-0.5 rounded-sm bg-[#fffdf8] text-[#276749] border border-[#276749] font-bold">
+                                  BOŞ KOLTUK
                                 </span>
                               )}
                             </div>
 
-                            <p className="text-[11px] text-zinc-400 mt-2 leading-snug">
+                            <p className="text-[11px] text-[#575046] mt-2 leading-snug">
                               {role.shortDesc}
                             </p>
 
-                            {/* If Seat is Empty: Direct Name Input & Sit Button */}
                             {!isOccupied && (
-                              <div className="mt-3 pt-2.5 border-t border-zinc-800/60 flex flex-col sm:flex-row gap-2">
+                              <div className="mt-3 pt-2.5 border-t border-dashed border-[#d6cdbc] flex flex-col sm:flex-row gap-2">
                                 <input
                                   type="text"
                                   value={currentInputName}
@@ -988,21 +975,21 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                                   }}
                                   placeholder="Dedektif Adınız (Örn: Selim)"
                                   maxLength={24}
-                                  className="flex-1 px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-xl text-xs text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-amber-500 font-medium"
+                                  className="flex-1 px-3 py-2 bg-[#faf6ed] border border-[#c8bfae] rounded-sm text-xs text-[#1f1c18] placeholder:text-[#9c9284] focus:outline-none focus:border-[#1f1c18] font-medium"
                                 />
 
                                 <button
                                   type="button"
                                   onClick={() => handleClaimSeat(roleKey)}
                                   disabled={isSubmitting}
-                                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer shrink-0"
+                                  className="px-4 py-2 bg-[#276749] hover:bg-[#1f543b] text-[#faf6ed] font-typewriter font-bold rounded-sm text-xs transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer shrink-0"
                                 >
                                   {isSubmitting && submittingRole === roleKey ? (
                                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                   ) : (
                                     <UserCheck className="w-3.5 h-3.5" />
                                   )}
-                                  <span>Bu Koltuğa Otur & Katıl</span>
+                                  <span>Bu Koltuğa Otur &amp; Katıl</span>
                                 </button>
                               </div>
                             )}
@@ -1013,7 +1000,7 @@ export const OnlineRoomModal: React.FC<OnlineRoomModalProps> = ({
                   </div>
                 ) : (
                   !initialRoomCode && (
-                    <div className="p-8 text-center text-zinc-500 text-xs border border-dashed border-zinc-800 rounded-2xl">
+                    <div className="p-8 text-center text-[#7c7265] text-xs border border-dashed border-[#c8bfae] rounded-sm">
                       Yukarıdaki kutuya arkadaşınızın gönderdiği 6 haneli oda kodunu girin.
                     </div>
                   )

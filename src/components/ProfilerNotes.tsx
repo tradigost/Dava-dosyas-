@@ -28,10 +28,8 @@ export const ProfilerNotes: React.FC<ProfilerNotesProps> = ({
   onPinFinding,
   isAlreadyPinned,
 }) => {
-  const [selectedSuspectId, setSelectedSuspectId] = useState<string>('selin-soylu');
-  const [highlightedClues, setHighlightedClues] = useState<Record<string, boolean>>({
-    'c-1': true, // default starter clue highlighted
-  });
+  const [selectedSuspectId, setSelectedSuspectId] = useState<string>(suspects[0]?.id || '');
+  const [highlightedClues, setHighlightedClues] = useState<Record<string, boolean>>({});
 
   const clues: ClueSentence[] = [
     {
@@ -77,27 +75,40 @@ export const ProfilerNotes: React.FC<ProfilerNotesProps> = ({
   };
 
   const currentSuspect = suspects.find((s) => s.id === selectedSuspectId) || suspects[0];
-  const suspectClues = clues.filter((c) => c.suspectId === selectedSuspectId);
+  const matchedClues = clues.filter((c) => c.suspectId === currentSuspect?.id);
+  const suspectClues: ClueSentence[] =
+    matchedClues.length > 0
+      ? matchedClues
+      : (currentSuspect?.suspiciousQuotes || []).map((q, idx) => ({
+          id: `${currentSuspect.id}-q-${idx}`,
+          suspectId: currentSuspect.id,
+          text: q,
+          tag: idx === 0 ? 'İFADE ANALİZİ' : 'ALİBİ KONTROLÜ',
+          isCrucial: idx === 0,
+          insight: currentSuspect.motiveHypothesis || currentSuspect.alibi,
+        }));
 
   const handlePin = () => {
     soundManager.playPinSound();
     onPinFinding(
-      '🧠 Profilleme & Sorgu: Şifre İpucu ve Alibi Çelişkisi',
-      'Selin: "Şifre kurbanın en sevdiği tablonun yılıdır" (1889). Cemil: "22:50’de kapıda Dr. Kerem’in arabasını gördüm." Dr. Kerem 20:45’te kapsülü içiren tek kişidir!',
+      `🧠 Profilleme & Sorgu: ${currentSuspect?.name || 'Şüpheli'}`,
+      currentSuspect
+        ? `${currentSuspect.name} (${currentSuspect.title}): ${currentSuspect.alibi} — Şüpheli beyan: ${currentSuspect.suspiciousQuotes?.[0] || ''}`
+        : 'Şüpheli ifade çelişkileri panoya eklendi.',
       'interrogation'
     );
   };
 
   return (
-    <div className="bg-zinc-900/90 border border-amber-900/40 rounded-xl p-4 sm:p-5 text-zinc-200">
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-zinc-800">
+    <div className="bg-[#faf6ed] border border-[#d6cdbc] rounded-sm p-4 sm:p-5 text-[#1f1c18]">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#d6cdbc]">
         <div className="flex items-center gap-2">
-          <Fingerprint className="w-5 h-5 text-amber-400" />
-          <h4 className="font-semibold text-sm sm:text-base text-amber-300">
+          <Fingerprint className="w-5 h-5 text-[#8b1e1e]" />
+          <h4 className="font-semibold font-typewriter text-sm sm:text-base text-[#1f1c18]">
             Davranış Bilimleri & İfade Çelişki İşaretçisi
           </h4>
         </div>
-        <span className="text-xs text-zinc-400 font-typewriter">
+        <span className="text-xs text-[#7c7265] font-typewriter">
           PROFİLLEYİCİ ÇALIŞMA MASASI
         </span>
       </div>
@@ -112,105 +123,107 @@ export const ProfilerNotes: React.FC<ProfilerNotesProps> = ({
               soundManager.playKeyClick();
               setSelectedSuspectId(suspect.id);
             }}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors flex items-center gap-1.5 ${
-              selectedSuspectId === suspect.id
-                ? 'bg-amber-950/80 border-amber-500/70 text-amber-200 shadow-sm'
-                : 'bg-zinc-950/60 border-zinc-800 text-zinc-400 hover:text-zinc-200'
+            className={`px-3 py-1.5 rounded-sm text-xs font-typewriter font-semibold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+              currentSuspect?.id === suspect.id
+                ? 'bg-[#1f1c18] border-[#1f1c18] text-[#faf6ed]'
+                : 'bg-[#fffdf8] border-[#c8bfae] text-[#1f1c18] hover:border-[#1f1c18]'
             }`}
           >
             {suspect.photoUrl ? (
               <img
                 src={suspect.photoUrl}
                 alt={suspect.name}
-                className="w-5 h-5 rounded-full object-cover border border-zinc-700"
+                className="w-5 h-5 rounded-full object-cover border border-[#c8bfae]"
               />
             ) : (
               <UserCheck className="w-3.5 h-3.5" />
             )}
             <span>{suspect.name}</span>
-            <span className="text-[10px] opacity-70">({suspect.title.split(' ')[0]})</span>
+            <span className="text-[10px] opacity-75">({suspect.title.split(' ')[0]})</span>
           </button>
         ))}
       </div>
 
       {/* Suspect Card Detail */}
-      <div className="mt-4 p-4 rounded-lg bg-zinc-950 border border-zinc-800">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800/80 pb-2">
-          <div>
-            <h5 className="text-sm font-bold text-zinc-100">{currentSuspect.name}</h5>
-            <p className="text-xs text-zinc-400">{currentSuspect.title} · {currentSuspect.age} Yaşında</p>
+      {currentSuspect && (
+        <div className="mt-4 p-4 rounded-sm bg-[#fffdf8] border border-[#d6cdbc]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#d6cdbc] pb-2">
+            <div>
+              <h5 className="text-sm font-bold font-typewriter text-[#1f1c18]">{currentSuspect.name}</h5>
+              <p className="text-xs text-[#575046]">{currentSuspect.title} · {currentSuspect.age} Yaşında</p>
+            </div>
+            <div className="text-right">
+              <span className="text-[11px] text-[#7c7265] font-typewriter uppercase tracking-wider block">Resmi Alibi:</span>
+              <span className="text-xs text-[#1f1c18] font-medium">{currentSuspect.alibi.substring(0, 56)}...</span>
+            </div>
           </div>
-          <div className="text-right">
-            <span className="text-[11px] text-zinc-500 uppercase tracking-wider block">Resmi Alibi:</span>
-            <span className="text-xs text-zinc-300 font-medium">{currentSuspect.alibi.substring(0, 48)}...</span>
-          </div>
-        </div>
 
-        {/* Clickable Statement Highlighter */}
-        <div className="mt-3">
-          <p className="text-xs text-zinc-400 mb-2 flex items-center gap-1">
-            <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
-            <span>İfadedeki çelişkileri ve ipuçlarını işaretlemek için cümlelere tıklayın:</span>
-          </p>
+          {/* Clickable Statement Highlighter */}
+          <div className="mt-3">
+            <p className="text-xs text-[#575046] mb-2 flex items-center gap-1">
+              <HelpCircle className="w-3.5 h-3.5 text-[#8b1e1e]" />
+              <span>İfadedeki çelişkileri ve ipuçlarını işaretlemek için cümlelere tıklayın:</span>
+            </p>
 
-          <div className="space-y-2">
-            {suspectClues.map((clue) => {
-              const isChecked = !!highlightedClues[clue.id];
-              return (
-                <div
-                  key={clue.id}
-                  onClick={() => handleToggleClue(clue.id)}
-                  className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                    isChecked
-                      ? 'bg-amber-950/40 border-amber-600/70 text-amber-100'
-                      : 'bg-zinc-900/40 border-zinc-800 text-zinc-400 hover:border-zinc-700'
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-xs leading-relaxed italic">{clue.text}</p>
-                    {isChecked ? (
-                      <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                    ) : (
-                      <div className="w-4 h-4 rounded-full border border-zinc-700 shrink-0 mt-0.5" />
+            <div className="space-y-2">
+              {suspectClues.map((clue) => {
+                const isChecked = !!highlightedClues[clue.id];
+                return (
+                  <div
+                    key={clue.id}
+                    onClick={() => handleToggleClue(clue.id)}
+                    className={`p-3 rounded-sm border cursor-pointer transition-all ${
+                      isChecked
+                        ? 'bg-[#faf6ed] border-[#8b1e1e] text-[#1f1c18]'
+                        : 'bg-[#fffdf8] border-[#d6cdbc] text-[#4a443c] hover:border-[#8c8273]'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-xs leading-relaxed italic">{clue.text}</p>
+                      {isChecked ? (
+                        <CheckCircle2 className="w-4 h-4 text-[#8b1e1e] shrink-0 mt-0.5" />
+                      ) : (
+                        <div className="w-4 h-4 rounded-full border border-[#c8bfae] shrink-0 mt-0.5" />
+                      )}
+                    </div>
+
+                    {isChecked && (
+                      <div className="mt-2.5 pt-2 border-t border-dashed border-[#d6cdbc]">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold font-typewriter uppercase px-1.5 py-0.5 rounded-sm bg-[#8b1e1e]/10 text-[#8b1e1e] border border-[#8b1e1e]/30">
+                            {clue.tag}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#575046] mt-1.5 font-sans leading-relaxed">
+                          {clue.insight}
+                        </p>
+                      </div>
                     )}
                   </div>
-
-                  {isChecked && (
-                    <div className="mt-2.5 pt-2 border-t border-amber-900/40">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold font-typewriter uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                          {clue.tag}
-                        </span>
-                      </div>
-                      <p className="text-xs text-zinc-300 mt-1.5 font-sans leading-relaxed">
-                        {clue.insight}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Pin Finding Action */}
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2 pt-2">
-        <span className="text-xs text-zinc-400">
+        <span className="text-xs text-[#575046]">
           Bu sorgu ve psikolojik analiz notunu masadaki diğer dedektiflerle paylaşın.
         </span>
         <button
           type="button"
           onClick={handlePin}
           disabled={isAlreadyPinned}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-sm text-xs font-typewriter font-semibold transition-colors ${
             isAlreadyPinned
-              ? 'bg-zinc-800 text-zinc-400 cursor-not-allowed'
-              : 'bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold shadow-sm'
+              ? 'bg-[#ebe5d8] text-[#7c7265] border border-[#d6cdbc] cursor-not-allowed'
+              : 'bg-[#1f1c18] hover:bg-[#8b1e1e] text-[#faf6ed] font-bold cursor-pointer'
           }`}
         >
           <Pin className="w-3.5 h-3.5" />
-          {isAlreadyPinned ? 'Ortak Panoya Yansıtıldı' : '📌 Özeti Ortak Panoya Yansıt'}
+          {isAlreadyPinned ? 'Ortak Panoya Yansıtıldı' : 'Özeti Ortak Panoya Yansıt'}
         </button>
       </div>
     </div>

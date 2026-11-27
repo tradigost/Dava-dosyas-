@@ -6,7 +6,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CaseScenario } from '../types';
-import { shouldShowEnvelopeAd, hasCaseAccess, isPaidScenario } from '../services/monetization';
+import {
+  shouldShowEnvelopeAd,
+  hasCaseAccess,
+  isPaidScenario,
+  restorePurchases,
+} from '../services/monetization';
 
 const baseScenario = {
   id: 'test-case',
@@ -62,4 +67,11 @@ test('hasCaseAccess enforces paid lock unless purchased locally or unlocked by h
   assert.equal(hasCaseAccess(paidCase, ['paid-1']), true);
   assert.equal(hasCaseAccess(paidCase, ['sku_paid_1']), true);
   assert.equal(hasCaseAccess(paidCase, [], 'paid-1'), true);
+});
+
+test('restorePurchases returns clean structured result outside native runtime', async () => {
+  const res = await restorePurchases();
+  assert.equal(typeof res.success, 'boolean');
+  assert.equal(typeof res.restoredCount, 'number');
+  assert.ok(res.message.length > 0);
 });

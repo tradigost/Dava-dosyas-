@@ -108,7 +108,7 @@ export const BriefingView: React.FC<BriefingViewProps> = ({
 
           <div className="space-y-2">
             <span className="text-[10px] font-typewriter uppercase tracking-widest text-[#8b1e1e] block">
-              MASADAKİ DOSYA · VAKA BRİFİNGİ
+              SUÇ DOSYASI · VAKA BRİFİNGİ
             </span>
             <h2 className="text-xl sm:text-2xl font-bold font-typewriter text-[#1f1c18]">
               Masa Şefi ({hostName}) Olay Yeri Brifingini Okuyor...

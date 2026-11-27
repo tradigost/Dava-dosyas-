@@ -84,3 +84,50 @@ export async function triggerCasePurchase(scenario: CaseScenario): Promise<{
       'Bu ücretli vaka Google Play / App Store uygulama içi satın alma (IAP) ile açılır. Mobil mağaza paketi bağlandığında tek tıkla satın alınabilir.',
   };
 }
+
+/**
+ * Restores previous Play Store / App Store purchases (required by Apple App Store).
+ */
+export async function restorePurchases(): Promise<{
+  success: boolean;
+  restoredCount: number;
+  message: string;
+}> {
+  const win = typeof window !== 'undefined' ? (window as any) : null;
+  if (win?.Capacitor?.isNativePlatform?.() && win?.Purchases?.restorePurchases) {
+    try {
+      const result = await win.Purchases.restorePurchases();
+      const activeEntitlements: string[] = Array.isArray(result?.activeSubscriptions)
+        ? result.activeSubscriptions
+        : Array.isArray(result?.allPurchasedProductIdentifiers)
+        ? result.allPurchasedProductIdentifiers
+        : [];
+      for (const sku of activeEntitlements) {
+        saveLocalPurchasedCase(sku);
+      }
+      return {
+        success: true,
+        restoredCount: activeEntitlements.length,
+        message:
+          activeEntitlements.length > 0
+            ? `${activeEntitlements.length} adet satın alınmış paket geri yüklendi.`
+            : 'Hesabınıza kayıtlı geçmiş bir satın alma bulunamadı.',
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        restoredCount: 0,
+        message: err?.message || 'Satın almalar geri yüklenirken bir hata oluştu.',
+      };
+    }
+  }
+  const localCount = loadLocalPurchasedCases().length;
+  return {
+    success: true,
+    restoredCount: localCount,
+    message:
+      localCount > 0
+        ? `Cihazda kayıtlı ${localCount} paket doğrulandı.`
+        : 'Web sürümünde yerel kayıtlar kontrol edildi. Mobil mağaza satın almaları Play Store / App Store üzerinden otomatik geri yüklenir.',
+  };
+}

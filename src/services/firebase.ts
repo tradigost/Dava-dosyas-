@@ -15,6 +15,7 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   GoogleAuthProvider, 
+  OAuthProvider,
   signOut, 
   onAuthStateChanged,
   deleteUser,
@@ -227,6 +228,44 @@ export async function loginWithGoogle(useRedirect: boolean = false): Promise<Det
     }, { merge: true });
   } catch (err) {
     console.error('Failed to save user profile:', err);
+  }
+
+  notifyAuthListeners(profile);
+  return profile;
+}
+
+// Apple Sign-In via Popup (Required by Apple App Store Guideline 4.8 alongside Google Sign-In)
+export async function loginWithApple(): Promise<DetectiveProfile | null> {
+  const provider = new OAuthProvider('apple.com');
+  provider.addScope('email');
+  provider.addScope('name');
+
+  const result = await signInWithPopup(auth, provider);
+  const user = result.user;
+
+  const profile: DetectiveProfile = {
+    uid: user.uid,
+    displayName: user.displayName || 'Dedektif',
+    photoURL: user.photoURL || '',
+    email: user.email || '',
+    isAnonymous: false,
+    isGuest: false,
+  };
+
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('detective_local_user');
+  }
+
+  try {
+    await setDoc(doc(db, 'users', user.uid), {
+      uid: user.uid,
+      displayName: user.displayName || 'Dedektif',
+      email: user.email || '',
+      photoURL: user.photoURL || '',
+      createdAt: new Date().toISOString(),
+    }, { merge: true });
+  } catch (err) {
+    console.error('Failed to save Apple user profile:', err);
   }
 
   notifyAuthListeners(profile);
